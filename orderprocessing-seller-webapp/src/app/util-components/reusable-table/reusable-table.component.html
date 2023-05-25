@@ -1,0 +1,70 @@
+<!-- <div class="d-flex flex-column">
+  
+  <div class="card mx-5">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover">
+        <thead class="card-header">
+          <tr>
+            <th class="fs-5 border-0 p-3">Sr</th>
+            <th *ngFor="let head of HeadArray" class="fs-5 border-0 p-3">
+              {{head.header}}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of DataArray; let sr=index">
+            <td class="text-dark border-0 p-3 fs-5">{{sr+1}}</td>
+            <td *ngFor="let head of HeadArray; let i=index" class="p-3 border-0 fs-5">
+              <div *ngIf="head.field_name != ''">
+                {{item[head.field_name]}}
+              </div>
+              <div *ngIf="head.field_name == 'Dispatch'">
+                <button class="btn btn-sm btn-success" (click)="onDispatch(item)">{{head.field_name}}</button>
+              </div>
+              <div *ngIf="head.field_name == 'Details'">
+                <button class="btn btn-sm fs-5" (click)="onDetail(item)">
+                  <i class="bi bi-eye text-primary"></i>
+                </button>
+
+              </div>
+              <div *ngIf="head.field_name == 'Approve'">
+                <button class="btn btn-sm btn-success" (click)="onApprove(item)">{{head.field_name}}</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card-footer">
+      <nav>
+        <ul class="pagination justify-content-end">
+          <li class="page-item"><a class="page-link text-success">Previous</a></li>
+          <li class="page-item"><a class="page-link text-success">Next</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div> -->
+
+<div class="table-container">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 generic-table">
+    <ng-container *ngFor="let column of HeadArray" [matColumnDef]="column.field_name">
+      <th mat-header-cell *matHeaderCellDef class="table-header">
+        {{column.header}}
+      </th>
+      <td mat-cell *matCellDef="let row" class="table-data">
+        <div *ngIf='column.field_name == "Details"'>
+          <button mat-button (click)="onDetail(row)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+        </div>
+        <div *ngIf='column.field_name != "Details"'>
+          {{row[column.field_name]}}
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

@@ -1,0 +1,15 @@
+.load-more{
+    width: 25%;
+    background-color: #ddd;
+    margin-right: 5%;
+}
+
+.load-less{
+    width: 25%;
+    background-color: #ddd;
+    margin-left: 5%;
+}
+
+.container{
+    text-align: center;
+}

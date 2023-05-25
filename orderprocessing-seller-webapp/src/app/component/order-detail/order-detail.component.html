@@ -1,0 +1,39 @@
+<div class="d-flex m-5">
+  <i class="bi bi-arrow-left fs-2" (click)="backNavigate()"></i>
+  <p class="display-6 fw-bold mx-3">{{title}} Details</p>
+</div>
+<div class="detail-container">
+  <mat-card class="order-detail">
+    <mat-card-header>
+      <mat-card-title>
+        Order Details
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="customer-detail">
+    <mat-card-header>
+      <mat-card-title>
+        Customer Details
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+    </mat-card-content>
+  </mat-card>
+  <mat-card class="address-detail">
+    <mat-card-header>
+      <mat-card-title>
+        Address
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+
+    </mat-card-content>
+  </mat-card>
+  <app-reusable-table [HeadArray]="columnArray" [DataArray]="cartData" class="table">
+
+  </app-reusable-table>
+</div>
