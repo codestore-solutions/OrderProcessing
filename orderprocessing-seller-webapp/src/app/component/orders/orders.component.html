@@ -1,10 +1,10 @@
 <p class="mx-5 mt-5 display-6 fw-bold">{{title}}</p>
+
+
 <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="mx-5 mt-5">
   <mat-tab label='New Orders'>
-    <div class="col-md-12">
-      <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title"
-        (dispatch)="onDispatch($event)"></app-reusable-table>
-    </div>
+    <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title"
+      (dispatch)="onDispatch($event)"></app-reusable-table>
   </mat-tab>
   <mat-tab label='Dispatched Orders'>
     <div class="col-md-12">

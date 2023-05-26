@@ -1,12 +1,12 @@
 .order-detail {
   width: 32%;
   min-height: 250px;
-  margin-top: 5%;
+  margin-top: 3%;
 }
 
 .customer-detail {
   width: 32%;
-  margin-top: 5%;
+  margin-top: 3%;
   margin-left: 2%;
   min-height: 250px;
 }
@@ -14,16 +14,21 @@
 .address-detail {
   width: 32%;
   margin-left: 2%;
-  margin-top: 5%;
+  margin-top: 3%;
   min-height: 250px;
 }
 
 .detail-container {
   display: flex;
   flex-wrap: wrap;
-  margin: 5%;
+  margin-left: 5%;
+  margin-right: 5%;
 }
 
 .table {
   width: 100%;
+}
+
+.content{
+  margin-top: 5%;
 }

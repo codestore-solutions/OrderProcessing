@@ -19,7 +19,7 @@ const routes: Routes = [
     component: BookingsComponent
   },
   {
-    path: 'order-details/:title',
+    path: 'order-details/:title/:cartID',
     component: OrderDetailComponent,
   }
 ];
