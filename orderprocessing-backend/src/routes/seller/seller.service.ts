@@ -15,7 +15,6 @@ import { Attribute } from 'src/database/entities/attributes.entity';
 import moment from 'moment';
 
 
-
 @Injectable()
 export class SellerService {
 
@@ -71,6 +70,7 @@ export class SellerService {
         }
         return { totalAmount };
     }
+    
 
     async checkShippingAddress(id: string) {
         const address = await this.addressRepository.findByPk(id);

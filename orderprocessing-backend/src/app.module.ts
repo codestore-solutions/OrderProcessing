@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { SellerModule } from './routes/seller/seller.module';
 import { CustomerModule } from './routes/customer/customer.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 
 @Module({
@@ -15,7 +16,8 @@ import { CustomerModule } from './routes/customer/customer.module';
     }),
     DatabaseModule,
     SellerModule,
-    CustomerModule
+    CustomerModule,
+    GatewayModule
   ],
   controllers: [AppController],
   providers: [AppService],

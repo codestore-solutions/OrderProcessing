@@ -52,6 +52,11 @@ export class NotificationGateway implements OnGatewayInit,
         console.log("Number of connected services", sockets.size)
     }
 
+    @SubscribeMessage('SendMessage')
+    SendMessage(client: SocketWithAuth){
+        this.io.emit('message', { code: 'MESSAGE', message: "Wweb socket connection"});
+    }
+
 
     handleDisconnect(client: SocketWithAuth) {
         const sockets = this.io.sockets;

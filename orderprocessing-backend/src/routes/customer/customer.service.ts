@@ -15,7 +15,6 @@ import { Attribute } from 'src/database/entities/attributes.entity';
 import moment from 'moment';
 
 
-
 @Injectable()
 export class CustomerService {
 
@@ -72,12 +71,14 @@ export class CustomerService {
         return { totalAmount };
     }
 
+
     async checkShippingAddress(id: string) {
         const address = await this.addressRepository.findByPk(id);
         if (!address) {
             throw new NotFoundException(ErrorMessages.ADDRESS_NOT_FOUND);
         }
     }
+
 
     async verifyPayment(id: string, totalAmount: number) {
 
@@ -89,6 +90,7 @@ export class CustomerService {
             throw new NotFoundException(ErrorMessages.PAYMENT_IS_PARTIALLY_DONE);
         }
     }
+
 
     async createOrder(payload: OrderBodyDto, cartId: string) {
         const { orders, paymentId, paymentMode, userId, shippingAddressId } = payload;

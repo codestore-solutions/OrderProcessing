@@ -15,11 +15,11 @@ export class SocketIOAdapter extends IoAdapter {
 
     createIOServer(port: number, options?: ServerOptions) {
 
-        const jwtService = this.app.get(JwtService);
+        // const jwtService = this.app.get(JwtService);
         const server: Server = super.createIOServer(port, options);
 
         //authenticating notification namespace
-        server.of('notification').use(createTokenMiddleware(jwtService))
+        // server.of('notification').use(createTokenMiddleware(jwtService))
         return server;
     }
 }
