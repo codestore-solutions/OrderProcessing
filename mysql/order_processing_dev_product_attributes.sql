@@ -28,6 +28,10 @@ CREATE TABLE `product_attributes` (
   `attributeId` varchar(255) DEFAULT NULL,
   `value` varchar(36) NOT NULL,
   `updatedAt` datetime NOT NULL,
+  `canExchange` tinyint NOT NULL DEFAULT '0',
+  `canReturn` tinyint NOT NULL DEFAULT '0',
+  `canCancel` tinyint(1) NOT NULL DEFAULT '1',
+  `daysToTakeAction` int DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `productId` (`productId`),
   KEY `attributeId` (`attributeId`),
@@ -42,7 +46,7 @@ CREATE TABLE `product_attributes` (
 
 LOCK TABLES `product_attributes` WRITE;
 /*!40000 ALTER TABLE `product_attributes` DISABLE KEYS */;
-INSERT INTO `product_attributes` VALUES ('614d9498-d0e0-48ec-be30-88010700e215','7cfb6faf-7c25-4552-9f76-04b46d68136c','12424956-873a-49ab-b1de-f5c7452a13da','160805','2023-05-11 15:30:00');
+INSERT INTO `product_attributes` VALUES ('614d9498-d0e0-48ec-be30-88010700e215','7cfb6faf-7c25-4552-9f76-04b46d68136c','12424956-873a-49ab-b1de-f5c7452a13da','160805','2023-05-11 15:30:00',0,0,1,0);
 /*!40000 ALTER TABLE `product_attributes` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -55,4 +59,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-12 16:37:40
+-- Dump completed on 2023-05-29 16:05:21

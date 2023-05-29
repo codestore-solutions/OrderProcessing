@@ -35,8 +35,10 @@ export const tableNameConstants = {
 
 };
 
-export const orderStatus = [ 'cancel', 'pending', 'processing', 'shipped', 
-    'delivered', 'return', 'exchanged', 'payment_failed']
+export const orderStatus = [ 'pending', 'cancel', 'processing', 'shipping', 
+    'delivered', 'return', 'exchanged', 'payment_failed',]
+
+export const sellerOrderState = ['processing', 'shipping']
 
 export const persona = [ 'superadmin', 'customer', 'store']
 

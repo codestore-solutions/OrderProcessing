@@ -1,7 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { constants } from '../../assets/constants';
 import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
-import { UpdateOrderDto } from './dto/update-order-details.dto';
 import { Product } from 'src/database/entities/product.entity';
 import { Address } from 'src/database/entities/address.entity';
 import { ProductInventory } from 'src/database/entities/product-inventory.entity';
@@ -10,8 +9,6 @@ import { ErrorMessages } from 'src/assets/errorMessages';
 import { Payment } from 'src/database/entities/payment.entity';
 import { User } from 'src/database/entities/user.entity';
 import { Order } from 'src/database/entities/order.entity';
-import { Sequelize, literal } from 'sequelize';
-import { Attribute } from 'src/database/entities/attributes.entity';
 import moment from 'moment';
 
 

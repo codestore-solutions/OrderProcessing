@@ -28,6 +28,10 @@ CREATE TABLE `product_inventory` (
   `quantity` int NOT NULL,
   `quantitySold` int NOT NULL DEFAULT '0',
   `updatedAt` datetime NOT NULL,
+  `canCancel` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT '0',
+  `canReturn` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `canExchange` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `daysToTakeAction` varchar(45) DEFAULT '15',
   PRIMARY KEY (`id`),
   KEY `productId` (`productId`),
   CONSTRAINT `product_inventory_ibfk_1` FOREIGN KEY (`productId`) REFERENCES `products` (`id`) ON UPDATE CASCADE
@@ -40,7 +44,7 @@ CREATE TABLE `product_inventory` (
 
 LOCK TABLES `product_inventory` WRITE;
 /*!40000 ALTER TABLE `product_inventory` DISABLE KEYS */;
-INSERT INTO `product_inventory` VALUES ('e5e51639-f9e2-4bc1-9518-5eea63e542bd','7cfb6faf-7c25-4552-9f76-04b46d68136c',10,0,'2023-05-11 15:30:00');
+INSERT INTO `product_inventory` VALUES ('e5e51639-f9e2-4bc1-9518-5eea63e542bd','7cfb6faf-7c25-4552-9f76-04b46d68136c',10,0,'2023-05-11 15:30:00','0',NULL,NULL,'15');
 /*!40000 ALTER TABLE `product_inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +57,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-12 16:37:39
+-- Dump completed on 2023-05-29 16:05:20

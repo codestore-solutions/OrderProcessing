@@ -29,6 +29,7 @@ CREATE TABLE `products` (
   `description` varchar(500) NOT NULL,
   `price` float NOT NULL,
   `createdAt` datetime NOT NULL,
+  `discount` float DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `storeId` (`storeId`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`storeId`) REFERENCES `users` (`id`) ON UPDATE CASCADE
@@ -41,7 +42,7 @@ CREATE TABLE `products` (
 
 LOCK TABLES `products` WRITE;
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` VALUES ('7cfb6faf-7c25-4552-9f76-04b46d68136c','eb1f91cc-0b57-4fa2-ac55-8c1848bb0903','Fastrack Limitless Smartwatch at 1995','Biggest 1.95” Horizon Curve Display: Fastrack Limitless FS1 comes with India\'s first largest 1.95” Horizon Curve Display and is ready to style your wrist with bright pixel resolution and brand new amazing colours, Built-In Alexa: Your personal assistant to make your life quick and smart like setting up alarms, reminders or adding grocery to your cart',1300,'2023-05-11 15:30:00');
+INSERT INTO `products` VALUES ('7cfb6faf-7c25-4552-9f76-04b46d68136c','eb1f91cc-0b57-4fa2-ac55-8c1848bb0903','Fastrack Limitless Smartwatch at 1995','Biggest 1.95” Horizon Curve Display: Fastrack Limitless FS1 comes with India\'s first largest 1.95” Horizon Curve Display and is ready to style your wrist with bright pixel resolution and brand new amazing colours, Built-In Alexa: Your personal assistant to make your life quick and smart like setting up alarms, reminders or adding grocery to your cart',1300,'2023-05-11 15:30:00',0);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -54,4 +55,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-05-12 16:37:39
+-- Dump completed on 2023-05-29 16:05:21

@@ -1,7 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { constants } from '../../assets/constants';
 import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
-import { UpdateOrderDto } from './dto/update-order-details.dto';
 import { Product } from 'src/database/entities/product.entity';
 import { Address } from 'src/database/entities/address.entity';
 import { ProductInventory } from 'src/database/entities/product-inventory.entity';
@@ -71,7 +70,7 @@ export class SellerService {
         }
         return { totalAmount };
     }
-    
+
 
     async checkShippingAddress(id: string) {
         const address = await this.addressRepository.findByPk(id);
@@ -114,14 +113,14 @@ export class SellerService {
     async getAllOrdersByStoreId(storeId: string) {
         return this.orderRepository.findAll({
             where: { storeId },
-            attributes: ['cartId', 
+            attributes: ['cartId',
                 [literal('COUNT(*)'), 'totalProductCount'],
                 [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
                 [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
                 [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
                 [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
             ],
-                
+
             group: ['cartId'],
             include: [
                 {
@@ -222,6 +221,39 @@ export class SellerService {
         });
     }
 
+
+    async updateOrderStatusByCartId(cartId: string, storeId: string, status: string) {
+
+        //gets orders based on cart Id, store Id
+        const orders = await this.orderRepository.findAll({
+            where: { cartId, storeId },
+        });
+
+        if (orders.length === 0) {
+            throw new BadRequestException('Orders not found');
+        }
+
+        const currentState = orders[0].status;
+
+        for (const order of orders) {
+            if (order.status !== currentState) {
+                throw new BadRequestException('All orders must be in the same state');
+            }
+        }
+
+        if (status === 'processing' && currentState !== 'pending') {
+            throw new BadRequestException('All orders must be in the "pending" state to update to "processing"');
+        } else if (status === 'shipped' && currentState !== 'processing') {
+            throw new BadRequestException('All orders must be in the "processing" state to update to "shipped"');
+        }
+
+        for (const order of orders) {
+            order.status = status;
+            await order.save();
+        }
+    }
+
+
     async updateOrderStatus(id: string, status: string) {
         const order = await this.orderRepository.findByPk(id);
 
@@ -252,45 +284,45 @@ export class SellerService {
     }
 
 
-        // async getOrderWithDetails() {
-        //     return this.orderModel.findAll({
-        //         include: [
-        //             {
-        //                 model: Product,
-        //                 include: [
-        //                     { model: Store },
-        //                     { model: Specification },
-        //                 ],
-        //             },
-        //             { model: Payment },
-        //             { model: User },
-        //             { model: ShippingAddress },
-        //         ],
-        //     });
-        // }
+    // async getOrderWithDetails() {
+    //     return this.orderModel.findAll({
+    //         include: [
+    //             {
+    //                 model: Product,
+    //                 include: [
+    //                     { model: Store },
+    //                     { model: Specification },
+    //                 ],
+    //             },
+    //             { model: Payment },
+    //             { model: User },
+    //             { model: ShippingAddress },
+    //         ],
+    //     });
+    // }
 
 
-        update(id: string, updateOrderDto: UpdateOrderDto) {
-            return this.orderRepository.update(updateOrderDto, { where: { id } })
-        }
+    // update(id: string, updateOrderDto: UpdateOrderDto) {
+    //     return this.orderRepository.update(updateOrderDto, { where: { id } })
+    // }
 
-        remove(id: string) {
-            return `This action removes a #${id} booking`;
-        }
+    remove(id: string) {
+        return `This action removes a #${id} booking`;
+    }
 
     async getOrdersByStoreId(storeId: string) {
-            return this.orderRepository.findAll({ where: { storeId } });
-        }
-
-    async createOrderDetail(OrderDto: OrderDto): Promise < void> {
-            // await this.orderRepository.create(OrderDto);
-        }
-
-    async updateOrderDetail(id: string, OrderDto: OrderDto): Promise < void> {
-            const orderDetails = await this.orderRepository.findByPk(id);
-            if(!orderDetails) {
-                throw new NotFoundException('Order detail not found');
-            }
-        await orderDetails.update(OrderDto);
-        }
+        return this.orderRepository.findAll({ where: { storeId } });
     }
+
+    async createOrderDetail(OrderDto: OrderDto): Promise<void> {
+        // await this.orderRepository.create(OrderDto);
+    }
+
+    async updateOrderDetail(id: string, OrderDto: OrderDto): Promise<void> {
+        const orderDetails = await this.orderRepository.findByPk(id);
+        if (!orderDetails) {
+            throw new NotFoundException('Order detail not found');
+        }
+        await orderDetails.update(OrderDto);
+    }
+}

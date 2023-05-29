@@ -1,10 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query, UseGuards, UseInterceptors, UploadedFile, Put, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Put, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiExcludeEndpoint, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import moment from 'moment';
 import { ErrorMessages } from 'src/assets/errorMessages';
 import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
-import { UpdateOrderDto, UpdateOrderStatusDto } from './dto/update-order-details.dto';
+import { sellerUpdateOrderStatusDto } from './dto/update-order-details.dto';
 import { SellerService } from './seller.service';
 import { PaymentMode } from 'src/assets/constants';
 import { uuid } from 'uuidv4';
@@ -33,14 +33,27 @@ export class SellerController {
         return this.sellerService.getOrderDetailByOrderId(orderId);
     }
 
+    @ApiOperation({ summary: 'Update the status of all eligible orders based on cart id, store id' })
+    @ApiParam({ name: 'cartId', description: 'Cart ID', example: 'cf8d0e2a-d10c-442f-a73e-fd299e80c994' })
+    @ApiParam({ name: 'storeId', description: 'Store ID', example: '94bb9a10-dfe7-4b5b-819c-7d951d5d977b' })
+    @ApiResponse({ status: 200, description: 'Orders status updated successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid status transition or order not found' })
+    @Put(':cartId/:storeId')
+    async updateCartOrders(
+        @Param('cartId') cartId: string,
+        @Param('storeId') storeId: string,
+        @Body(ValidationPipe) sellerUpdateOrderStatusDto: sellerUpdateOrderStatusDto,) {
+        return this.sellerService.updateOrderStatusByCartId(cartId, storeId, sellerUpdateOrderStatusDto.status);
+    }
+
     @Put('order/status/:orderId')
     @ApiOkResponse({ description: 'Order status updated successfully' })
     @ApiBadRequestResponse({ description: 'Invalid status or order cannot be updated in the current status' })
     @ApiNotFoundResponse({ description: 'Order not found' })
     @ApiOperation({ summary: 'Update the status of an order' })
     async updateOrderById(@Param('orderId') orderId: string, 
-        @Body(ValidationPipe) updateOrderStatusDto: UpdateOrderStatusDto) {
-        return this.sellerService.updateOrderStatus(orderId, updateOrderStatusDto.status);
+        @Body(ValidationPipe) sellerUpdateOrderStatusDto: sellerUpdateOrderStatusDto) {
+        return this.sellerService.updateOrderStatus(orderId, sellerUpdateOrderStatusDto.status);
     }
 
     @ApiOperation({ summary: 'Get orders by status' })
