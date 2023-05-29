@@ -19,12 +19,9 @@ import { BookingsComponent } from './component/bookings/bookings.component';
 import { ReusableTableComponent } from './util-components/reusable-table/reusable-table.component';
 import { ProductDetailsComponent } from './util-components/product-details/product-details.component';
 import { OrderDetailComponent } from './component/order-detail/order-detail.component';
-import { NZ_I18N } from 'ng-zorro-antd/i18n';
-import { en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { SharedModuleModule } from './shared-module/shared-module.module';
-import { IconsProviderModule } from './icons-provider.module';
 import { NavComponent } from './component/nav/nav.component';
 registerLocaleData(en);
 
@@ -49,10 +46,9 @@ registerLocaleData(en);
     EffectsModule.forRoot([OrderEffects]),
     HttpClientModule,
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-    IconsProviderModule,
     SharedModuleModule
   ],
-  providers: [DataService, { provide: NZ_I18N, useValue: en_US }],
+  providers: [DataService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

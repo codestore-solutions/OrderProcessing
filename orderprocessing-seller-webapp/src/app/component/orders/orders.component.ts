@@ -37,6 +37,9 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   }
   ngOnInit(): void {
     this.store.dispatch(loadOrder());
+    this.service.getSocketData().subscribe(data=>{
+      console.log(data);
+    })
   }
 
   ngAfterViewInit(): void {

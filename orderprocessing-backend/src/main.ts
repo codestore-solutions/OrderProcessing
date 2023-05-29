@@ -6,13 +6,13 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
+import cors from 'cors';
 
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix(constants.APIS_PREFIX);
   app.enableCors();
-
   //Configuring Swagger
   const config = new DocumentBuilder()
   .setTitle(swaggerConstants.SWAGGER_TITLE)

@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http"
+import { HttpClient } from "@angular/common/http";
+import { io } from "socket.io-client";
+import { BehaviorSubject } from "rxjs";
 
 interface category {
     id: string;
@@ -51,5 +53,18 @@ export class DataService{
 
     generateUUID() {
         return this.http.get("https://www.uuidtools.com/api/generate/timestamp-first")
+    }
+
+
+    //Web-Socket Connection 
+    public data$: BehaviorSubject<string> = new BehaviorSubject('');
+
+    socket = io('ws://127.0.0.1:3000/notification', {transports: ['websocket']});
+    public getSocketData() {
+        this.socket.on('SendMessage', (message)=>{
+            this.data$.next(message);
+        });
+        
+        return this.data$.asObservable();
     }
 }
