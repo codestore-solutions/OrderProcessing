@@ -61,10 +61,15 @@ export class DataService{
 
     socket = io('ws://127.0.0.1:3000/notification', {transports: ['websocket']});
     public getSocketData() {
-        this.socket.on('SendMessage', (message)=>{
+        this.socket.on('message', (message)=>{
             this.data$.next(message);
         });
         
         return this.data$.asObservable();
+    }
+
+    public sendMessage() {
+        const message = 'SendMessage';
+        this.socket.emit('SendMessage');
     }
 }
