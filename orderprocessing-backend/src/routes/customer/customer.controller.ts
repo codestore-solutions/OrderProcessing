@@ -1,21 +1,25 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, HttpStatus, Query, UseGuards, UseInterceptors, UploadedFile, Put, ValidationPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiExcludeEndpoint, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import moment from 'moment';
-import { ErrorMessages } from 'src/assets/errorMessages';
-import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
-import { UpdateOrderDto, UpdateOrderStatusDto } from './dto/update-order-details.dto';
+import { ApiBadRequestResponse, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { OrderBodyDto } from './dto/create-order-details.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-details.dto';
 import { CustomerService } from './customer.service';
 import { PaymentMode } from 'src/assets/constants';
 import { uuid } from 'uuidv4';
+import { NotificationGateway } from 'src/gateway/gateway.provider';
+import { NEW_ORDER } from 'src/gateway/notification.constant';
 
 
 @ApiTags('Orders - customer')
 @Controller('customer')
 export class CustomerController {
-    constructor(private readonly customerService: CustomerService) { }
+    constructor(
+        private readonly customerService: CustomerService,
+        private readonly notificationService: NotificationGateway,
+    ) { }
 
-    @ApiOperation({ description: 'Creates a order associated with given userId, and productId' })
+    @ApiOperation({ summary: 'Creates an order',
+        description: 'Creates an order associated with given userId, and productId' })
     @ApiResponse({ status: 201, description: 'Orders created successfully' })
     @Post('createOrder')
     async createOrder(@Body() OrderBodyDto: OrderBodyDto) {
@@ -23,23 +27,40 @@ export class CustomerController {
         const ordersArray = Array.isArray(OrderBodyDto.orders) ?
             OrderBodyDto.orders : [OrderBodyDto.orders];
 
-        //verification of product, inventory and product specification
-        //takes prices of all product for validation with payment module
-        const { totalAmount } = await this.customerService.checkProductAndInventory(ordersArray)
-
-        //verification of address
-        await this.customerService.checkShippingAddress(OrderBodyDto.shippingAddressId)
-
-        //payment verification if mode is online
-        if (OrderBodyDto.paymentMode !== PaymentMode.CASH_ON_DELIVERY) {
-            await this.customerService.verifyPayment(OrderBodyDto.paymentId, totalAmount)
-        }
-
         //creating orders using cart Id, 
         const cartId = uuid();
+
+        //verification of product, inventory and product specification
+        //takes prices of all product for validation with payment module
+        const { totalAmount, data } = await this.customerService.checkProductAndInventory(ordersArray)
+
+        //get and verification of address
+        const address = await this.customerService.checkAndGetShippingAddress(OrderBodyDto.shippingAddressId)
+
+        //payment verification if mode is online
+        let payment = null;
+        if (OrderBodyDto.paymentMode !== PaymentMode.CASH_ON_DELIVERY) {
+            payment = await this.customerService.verifyPayment(OrderBodyDto.paymentId, totalAmount)
+        }
+
+        //creates an order after validations
         await this.customerService.createOrder(OrderBodyDto, cartId);
 
-        //sends data or notification to seller 
+        //get customer details
+        const customer = await this.customerService.getCustomerInfo(OrderBodyDto.userId);
+
+        for (let key in data) {
+            let orderData = {
+                ...data[key],
+                address,
+                paymentMode: OrderBodyDto.paymentMode,
+                cartId,
+                customer,
+                createdAt: new Date()
+            }
+            //sends data or notification to sellers when order placed
+            this.notificationService.io.to(key).emit(NEW_ORDER, orderData);
+        }
     }
 
 

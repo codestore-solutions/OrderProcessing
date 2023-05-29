@@ -48,6 +48,13 @@ export class Product extends Model {
 
     @AllowNull(false)
     @Column({
+        type: DataType.FLOAT,
+        defaultValue: 0,
+    })
+    discount: number;
+
+    @AllowNull(false)
+    @Column({
         type: DataType.DATE,
         defaultValue: DataType.NOW,
     })

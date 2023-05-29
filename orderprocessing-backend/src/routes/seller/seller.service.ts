@@ -13,6 +13,7 @@ import { Order } from 'src/database/entities/order.entity';
 import { Sequelize, literal } from 'sequelize';
 import { Attribute } from 'src/database/entities/attributes.entity';
 import moment from 'moment';
+import sequelize from 'sequelize';
 
 
 @Injectable()
@@ -113,7 +114,14 @@ export class SellerService {
     async getAllOrdersByStoreId(storeId: string) {
         return this.orderRepository.findAll({
             where: { storeId },
-            attributes: ['cartId', [literal('COUNT(*)'), 'count']],
+            attributes: ['cartId', 
+                [literal('COUNT(*)'), 'totalProductCount'],
+                [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
+                [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
+                [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
+                [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
+            ],
+                
             group: ['cartId'],
             include: [
                 {
@@ -121,10 +129,10 @@ export class SellerService {
                     as: 'customer',
                     attributes: { exclude: ['id'] },
                 },
-                {
-                    model: Payment,
-                    attributes: { exclude: ['id', 'storeId', 'customerId'] }
-                },
+                // {
+                //     model: Payment,
+                //     attributes: { exclude: ['id', 'storeId', 'customerId'] }
+                // },
                 {
                     model: Address,
                     attributes: { exclude: ['id', 'userId'] }

@@ -36,16 +36,33 @@ export class CustomerService {
 
         @Inject(constants.PAYMENT_REPOSITORY)
         private paymentRepository: typeof Payment,
+
+        @Inject(constants.USER_REPOSITORY)
+        private userRepository: typeof User,
     ) { }
 
 
     async checkProductAndInventory(orderDtos: OrderDto[]) {
         let totalAmount = 0
+        let data = {};
         for (const orderDto of orderDtos) {
+            const storeId = orderDto.storeId
+            if(data.hasOwnProperty("storeId")){
+                data[storeId]['count']++;
+            } else {
+                data[storeId] = {
+                    count: 1, 
+                    paymentAmount: 0,
+                    discount: 0
+                }
+            }
+
             // Retrieve the product from the database
             const productId = orderDto.productId;
             const product = await this.productRepository.findByPk(productId);
-            totalAmount += product.price;
+            totalAmount += (product.price - product.discount);
+            data[storeId]['paymentAmount'] += product.price;
+            data[storeId]['discount'] += product.discount;
 
             // Check if the product exists
             if (!product) {
@@ -68,27 +85,46 @@ export class CustomerService {
                 throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
             }
         }
-        return { totalAmount };
+        return { totalAmount, data };
     }
 
 
-    async checkShippingAddress(id: string) {
-        const address = await this.addressRepository.findByPk(id);
+    async checkAndGetShippingAddress(id: string) {
+        const address = await this.addressRepository.findByPk(id, {
+            attributes: { exclude: ['id', 'userId'] }
+        });
         if (!address) {
             throw new NotFoundException(ErrorMessages.ADDRESS_NOT_FOUND);
         }
+        return address;
     }
 
 
     async verifyPayment(id: string, totalAmount: number) {
 
-        const payment = await this.paymentRepository.findByPk(id);
+        const payment = await this.paymentRepository.findByPk(id, {
+            attributes: {
+                exclude: ['id', 'storeId', 'customerId']
+            }
+        });
 
         if (!payment) {
             throw new NotFoundException(ErrorMessages.PAYMENT_NOT_DONE);
         } else if (payment.amountPaid !== totalAmount) {
             throw new NotFoundException(ErrorMessages.PAYMENT_IS_PARTIALLY_DONE);
         }
+        delete payment.amountPaid;
+        return payment;
+    }
+
+
+    async getCustomerInfo(userId: string) {
+        const user = await this.userRepository.findByPk(userId, {
+            attributes: {
+                exclude: ['id']
+            }
+        });
+        return user;
     }
 
 
@@ -96,6 +132,8 @@ export class CustomerService {
         const { orders, paymentId, paymentMode, userId, shippingAddressId } = payload;
 
         for (const order of orders) {
+            const product = await this.productRepository.findByPk(order.productId);
+
             await this.orderRepository.create({
                 userId,
                 storeId: order.storeId,
@@ -104,6 +142,8 @@ export class CustomerService {
                 productAttributeId: order.specificationId,
                 cartId,
                 paymentId,
+                price: product.price,
+                discount: product.discount,
                 shippingAddressId,
                 status: 'pending',
                 paymentMode,

@@ -23,7 +23,7 @@ export const constants = {
 
 
 export const tableNameConstants = {
-    NEW_ORDER: 'new_orders',
+    ORDER: 'orders',
     BOOKING: 'bookings',
     USER: 'users',
     PAYMENT: 'payments',

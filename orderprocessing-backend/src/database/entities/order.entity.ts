@@ -11,7 +11,7 @@ import { ProductAttributes } from "src/database/entities/product-attributes.enti
 @Table({
     freezeTableName: true,
     timestamps: false,
-    tableName: tableNameConstants.NEW_ORDER,
+    tableName: tableNameConstants.ORDER,
 })
 export class Order extends Model {
     @PrimaryKey
@@ -80,6 +80,20 @@ export class Order extends Model {
 
     @BelongsTo(() => Payment)
     payment: Payment;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.FLOAT,
+    })
+    price: number;
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.FLOAT,
+        defaultValue: 0,
+    })
+    discount: number;
+
 
     @Column({
         type: DataType.ENUM,

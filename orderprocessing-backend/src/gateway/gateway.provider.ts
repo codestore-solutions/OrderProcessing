@@ -34,21 +34,17 @@ export class NotificationGateway implements OnGatewayInit,
 
     async handleConnection(client: SocketWithAuth, ...args: any[]) {
         const sockets = this.io.sockets;
-
-        const userType = client.userType;
         const userId = client.userID;
-        let roomName: string | string[];
         
-
         try{
-
+            await client.join(userId);
         } catch(e){
             console.log(e, "Connection error")
-            this.io.to(client.id).emit('exception', { code: 'UNKNOWN_ERROR', message: "Something went wrong"});
+            this.io.to(client.id).emit('exception', 
+                { code: 'UNKNOWN_ERROR', message: "Something went wrong"});
             this.io.in(client.id).disconnectSockets();
         }
 
-        client.join("testing");
         console.log("Number of connected services", sockets.size)
     }
 

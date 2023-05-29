@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
+import { SocketIOAdapter } from './gateway/socket.io.adapter';
 
 
 async function bootstrap() {
@@ -15,11 +16,11 @@ async function bootstrap() {
 
   //Configuring Swagger
   const config = new DocumentBuilder()
-  .setTitle(swaggerConstants.SWAGGER_TITLE)
-  .setDescription(swaggerConstants.SWAGGER_DESCRIPTION)
-  .setVersion(swaggerConstants.SWAGGER_VERSION)
-  .addBearerAuth()
-  .build();
+    .setTitle(swaggerConstants.SWAGGER_TITLE)
+    .setDescription(swaggerConstants.SWAGGER_DESCRIPTION)
+    .setVersion(swaggerConstants.SWAGGER_VERSION)
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(constants.APIS_PREFIX, app, document);
 
@@ -32,7 +33,10 @@ async function bootstrap() {
   try {
     app.use(json({ limit: '50mb' }));
     app.use(urlencoded({ extended: true, limit: '50mb' }));
-  } catch(err) {
+
+    //Setting websocket adapter
+    app.useWebSocketAdapter(new SocketIOAdapter(app))
+  } catch (err) {
     console.log(err);
   }
   await app.listen(port);
