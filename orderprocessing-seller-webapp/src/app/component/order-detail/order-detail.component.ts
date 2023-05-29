@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
+import * as dayjs from 'dayjs';
 import { CartDetails } from 'src/app/model/cartDetails';
 import { loadCartDetail } from 'src/app/store/actions/orders.action';
 import { selectCartDetails } from 'src/app/store/selector/order.selector';
@@ -89,7 +90,7 @@ export class OrderDetailComponent implements OnInit, OnChanges {
     if (obj[0] != null) {
       result = {
         id: obj[0].cartId,
-        createdAt: obj[0].createdAt,
+        createdAt: dayjs(obj[0].createdAt, 'DD-MM-YYYY').toString(),
         customerName: obj[0].customer.username,
         address: obj[0].address.country + " " + obj[0].address.state + " " + obj[0].address.city + " " + obj[0].address.street + ", " + obj[0].address.postalCode,
         paymentMode: obj[0].paymentMode

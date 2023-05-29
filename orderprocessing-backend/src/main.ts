@@ -8,12 +8,10 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
 import { SocketIOAdapter } from './gateway/socket.io.adapter';
 
-
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix(constants.APIS_PREFIX);
   app.enableCors();
-
   //Configuring Swagger
   const config = new DocumentBuilder()
     .setTitle(swaggerConstants.SWAGGER_TITLE)

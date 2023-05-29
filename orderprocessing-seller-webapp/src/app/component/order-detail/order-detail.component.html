@@ -58,7 +58,15 @@
       </div>
     </mat-card-content>
   </mat-card>
-  <app-reusable-table [HeadArray]="columnArray" [DataArray]="cartData" class="table">
+  <mat-card class="table-container">
+    <mat-card-header>
+      <mat-card-title class="fs-3">
+        Orders
+      </mat-card-title>
+    </mat-card-header>
+    <app-reusable-table [HeadArray]="columnArray" [DataArray]="cartData" class="table p-3">
 
-  </app-reusable-table>
+    </app-reusable-table>
+  </mat-card>
+
 </div>

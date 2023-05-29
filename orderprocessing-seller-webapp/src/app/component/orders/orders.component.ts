@@ -4,6 +4,7 @@ import { Order } from 'src/app/model/order.model';
 import { loadOrder } from 'src/app/store/actions/orders.action';
 import { selectOrders } from 'src/app/store/selector/order.selector';
 import { DataService } from 'src/app/services/data.service';
+import * as dayjs from 'dayjs';
 
 interface order {
   cartId: string,
@@ -28,7 +29,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
     { header: 'Address', field_name: 'address' },
     { header: 'Product Count', field_name: 'productCount' },
     { header: 'Customer Name', field_name: 'customerName' },
-    { header: 'Created At', field_name: 'paymentDate' },
+    { header: 'Date', field_name: 'paymentDate' },
     { header: 'Paid Amount', field_name: 'paidAmnt' },
     { header: 'Details', field_name: 'Details' }
   ]
@@ -37,6 +38,10 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   }
   ngOnInit(): void {
     this.store.dispatch(loadOrder());
+    this.service.sendMessage();
+    this.service.getSocketData().subscribe(data=>{
+      console.log(data);
+    })
   }
 
   ngAfterViewInit(): void {
@@ -67,7 +72,7 @@ export class OrdersComponent implements OnInit, AfterViewInit {
           productCount: data.count,
           customerName: data.customer.username,
           paidAmnt: data.payment.amountPaid,
-          paymentDate: data.payment.createdAt,
+          paymentDate: dayjs(data.payment.createdAt, 'DD-MM-YYYY').toString(),
           discount: data.payment.discount
         };
         result.push(orderItem);
