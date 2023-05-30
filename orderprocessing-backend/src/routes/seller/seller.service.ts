@@ -1,5 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { constants } from '../../assets/constants';
+import { constants, orderStatus } from '../../assets/constants';
 import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
 import { Product } from 'src/database/entities/product.entity';
 import { Address } from 'src/database/entities/address.entity';
@@ -275,12 +275,37 @@ export class SellerService {
         return order;
     }
 
-    async findByStatus(status: string) {
+    async findByStatus(status: string, storeId: string) {
+
+        const validStatus = [...orderStatus];
+
+        if (!validStatus.includes(status)) {
+            throw new BadRequestException('Invalid status value');
+        }
+        
         return this.orderRepository.findAll({
-            where: {
-                status,
-            },
-        })
+            where: { storeId, status },
+            attributes: ['cartId',
+                [literal('COUNT(*)'), 'totalProductCount'],
+                [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
+                [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
+                [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
+                [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
+            ],
+
+            group: ['cartId'],
+            include: [
+                {
+                    model: User,
+                    as: 'customer',
+                    attributes: { exclude: ['id'] },
+                },
+                {
+                    model: Address,
+                    attributes: { exclude: ['id', 'userId'] }
+                },
+            ],
+        });
     }
 
 

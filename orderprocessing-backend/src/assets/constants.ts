@@ -35,7 +35,7 @@ export const tableNameConstants = {
 
 };
 
-export const orderStatus = [ 'pending', 'cancel', 'processing', 'shipping', 
+export const orderStatus = [ 'pending', 'cancel', 'processing', 'agent_assigned', 'picked_up', 
     'delivered', 'return', 'exchanged', 'payment_failed',]
 
 export const sellerOrderState = ['processing', 'shipping']

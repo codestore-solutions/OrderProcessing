@@ -1,7 +1,6 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { constants } from '../../assets/constants';
 import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
-import { UpdateOrderDto } from './dto/update-order-details.dto';
 import { Product } from 'src/database/entities/product.entity';
 import { Address } from 'src/database/entities/address.entity';
 import { ProductInventory } from 'src/database/entities/product-inventory.entity';
@@ -10,11 +9,13 @@ import { ErrorMessages } from 'src/assets/errorMessages';
 import { Payment } from 'src/database/entities/payment.entity';
 import { User } from 'src/database/entities/user.entity';
 import { Order } from 'src/database/entities/order.entity';
-
+import { literal } from 'sequelize';
+import { Attribute } from 'src/database/entities/attributes.entity';
+import sequelize from 'sequelize';
 
 
 @Injectable()
-export class OrdersService {
+export class DeliveryService {
 
     constructor(
         @Inject(constants.ORDER_REPOSITORY)
@@ -69,6 +70,7 @@ export class OrdersService {
         return { totalAmount };
     }
 
+
     async checkShippingAddress(id: string) {
         const address = await this.addressRepository.findByPk(id);
         if (!address) {
@@ -106,20 +108,33 @@ export class OrdersService {
         }
     }
 
+
     async getAllOrdersByStoreId(storeId: string) {
         return this.orderRepository.findAll({
             where: { storeId },
+            attributes: ['cartId',
+                [literal('COUNT(*)'), 'totalProductCount'],
+                [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
+                [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
+                [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
+                [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
+            ],
+
+            group: ['cartId'],
             include: [
                 {
-                    model: Product,
-                    include: [
-                        { model: ProductAttributes },
-                        { model: ProductInventory },
-                    ],
+                    model: User,
+                    as: 'customer',
+                    attributes: { exclude: ['id'] },
                 },
-                { model: Payment },
-                { model: User },
-                { model: Address },
+                // {
+                //     model: Payment,
+                //     attributes: { exclude: ['id', 'storeId', 'customerId'] }
+                // },
+                {
+                    model: Address,
+                    attributes: { exclude: ['id', 'userId'] }
+                },
             ],
         });
     }
@@ -128,36 +143,145 @@ export class OrdersService {
     async getAllOrdersByCartId(storeId: string, cartId: string) {
         return this.orderRepository.findAll({
             where: { storeId, cartId },
+            attributes: {
+                exclude: ['storeId', 'userId',
+                    'productAttributeId', 'shippingAddressId', 'paymentId', 'productId']
+            },
             include: [
-                { model: Product, 
-                    include: [
-                        { model: ProductAttributes }, 
-                        { model: ProductInventory }
-                    ] 
+                {
+                    model: User,
+                    as: 'customer',
+                    attributes: { exclude: ['id'] },
                 },
-                { model: Payment },
-                { model: User },
-                { model: Address },
+                {
+                    model: Product,
+                    attributes: { exclude: ['storeId', 'id'] },
+                },
+
+                {
+                    model: ProductAttributes,
+                    attributes: { exclude: ['id', 'attributeId', 'productId'] },
+                    include: [
+                        {
+                            model: Attribute,
+                            attributes: { exclude: ['id'] },
+                        },
+                    ]
+                },
+                {
+                    model: Payment,
+                    attributes: { exclude: ['id', 'storeId', 'customerId'] }
+                },
+                {
+                    model: Address,
+                    attributes: { exclude: ['id', 'userId'] }
+                },
             ],
         });
     }
 
     async getOrderDetailByOrderId(orderId: string) {
         return this.orderRepository.findOne({
-            where: { orderId },
+            where: { id: orderId },
+            attributes: {
+                exclude: ['storeId', 'userId',
+                    'productAttributeId', 'shippingAddressId', 'paymentId', 'productId']
+            },
             include: [
-                { model: Product, 
-                    include: [
-                        { model: ProductAttributes }, 
-                        { model: ProductInventory }
-                    ] 
+                {
+                    model: User,
+                    as: 'customer',
+                    attributes: { exclude: ['id'] },
                 },
-                { model: Payment },
-                { model: User },
-                { model: Address },
+                {
+                    model: Product,
+                    attributes: { exclude: ['storeId', 'id'] },
+                },
+
+                {
+                    model: ProductAttributes,
+                    attributes: { exclude: ['id', 'attributeId', 'productId'] },
+                    include: [
+                        {
+                            model: Attribute,
+                            attributes: { exclude: ['id'] },
+                        },
+                    ]
+                },
+                {
+                    model: Payment,
+                    attributes: { exclude: ['id', 'storeId', 'customerId'] }
+                },
+                {
+                    model: Address,
+                    attributes: { exclude: ['id', 'userId'] }
+                },
             ],
         });
     }
+
+
+    async updateOrderStatusByCartId(cartId: string, storeId: string, status: string) {
+
+        //gets orders based on cart Id, store Id
+        const orders = await this.orderRepository.findAll({
+            where: { cartId, storeId },
+        });
+
+        if (orders.length === 0) {
+            throw new BadRequestException('Orders not found');
+        }
+
+        const currentState = orders[0].status;
+
+        for (const order of orders) {
+            if (order.status !== currentState) {
+                throw new BadRequestException('All orders must be in the same state');
+            }
+        }
+
+        if (status === 'processing' && currentState !== 'pending') {
+            throw new BadRequestException('All orders must be in the "pending" state to update to "processing"');
+        } else if (status === 'shipped' && currentState !== 'processing') {
+            throw new BadRequestException('All orders must be in the "processing" state to update to "shipped"');
+        }
+
+        for (const order of orders) {
+            order.status = status;
+            await order.save();
+        }
+    }
+
+
+    async updateOrderStatus(id: string, status: string) {
+        const order = await this.orderRepository.findByPk(id);
+
+        if (!order) {
+            throw new NotFoundException(ErrorMessages.ORDER_NOT_FOUND);
+        }
+
+        switch (status) {
+            case 'cancel':
+                if (order.status !== 'processing' && order.status !== 'pending') {
+                    throw new BadRequestException(ErrorMessages.CANNOT_CANCEL_ORDER);
+                }
+                break;
+        }
+
+        order.status = status;
+        await order.save();
+
+        return order;
+    }
+
+    async findByStatus(status: string) {
+        return this.orderRepository.findAll({
+            where: {
+                status,
+            },
+        })
+    }
+
 
     // async getOrderWithDetails() {
     //     return this.orderModel.findAll({
@@ -177,9 +301,9 @@ export class OrdersService {
     // }
 
 
-    update(id: string, updateOrderDto: UpdateOrderDto) {
-        return this.orderRepository.update(updateOrderDto, { where: { id } })
-    }
+    // update(id: string, updateOrderDto: UpdateOrderDto) {
+    //     return this.orderRepository.update(updateOrderDto, { where: { id } })
+    // }
 
     remove(id: string) {
         return `This action removes a #${id} booking`;

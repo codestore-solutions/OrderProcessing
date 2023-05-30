@@ -8,7 +8,7 @@ import { User } from "src/database/entities/user.entity";
 import { Order } from "src/database/entities/order.entity";
 
 
-export const orderProviders = [
+export const deliveryProviders = [
     {
         provide: constants.ORDER_REPOSITORY,
         useValue: Order,

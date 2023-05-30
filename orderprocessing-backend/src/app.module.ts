@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { SellerModule } from './routes/seller/seller.module';
 import { CustomerModule } from './routes/customer/customer.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { DeliveryModule } from './routes/delivery/delivery.module';
 
 
 @Module({
@@ -17,6 +18,7 @@ import { GatewayModule } from './gateway/gateway.module';
     DatabaseModule,
     SellerModule,
     CustomerModule,
+    DeliveryModule,
     GatewayModule
   ],
   controllers: [AppController],
