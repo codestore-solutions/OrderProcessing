@@ -1,18 +1,21 @@
-<p class="mx-5 mt-5 display-6 fw-bold">{{title}}</p>
+<p class="mx-5 mt-5 display-4 fw-bold">{{title}}</p>
 
 
 <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="mx-5 mt-5">
-  <mat-tab label='New Orders'>
+  <mat-tab >
+    <ng-template mat-tab-label><span class="fs-4 fw-light text-dark">New Orders</span></ng-template>
     <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title"
       (dispatch)="onDispatch($event)"></app-reusable-table>
   </mat-tab>
-  <mat-tab label='Dispatched Orders'>
+  <mat-tab>
+    <ng-template mat-tab-label><span class="fs-4 fw-light text-dark">Processing Orders</span></ng-template>
     <div class="col-md-12">
       <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title"
         (dispatch)="onDispatch($event)"></app-reusable-table>
     </div>
   </mat-tab>
-  <mat-tab label='Completed Orders'>
+  <mat-tab>
+    <ng-template mat-tab-label><span class="fs-4 fw-light text-dark">Completed Orders</span></ng-template>
     <div class="col-md-12">
       <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title"
         (dispatch)="onDispatch($event)"></app-reusable-table>

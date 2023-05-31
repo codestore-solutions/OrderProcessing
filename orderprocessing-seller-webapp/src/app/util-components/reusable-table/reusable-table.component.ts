@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+import { DataService } from 'src/app/services/data.service';
 
 @Component({
   selector: 'app-reusable-table',
@@ -20,7 +21,7 @@ export class ReusableTableComponent implements OnInit, OnChanges{
   @Output() details = new EventEmitter<any>();
   sellerID: string = 'eb1f91cc-0b57-4fa2-ac55-8c1848bb0903';
 
-  constructor(public dialog: MatDialog, private store: Store, private router: Router) {
+  constructor(public dialog: MatDialog, private store: Store, private router: Router, private service: DataService) {
 
   }
   ngOnInit() {
@@ -55,4 +56,10 @@ export class ReusableTableComponent implements OnInit, OnChanges{
   onCardClosed(event: Event) {
     console.log(event);
   }
+
+  changeStatus(item) {
+    this.service.changeOrderStatus(item.cartId);
+  }
+
+ 
 }

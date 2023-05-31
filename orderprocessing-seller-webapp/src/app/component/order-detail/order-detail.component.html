@@ -4,64 +4,72 @@
 </div>
 <div class="detail-container">
   <mat-card class="order-detail">
-    <mat-card-header class="p-3">
+    <mat-card-header>
       <mat-card-title class="fs-3">
         Order Details
       </mat-card-title>
     </mat-card-header>
+    <hr/>
     <mat-card-content class="content fs-5">
-      <div class="d-flex">
-        <p>Order ID</p>
-        <p class="mx-3">{{order.id}}</p>
+      <div class="details">
+        <p class="">Order ID</p>
+        <p class="value
+        ">{{order.id}}</p>
       </div>
-      <div class="d-flex">
-        <p>Date Added</p>
-        <p class="mx-3">{{order.createdAt}}</p>
+      <div class="details">
+        <p class="">Order Date</p>
+        <p class="">{{order.orderedAt}}</p>
       </div>
-      <div class="d-flex">
-        <p>Payment Mode</p>
-        <p class="mx-3">{{order.paymentMode}}</p>
+      <div class="details">
+        <p class="">Order Time</p>
+        <p class="">{{order.createdAt}}</p>
       </div>
     </mat-card-content>
   </mat-card>
   <mat-card class="customer-detail">
-    <mat-card-header class="p-3">
+    <mat-card-header>
       <mat-card-title class="fs-3">
         Customer Details
       </mat-card-title>
     </mat-card-header>
+    <hr/>
     <mat-card-content class="content fs-5">
-      <div class="d-flex">
-        <p>Customer Name</p>
-        <p class="mx-3">{{order.customerName}}</p>
+      <div class="details">
+        <p class="">Customer Name</p>
+        <p class="">{{order.customerName}}</p>
       </div>
-      <div class="d-flex">
-        <p>Payment Mode</p>
-        <p class="mx-3">{{order.paymentMode}}</p>
+      <div class="details">
+        <p class="value">Email</p>
+        <p class="value">{{email}}</p>
+      </div>
+      <div class="details">
+        <p class="">Payment Mode</p>
+        <p class="">{{order.paymentMode}}</p>
       </div>
     </mat-card-content>
   </mat-card>
   <mat-card class="address-detail">
-    <mat-card-header class="p3">
+    <mat-card-header>
       <mat-card-title class="fs-3">
         Address
       </mat-card-title>
     </mat-card-header>
+    <hr/>
     <mat-card-content class="content fs-5">
-      <div class="d-flex">
-        <p>Shipping </p>
-        <p class="mx-3">{{order.address}}</p>
+      <div class="details">
+        <p class="">Shipping </p>
+        <p class="">{{order.address}}</p>
       </div>
-      <div class="d-flex">
-        <p>Billing </p>
-        <p class="mx-3">{{order.address}}</p>
+      <div class="details">
+        <p class="">Billing </p>
+        <p class="">{{order.address}}</p>
       </div>
     </mat-card-content>
   </mat-card>
   <mat-card class="table-container">
     <mat-card-header>
       <mat-card-title class="fs-3">
-        Orders
+        Items
       </mat-card-title>
     </mat-card-header>
     <app-reusable-table [HeadArray]="columnArray" [DataArray]="cartData" class="table p-3">

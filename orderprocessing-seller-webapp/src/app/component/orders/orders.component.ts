@@ -24,31 +24,37 @@ export class OrdersComponent implements OnInit, AfterViewInit {
   orderData$ = this.store.select(selectOrders);
   orderList: order[] = [];
   dataList: Order[] = [];
+  processedOrderList: Order[] = [];
   title: string = 'Orders';
   columnArray = [
-    { header: 'Address', field_name: 'address' },
-    { header: 'Product Count', field_name: 'productCount' },
     { header: 'Customer Name', field_name: 'customerName' },
+    { header: 'Product Count', field_name: 'productCount' },
     { header: 'Date', field_name: 'paymentDate' },
     { header: 'Paid Amount', field_name: 'paidAmnt' },
-    { header: 'Details', field_name: 'Details' }
+    { header: 'Actions', field_name: 'Actions' }
   ]
   constructor(private store: Store, private service: DataService) {
 
   }
   ngOnInit(): void {
     this.store.dispatch(loadOrder());
-    this.service.sendMessage();
-    this.service.getSocketData().subscribe(data=>{
-      console.log(data);
-    })
-  }
-
-  ngAfterViewInit(): void {
     this.orderData$.subscribe((data) => {
       this.dataList = data;
       this.orderList = this.parseObject(this.dataList);
-    })
+    });
+
+    this.service.getSocketData().subscribe((data) => {
+      console.log(data);
+    });
+
+    this.service.getProcessedOrders().subscribe(data=> {
+      console.log("Processed Orders Data",data);
+    });
+  }
+
+  ngAfterViewInit(): void {
+
+
   }
 
   onDispatch(event: Event) {
@@ -66,14 +72,15 @@ export class OrdersComponent implements OnInit, AfterViewInit {
     const result: order[] = [];
     if (dataList != null) {
       for (let data of dataList) {
+        const date = dayjs(data.createdAt.split('T', 2)[0], 'DD-MM-YYYY').format('D MMMM, YYYY');
         const orderItem: order = {
           cartId: data.cartId,
           address: data.address.country + " " + data.address.state + " " + data.address.city + " " + data.address.street + " " + data.address.postalCode,
-          productCount: data.count,
+          productCount: data.totalProductCount,
           customerName: data.customer.username,
-          paidAmnt: data.payment.amountPaid,
-          paymentDate: dayjs(data.payment.createdAt, 'DD-MM-YYYY').toString(),
-          discount: data.payment.discount
+          paidAmnt: data.totalAmount,
+          paymentDate: date.toString(),
+          discount: data.totalDiscount
         };
         result.push(orderItem);
       }

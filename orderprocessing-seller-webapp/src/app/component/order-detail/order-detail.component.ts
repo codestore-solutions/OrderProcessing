@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
 import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as dayjs from 'dayjs';
@@ -16,6 +17,7 @@ interface order {
 
 interface orderDetail {
   id: string;
+  orderedAt: string;
   createdAt: string;
   customerName: string;
   address: string;
@@ -28,7 +30,7 @@ interface orderDetail {
   templateUrl: './order-detail.component.html',
   styleUrls: ['./order-detail.component.css']
 })
-export class OrderDetailComponent implements OnInit, OnChanges {
+export class OrderDetailComponent implements OnInit{
   columnArray = [
     { header: 'Product Description', field_name: 'productDescription' },
     { header: "Product Name", field_name: 'productName' },
@@ -37,18 +39,18 @@ export class OrderDetailComponent implements OnInit, OnChanges {
   ]
   cartDetail$ = this.store.select(selectCartDetails);
   cartData: order[];
+  email: string = "ramesh@gmail.com";
   order: orderDetail = {
     id: '',
-    createdAt: '',
+    orderedAt: '',
     customerName: '',
     address: '',
-    paymentMode: ''
+    paymentMode: '',
+    createdAt: ''
   };
   title: string;
 
-  ngOnChanges(changes: SimpleChanges): void {
-
-  }
+  
   constructor(private store: Store, private location: Location, private route: ActivatedRoute) {
 
   }
@@ -56,7 +58,7 @@ export class OrderDetailComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.title = this.route.snapshot.params['title'];
     const cartID = this.route.snapshot.params['cartID'];
-    this.store.dispatch(loadCartDetail(cartID))
+    this.store.dispatch(loadCartDetail(cartID));
     this.cartDetail$.subscribe(data => {
       if (data != null) {
         console.log(data);
@@ -66,6 +68,7 @@ export class OrderDetailComponent implements OnInit, OnChanges {
         }
       }
     });
+    
   }
 
   orderParser(obj: CartDetails[]) {
@@ -88,12 +91,15 @@ export class OrderDetailComponent implements OnInit, OnChanges {
   orderDetailParser(obj: CartDetails[]): orderDetail {
     let result: orderDetail;
     if (obj[0] != null) {
+      const date = obj[0].createdAt.split('T', 2);
+      const time = date[1].split('.', 2);
       result = {
         id: obj[0].cartId,
-        createdAt: dayjs(obj[0].createdAt, 'DD-MM-YYYY').toString(),
+        orderedAt: dayjs(date[0], 'DD-M-YYYY').format('D MMMM, YYYY').toString(),
         customerName: obj[0].customer.username,
         address: obj[0].address.country + " " + obj[0].address.state + " " + obj[0].address.city + " " + obj[0].address.street + ", " + obj[0].address.postalCode,
-        paymentMode: obj[0].paymentMode
+        paymentMode: obj[0].paymentMode,
+        createdAt: dayjs(obj[0].createdAt).format('hh:mm:ss A').toString()
       };
     }
     return result;
