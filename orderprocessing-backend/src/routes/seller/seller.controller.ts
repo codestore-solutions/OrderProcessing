@@ -64,7 +64,7 @@ export class SellerController {
     async updateCartOrders(
         @Param('cartId') cartId: string,
         @Param('sellerId') sellerId: string,
-        @Body(ValidationPipe) sellerUpdateOrderStatusDto: sellerUpdateOrderStatusDto,) {
+        @Body(ValidationPipe) sellerUpdateOrderStatusDto: sellerUpdateOrderStatusDto,) { console.log(sellerUpdateOrderStatusDto);
         return this.sellerService.updateOrderStatusByCartId(cartId, sellerId, sellerUpdateOrderStatusDto.status);
     }
 

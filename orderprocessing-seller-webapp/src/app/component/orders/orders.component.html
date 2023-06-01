@@ -1,20 +1,19 @@
 <p class="mx-5 mt-5 display-4 fw-bold">{{title}}</p>
 
 
-<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="mx-5 mt-5">
-  <mat-tab >
+<mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="mx-5 mt-5" (selectedTabChange)="onTabClick($event)">
+  <mat-tab label="newOrders">
     <ng-template mat-tab-label><span class="fs-4 fw-light text-dark">New Orders</span></ng-template>
     <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title"
       (dispatch)="onDispatch($event)"></app-reusable-table>
   </mat-tab>
-  <mat-tab>
+  <mat-tab label="processingOrders">
     <ng-template mat-tab-label><span class="fs-4 fw-light text-dark">Processing Orders</span></ng-template>
     <div class="col-md-12">
-      <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title"
-        (dispatch)="onDispatch($event)"></app-reusable-table>
+      <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title" [TableType]="tableType[1]" (dispatch)="onDispatch($event)"></app-reusable-table>
     </div>
   </mat-tab>
-  <mat-tab>
+  <mat-tab label="completedOrders">
     <ng-template mat-tab-label><span class="fs-4 fw-light text-dark">Completed Orders</span></ng-template>
     <div class="col-md-12">
       <app-reusable-table [HeadArray]="columnArray" [DataArray]="orderList" [Title]="title"

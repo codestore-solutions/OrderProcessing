@@ -42,7 +42,7 @@ registerLocaleData(en);
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    StoreModule.forRoot({ order: dataReducer, booking: dataReducer, cartDetails: dataReducer, serviceCategoryList: dataReducer, productList: dataReducer}, {}),
+    StoreModule.forRoot({ order: dataReducer, booking: dataReducer, cartDetails: dataReducer, serviceCategoryList: dataReducer, productList: dataReducer, processedOrders: dataReducer}, {}),
     EffectsModule.forRoot([OrderEffects]),
     HttpClientModule,
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),

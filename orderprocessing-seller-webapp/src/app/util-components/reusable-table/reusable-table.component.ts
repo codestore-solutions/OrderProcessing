@@ -15,6 +15,7 @@ export class ReusableTableComponent implements OnInit, OnChanges{
   @Input() HeadArray: any[] = [];
   @Input() DataArray: any[] = [];
   @Input() Title: string = '';
+  @Input() TableType: string = '';
   displayedColumns: string[] = [];
   dataSource: MatTableDataSource<any>;
   @Output() dispatch = new EventEmitter<any>();
@@ -57,9 +58,10 @@ export class ReusableTableComponent implements OnInit, OnChanges{
     console.log(event);
   }
 
-  changeStatus(item) {
+  changeStatus(item, i) {
+    console.log(i);
+    this.DataArray.splice(i, 1);
+    this.dataSource = new MatTableDataSource(this.DataArray);
     this.service.changeOrderStatus(item.cartId);
   }
-
- 
 }

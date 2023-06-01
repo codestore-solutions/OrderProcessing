@@ -20,7 +20,7 @@ export class DataService {
     }
     sellerId: string = "eb1f91cc-0b57-4fa2-ac55-8c1848bb0903";
     getOrders() {
-        return this.http.get('http://localhost:3000/api/seller/carts/' + `${this.sellerId}`);
+        return this.http.get(`http://localhost:3000/api/seller/carts/getBystatus/${this.sellerId}?status=pending`);
     }
 
     getBookingDetails(more: number) {
@@ -67,8 +67,17 @@ export class DataService {
         }
     });
     public getSocketData() {
-        this.socket.on('NEW_ORDER', (message:Order) => {
-            this.data$.next(message);
+        this.socket.on('NEW_ORDER', (message) => {
+            const object = new Order();
+            object.address = message.address;
+            object.cartId = message.cartId;
+            object.createdAt = message.createdAt;
+            object.customer = message.cusomer;
+            object.paymentMode = message.paymentMode;
+            object.totalAmount = message.paymentAmount;
+            object.totalDiscount = message.discount;
+            object.totalProductCount = message.count;
+            this.data$.next(object);
         });
 
         return this.data$.asObservable();
@@ -76,8 +85,10 @@ export class DataService {
 
     public changeOrderStatus(cartID: string) {
         console.log(cartID);
-        
-        this.http.put(`http://localhost:3000/api/seller/` + `${cartID}/${this.sellerId}`, JSON.stringify({ status : 'processing'}));
+        const obj = {
+            status: 'processing'
+        }
+        return this.http.put(`http://localhost:3000/api/seller/` + `${cartID}/`+`${this.sellerId}`, obj).subscribe();
     }
 
     public getProcessedOrders() {

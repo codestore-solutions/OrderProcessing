@@ -14,3 +14,8 @@ export const loadBookingError = createAction('[Booking] Load Booking');
 export const loadCartDetail = createAction('[Cart Detail] Load Detail', (cartID: string)=>({ cartID}));
 export const loadCartDetailSuccess = createAction('[Cart Detail] Load Detail Success', (cartDetail: CartDetails[])=>({cartDetail}));
 export const loadCartDetailsError = createAction('[Cart Detail] Load Detail Failed');
+
+
+export const loadProcessedOrders = createAction('[Processed Orders] Load Processed Orders');
+export const loadProcessedOrdersSuccessful = createAction('[Processed Orders] Load Success', (processedOrders: Order[])=>({processedOrders}));
+export const loadProcessedOrderFail = createAction('[Processed Orders] Load Failed');

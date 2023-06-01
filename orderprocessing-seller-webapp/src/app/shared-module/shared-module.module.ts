@@ -30,6 +30,8 @@ import {
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {PortalModule} from '@angular/cdk/portal';
+import { ClipboardModule } from '@angular/cdk/clipboard';
+
 
 
 const imports = [
@@ -57,7 +59,8 @@ const imports = [
     MatInputModule,
     MatStepperModule,
     MatProgressSpinnerModule,
-    PortalModule
+    PortalModule,
+    ClipboardModule
 ]
 
 @NgModule({

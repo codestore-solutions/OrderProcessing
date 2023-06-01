@@ -1,8 +1,8 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Order } from 'src/app/model/order.model';
-import { loadOrder } from 'src/app/store/actions/orders.action';
-import { selectOrders } from 'src/app/store/selector/order.selector';
+import { loadOrder, loadProcessedOrders } from 'src/app/store/actions/orders.action';
+import { selectOrders, selectProcessedOrders } from 'src/app/store/selector/order.selector';
 import { DataService } from 'src/app/services/data.service';
 import * as dayjs from 'dayjs';
 
@@ -20,16 +20,24 @@ interface order {
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css']
 })
-export class OrdersComponent implements OnInit, AfterViewInit {
+export class OrdersComponent implements OnInit{
+  title: string = 'Orders';
+  tableType = ['newOrder', 'processingOrder', 'completedOrder']
+  //Selector from store
   orderData$ = this.store.select(selectOrders);
+
+  //Fields for New Orders
   orderList: order[] = [];
   dataList: Order[] = [];
+
+  //Fields for Processed Orders
   processedOrderList: Order[] = [];
-  title: string = 'Orders';
+  
+  //Header of Mat-table
   columnArray = [
     { header: 'Customer Name', field_name: 'customerName' },
     { header: 'Product Count', field_name: 'productCount' },
-    { header: 'Date', field_name: 'paymentDate' },
+    { header: 'Ordered At', field_name: 'paymentDate' },
     { header: 'Paid Amount', field_name: 'paidAmnt' },
     { header: 'Actions', field_name: 'Actions' }
   ]
@@ -42,32 +50,23 @@ export class OrdersComponent implements OnInit, AfterViewInit {
       this.dataList = data;
       this.orderList = this.parseObject(this.dataList);
     });
-
     this.service.getSocketData().subscribe((data) => {
-      console.log(data);
-    });
-
-    this.service.getProcessedOrders().subscribe(data=> {
-      console.log("Processed Orders Data",data);
+      if (data != null) {
+        // const dataList = [];
+        // dataList.push(data);
+        // this.orderList = this.parseObject(dataList);
+      }
     });
   }
 
-  ngAfterViewInit(): void {
-
-
-  }
 
   onDispatch(event: Event) {
     console.log(event);
   }
 
-  // isIteratble(obj) {
-  //   if (obj == null) {
-  //     return false;
-  //   }
-  //   return typeof obj[Symbol.iterator] === 'function';
-  // }
+  
 
+  //Parsing Incoming Order List
   parseObject(dataList: Order[]): order[] {
     const result: order[] = [];
     if (dataList != null) {
@@ -88,4 +87,21 @@ export class OrdersComponent implements OnInit, AfterViewInit {
 
     return result;
   }
+
+  //Tab change event listener
+  onTabClick(event) {
+    if (event.tab.textLabel == 'processingOrders') {
+      this.store.dispatch(loadProcessedOrders());
+      this.orderData$ = this.store.select(selectProcessedOrders);
+      this.orderData$.subscribe(data => {
+        this.dataList = data;
+        this.orderList = this.parseObject(data);
+      })
+    } else if (event.tab.textLabel == 'newOrders') {
+      this.store.dispatch(loadOrder());
+      this.orderData$ = this.store.select(selectOrders);
+    }
+  }
 }
+
+

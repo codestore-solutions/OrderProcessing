@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { EMPTY, async, asyncScheduler, catchError, exhaustMap, map } from "rxjs";
 import { DataService } from "src/app/services/data.service";
-import { loadBooking, loadBookingSuccess, loadCartDetail, loadCartDetailSuccess, loadOrder, loadOrderSuccess } from "../actions/orders.action";
+import { loadBooking, loadBookingSuccess, loadCartDetail, loadCartDetailSuccess, loadOrder, loadOrderSuccess, loadProcessedOrders, loadProcessedOrdersSuccessful } from "../actions/orders.action";
 import { Order } from "src/app/model/order.model";
 import { Booking } from "src/app/model/booking.model";
 import { CartDetails } from "src/app/model/cartDetails";
@@ -38,5 +38,11 @@ export class OrderEffects{
         ))
     ));
 
-   
+   loadProcessedOrders = createEffect(()=> this.action$.pipe(
+    ofType(loadProcessedOrders), 
+    exhaustMap(()=> this.service.getProcessedOrders().pipe(
+        map((processedOrders: Order[])=> (loadProcessedOrdersSuccessful(processedOrders))),
+        catchError(()=>EMPTY)
+    ))
+   ))
 }

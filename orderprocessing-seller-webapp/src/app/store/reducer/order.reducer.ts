@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
 import { Order } from "src/app/model/order.model";
-import { loadBookingSuccess, loadCartDetailSuccess, loadOrderSuccess } from "../actions/orders.action";
+import { loadBookingSuccess, loadCartDetailSuccess, loadOrderSuccess, loadProcessedOrdersSuccessful } from "../actions/orders.action";
 import { Booking } from "src/app/model/booking.model";
 import { CartDetails } from "src/app/model/cartDetails";
 
@@ -10,12 +10,14 @@ export interface DataState {
     order: Order[],
     booking: Booking[],
     cart: CartDetails[],
+    processedOrders: Order[]
 }
 
 const initialState: DataState = {
     order: [],
     booking: [],
     cart: [],
+    processedOrders: []
 }
 
 export const dataReducer = createReducer(
@@ -35,5 +37,9 @@ export const dataReducer = createReducer(
     on(loadCartDetailSuccess, (state, {cartDetail})=>({
         ...state,
         cart: cartDetail
+    })),
+    on(loadProcessedOrdersSuccessful, (state, {processedOrders}) => ({
+        ...state,
+        processedOrders: processedOrders
     }))
 )

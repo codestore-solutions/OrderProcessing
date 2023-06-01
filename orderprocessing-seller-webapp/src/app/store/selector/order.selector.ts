@@ -7,7 +7,9 @@ const getBookings = createFeatureSelector<DataState>('booking');
 const getCartDetails = createFeatureSelector<DataState>('cartDetails');
 const getServiceCategoryList = createFeatureSelector<DataState>('serviceCategoryList');
 
-const getProductList = createFeatureSelector<DataState>('productList')
+const getProductList = createFeatureSelector<DataState>('productList');
+const getProcessedOrders = createFeatureSelector<DataState>('processedOrders');
+
 export const selectOrders = createSelector(
     getOrders,
     (state:DataState)=>state.order
@@ -20,5 +22,10 @@ export const selectBookings = createSelector(
 export const selectCartDetails = createSelector(
     getCartDetails,
     (state:DataState)=>state.cart
+);
+
+export const selectProcessedOrders = createSelector(
+    getProcessedOrders,
+    (state:DataState)=>state.processedOrders
 );
 
