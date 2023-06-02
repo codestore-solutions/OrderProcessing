@@ -24,3 +24,9 @@
   width: auto;
   padding: 30px !important;
 }
+
+.toolbar{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

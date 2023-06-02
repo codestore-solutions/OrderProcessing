@@ -27,20 +27,32 @@
 
 .table {
   width: 100%;
+  margin-top: 5%;
 }
 
-.content{
+.content {
   margin-top: 5%;
   display: flex;
   flex-direction: column;
 }
 
-.table-container{
+.table-container {
   height: 100%;
-  margin-top: 3%;
+  margin-top: 2%;
 }
 
-.details{
+.table-header {
+  font-size: larger;
+  padding: 1%;
+  border: none;
+}
+
+.table-data {
+  padding: 1%;
+  border: none;
+}
+
+.details {
   width: 100%;
   display: flex;
   flex-direction: row;

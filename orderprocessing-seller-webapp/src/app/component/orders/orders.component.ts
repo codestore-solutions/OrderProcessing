@@ -51,10 +51,9 @@ export class OrdersComponent implements OnInit{
       this.orderList = this.parseObject(this.dataList);
     });
     this.service.getSocketData().subscribe((data) => {
-      if (data != null) {
-        // const dataList = [];
-        // dataList.push(data);
-        // this.orderList = this.parseObject(dataList);
+      if (data != null && this.dataList != null) {
+        this.dataList.push(data);
+        this.orderList = this.parseObject(this.dataList);
       }
     });
   }

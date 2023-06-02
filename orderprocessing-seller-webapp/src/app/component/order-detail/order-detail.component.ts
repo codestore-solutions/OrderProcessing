@@ -30,13 +30,16 @@ interface orderDetail {
   templateUrl: './order-detail.component.html',
   styleUrls: ['./order-detail.component.css']
 })
-export class OrderDetailComponent implements OnInit{
+export class OrderDetailComponent implements OnInit, OnChanges {
+  //Headers for Item Table
   columnArray = [
     { header: 'Product Description', field_name: 'productDescription' },
     { header: "Product Name", field_name: 'productName' },
     { header: "Quantity", field_name: 'quantity' },
     { header: "Unit Price", field_name: 'unitPrice' },
   ]
+
+  //Fields for data from table 
   cartDetail$ = this.store.select(selectCartDetails);
   cartData: order[];
   email: string = "ramesh@gmail.com";
@@ -50,10 +53,14 @@ export class OrderDetailComponent implements OnInit{
   };
   title: string;
 
-  
+
+  dataSource: MatTableDataSource<any>;
+  displayedColumns: string[] = [];
+
   constructor(private store: Store, private location: Location, private route: ActivatedRoute) {
 
   }
+
 
   ngOnInit(): void {
     this.title = this.route.snapshot.params['title'];
@@ -63,12 +70,16 @@ export class OrderDetailComponent implements OnInit{
       if (data != null) {
         console.log(data);
         this.cartData = this.orderParser(data);
-        if(this.orderDetailParser(data)!) {
+        if (this.orderDetailParser(data)!) {
           this.order = this.orderDetailParser(data);
         }
       }
     });
-    
+    this.displayedColumns = this.displayedColumns.concat(this.columnArray.map(c => c.field_name));
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.dataSource = new MatTableDataSource(this.cartData);
   }
 
   orderParser(obj: CartDetails[]) {
@@ -104,6 +115,7 @@ export class OrderDetailComponent implements OnInit{
     }
     return result;
   }
+
   backNavigate() {
     this.location.back();
   }

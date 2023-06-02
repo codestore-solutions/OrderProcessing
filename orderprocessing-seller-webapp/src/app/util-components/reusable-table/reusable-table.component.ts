@@ -25,6 +25,7 @@ export class ReusableTableComponent implements OnInit, OnChanges{
   constructor(public dialog: MatDialog, private store: Store, private router: Router, private service: DataService) {
 
   }
+
   ngOnInit() {
     this.displayedColumns = this.displayedColumns.concat(this.HeadArray.map(c => c.field_name));
   }
@@ -40,7 +41,6 @@ export class ReusableTableComponent implements OnInit, OnChanges{
   }
 
   onDetail(item: any) {
-    
     this.details.emit(item);
     if(item.cartId != null) {
       this.router.navigate([`order-details/${this.Title}/${item.cartId}`]);
