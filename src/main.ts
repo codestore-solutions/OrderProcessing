@@ -24,7 +24,7 @@ async function bootstrap() {
 
   //Configuring PORT
   const configService = app.get(ConfigService);
-  const port = configService.get('EXPRESS_PORT');
+  const port = configService.get('PORT');
   app.useStaticAssets(join(__dirname, 'assets/images'));
   app.setViewEngine('hbs');
 
@@ -37,6 +37,7 @@ async function bootstrap() {
   } catch (err) {
     console.log(err);
   }
-  await app.listen(port??3000);
+  console.log(process.env.PORT || 3000)
+  await app.listen(process.env.PORT || 3000);
 }
 bootstrap();
