@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/772c1b9a-8bb2-426a-84dc-bcdc3647cb52/resourceGroups/order-processing-backend_group/providers/Microsoft.Web/sites/order-processing-dev",
+    "appService.deploySubpath": "."
+}

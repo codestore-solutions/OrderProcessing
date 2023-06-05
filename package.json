@@ -11,6 +11,8 @@
     "start": "nest start",
     "start:dev": "SET RUNNING_ENV=development& nest start --watch",
     "start:debug": "nest start --debug --watch",
+    "start:staging-debug": "SET RUNNING_ENV=staging& nest start --watch",
+    "start:staging": "SET RUNNING_ENV=staging& node dist/main",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",

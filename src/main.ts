@@ -37,6 +37,6 @@ async function bootstrap() {
   } catch (err) {
     console.log(err);
   }
-  await app.listen(port);
+  await app.listen(port??3000);
 }
 bootstrap();
