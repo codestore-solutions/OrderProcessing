@@ -6,7 +6,6 @@ export const users = [
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
     "role": "admin",
-    "stores": ["#1234", "#1235"]
   },
   {
     "id": 2,
@@ -15,7 +14,6 @@ export const users = [
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
     "role": "business-admin",
-    "stores": ["#1236", "#1237"]
   },
   {
     "id": 3,
@@ -23,8 +21,8 @@ export const users = [
     "email": "ratanchaudhary@123gmail.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "sub-seller",
-    "stores": ["#1238",]
+    "role": "seller",
+    "businessAdmin": 2,
   },
   {
     "id": 4,
@@ -32,8 +30,8 @@ export const users = [
     "email": "kamalr@123gmail.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "sub-seller",
-    "stores": ["#1237"]
+    "role": "seller",
+    "businessAdmin": 2,
 
   },
   {

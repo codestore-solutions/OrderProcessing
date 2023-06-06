@@ -6,7 +6,7 @@ export const constants = {
 
     PRODUCT_REPOSITORY: 'PRODUCT_REPOSITORY',
     PRODUCT_SPECIFICATION_REPOSITORY: 'PRODUCT_SPECIFICATION_REPOSITORY',
-    
+
     ADDRESS_REPOSITORY: 'ADDRESS_REPOSITORY',
 
     PRODUCT_INVENTORY_REPOSITORY: "PRODUCT_INVENTORY_REPOSITORY",
@@ -35,12 +35,26 @@ export const tableNameConstants = {
 
 };
 
-export const orderStatus = [ 'pending', 'cancel', 'processing', 'agent_assigned', 'picked_up', 
+export const orderStatus = ['pending', 'cancel', 'processing', 'packing_completed', 'agent_assigned', 'picked_up',
     'delivered', 'return', 'exchanged', 'payment_failed', 'issue']
+
+export enum OrderStatusEnum {
+    Pending = 'pending',
+    Cancel = 'cancel',
+    Processing = 'processing',
+    PackingCompleted = 'packing_completed',
+    AgentAssigned = 'agent_assigned',
+    PickedUp = 'picked_up',
+    Delivered = 'delivered',
+    Return = 'return',
+    Exchanged = 'exchanged',
+    PaymentFailed = 'payment_failed',
+    Issue = 'issue'
+}
 
 export const sellerOrderState = ['processing', 'shipping']
 
-export const persona = [ 'superadmin', 'customer', 'store']
+export const persona = ['superadmin', 'customer', 'store']
 
 export enum PaymentMode {
     CASH_ON_DELIVERY = 'cash on delivery',
@@ -58,10 +72,10 @@ export const swaggerConstants = {
 export const errorMessages = {
     RECORDS_NOT_FOUND: 'No Record is Present in Database',
     ID_NOT_FOUND: 'No Record found with given id',
-    
+
     USER_ID_NOT_FOUND: `The User Id doesn't exist`,
     USER_TYPE_ID_NOT_FOUND: `The User Type Id doesn't exist`,
-    
+
     NO_USER_PRESENT_IN_DB: `No User is present in DB`,
     NO_USER_TYPE_EXIST_IN_DB: `No User type Exists in DB`,
 

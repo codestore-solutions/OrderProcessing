@@ -41,14 +41,15 @@ export const databaseProviders = [
             Sequelize2.GEOGRAPHY.prototype._bindParam = function _bindParam(value, options) {
                 return `ST_GeomFromText(${options.bindParam(wkx.Geometry.parseGeoJSON(value).toWkt())})`;
             }
+
             const sequelize = new Sequelize({
                 dialect: 'mysql',
                 dialectModule: mysql2,
-                host: 'order-processing-db-dev.mysql.database.azure.com',
+                host: env.DB_HOST??'order-processing-db-dev.mysql.database.azure.com',
                 port: 3306,
-                username: 'admindev',
-                password: 'root@123',
-                database: 'order_processing_dev',
+                username: env.DB_USERNAME ?? 'admindev',
+                password: env.DB_PASSWORD ?? 'root@123',
+                database: env.DATABASE ??'order_processing_dev',
                 logging: false,
                 
             });

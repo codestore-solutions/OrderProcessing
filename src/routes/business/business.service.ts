@@ -1,6 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { constants, orderStatus } from '../../assets/constants';
-import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
+import { OrderStatusEnum, constants, orderStatus } from '../../assets/constants';
 import { Product } from 'src/database/entities/product.entity';
 import { Address } from 'src/database/entities/address.entity';
 import { ProductInventory } from 'src/database/entities/product-inventory.entity';
@@ -13,10 +12,14 @@ import { Sequelize, literal } from 'sequelize';
 import { Attribute } from 'src/database/entities/attributes.entity';
 import moment from 'moment';
 import sequelize from 'sequelize';
+import { users } from 'src/assets/users';
+import { Op } from 'sequelize';
+import { shippingAddresses } from 'src/assets/address';
+import { stores } from 'src/assets/stores';
 
 
 @Injectable()
-export class SellerService {
+export class BusinessService {
 
     constructor(
         @Inject(constants.ORDER_REPOSITORY)
@@ -39,101 +42,84 @@ export class SellerService {
     ) { }
 
 
-    async checkProductAndInventory(orderDtos: OrderDto[]) {
-        let totalAmount = 0
-        for (const orderDto of orderDtos) {
-            // Retrieve the product from the database
-            const productId = orderDto.productId;
-            const product = await this.productRepository.findByPk(productId);
-            totalAmount += product.price;
-
-            // Check if the product exists
-            if (!product) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_NOT_FOUND);
-            }
-
-            const variant = await this.attributesRepository.findOne({ where: { productId } })
-
-            // Check if the product variant exists
-            if (!variant) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_VARIANT_NOT_AVAILABLE);
-            }
-
-            const productInventory = await this.inventoryRepository.findOne({ where: { productId } });
-
-            // Check if the product inventory exists
-            if (!productInventory) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
-            } else if (productInventory.quantity - productInventory.quantitySold < orderDto.quantity) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
-            }
-        }
-        return { totalAmount };
-    }
+    async getAllOrdersByBusinessId(businessId: number) {
 
 
-    async checkShippingAddress(id: string) {
-        const address = await this.addressRepository.findByPk(id);
-        if (!address) {
-            throw new NotFoundException(ErrorMessages.ADDRESS_NOT_FOUND);
-        }
-    }
-
-    async verifyPayment(id: string, totalAmount: number) {
-
-        const payment = await this.paymentRepository.findByPk(id);
-
-        if (!payment) {
-            throw new NotFoundException(ErrorMessages.PAYMENT_NOT_DONE);
-        } else if (payment.amountPaid !== totalAmount) {
-            throw new NotFoundException(ErrorMessages.PAYMENT_IS_PARTIALLY_DONE);
-        }
-    }
-
-    async createOrder(payload: OrderBodyDto, cartId: string) {
-        const { orders, paymentId, paymentMode, userId, shippingAddressId } = payload;
-
-        for (const order of orders) {
-            await this.orderRepository.create({
-                userId,
-                storeId: order.storeId,
-                productId: order.productId,
-                quantity: order.quantity,
-                productAttributeId: order.specificationId,
-                cartId,
-                paymentId,
-                shippingAddressId,
-                status: 'pending',
-                paymentMode,
-            });
-        }
-    }
-
-
-    async getAllOrdersByStoreId(storeId: number) {
-        return this.orderRepository.findAll({
-            where: { storeId },
-            attributes: ['cartId',
+        const storesIds = stores.filter(item => (item.businessId === businessId))
+        const orders = await this.orderRepository.findAll({
+            where: {
+                storeId: {
+                    [Op.in]: storesIds.map((item) => item.id),
+                },
+                status: OrderStatusEnum.PackingCompleted
+            },
+            attributes: ['cartId', 'userId', 'shippingAddressId', 'storeId',
                 [literal('COUNT(*)'), 'totalProductCount'],
                 [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
                 [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
                 [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
                 [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
             ],
-
             group: ['cartId'],
-            include: [
-                {
-                    model: User,
-                    as: 'customer',
-                    attributes: { exclude: ['id'] },
-                },
-                {
-                    model: Address,
-                    attributes: { exclude: ['id', 'userId'] }
-                },
-            ],
         });
+
+        const fetchCustomer = (id: number) => {
+            const index = users.findIndex((user) => user.id === id);
+            if (index === -1) {
+                return {};
+            }
+
+            const user = { ...users[index] };
+
+            delete user.password;
+            delete user.role
+
+            return user;
+        }
+
+        const fetchAddress = (id: number) => {
+            const index = shippingAddresses.findIndex((address) => address.id === id);
+            return index === -1 ? {} : shippingAddresses[index]
+        }
+
+        const fetchStore = (id: number) => {
+            const index = stores.findIndex((store) => store.id === id);
+            return index === -1 ? {} : stores[index]
+        }
+
+        const fetchDeliveryAgent = (id: number) => {
+            const index = users.findIndex((user) => user.id === id && user?.role === 'delivery-agent');
+
+            if (index === -1) {
+                return {};
+            }
+
+            const user = { ...users[index] };
+
+            delete user.password;
+            delete user.role
+
+            return user;
+        }
+
+
+
+        const modifiedOrders = orders.map((order) => {
+            const userId = order.userId
+            const addressId = order.shippingAddressId
+            const storeId = order.storeId
+            const agentId = order.deliveryAgentId
+            const customer = fetchCustomer(userId)
+            const address = fetchAddress(addressId)
+            const store = fetchStore(storeId)
+            const agent = agentId ? fetchDeliveryAgent(agentId) : {}
+            return {
+                customer, address, store, deliveryAgent: agent,
+                ...order.dataValues
+            }
+        })
+
+        return modifiedOrders
     }
 
 
@@ -278,7 +264,7 @@ export class SellerService {
         if (!validStatus.includes(status)) {
             throw new BadRequestException('Invalid status value');
         }
-        
+
         return this.orderRepository.findAll({
             where: { storeId, status },
             attributes: ['cartId',
@@ -304,46 +290,4 @@ export class SellerService {
         });
     }
 
-
-    // async getOrderWithDetails() {
-    //     return this.orderModel.findAll({
-    //         include: [
-    //             {
-    //                 model: Product,
-    //                 include: [
-    //                     { model: Store },
-    //                     { model: Specification },
-    //                 ],
-    //             },
-    //             { model: Payment },
-    //             { model: User },
-    //             { model: ShippingAddress },
-    //         ],
-    //     });
-    // }
-
-
-    // update(id: string, updateOrderDto: UpdateOrderDto) {
-    //     return this.orderRepository.update(updateOrderDto, { where: { id } })
-    // }
-
-    remove(id: string) {
-        return `This action removes a #${id} booking`;
-    }
-
-    async getOrdersByStoreId(storeId: string) {
-        return this.orderRepository.findAll({ where: { storeId } });
-    }
-
-    async createOrderDetail(OrderDto: OrderDto): Promise<void> {
-        // await this.orderRepository.create(OrderDto);
-    }
-
-    async updateOrderDetail(id: string, OrderDto: OrderDto): Promise<void> {
-        const orderDetails = await this.orderRepository.findByPk(id);
-        if (!orderDetails) {
-            throw new NotFoundException('Order detail not found');
-        }
-        await orderDetails.update(OrderDto);
-    }
 }

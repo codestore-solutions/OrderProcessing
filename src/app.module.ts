@@ -8,20 +8,22 @@ import { CustomerModule } from './routes/customer/customer.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { DeliveryModule } from './routes/delivery/delivery.module';
 import { UserModule } from './routes/user/user.module';
+import { BusinesModule } from './routes/business/business.module';
 
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: `environment1s/${process.env.RUNNING_ENV}.env`
+      envFilePath: `environments/${process.env.RUNNING_ENV}.env`
     }),
     DatabaseModule,
     SellerModule,
     CustomerModule,
     DeliveryModule,
     GatewayModule,
-    UserModule
+    UserModule,
+    BusinesModule
   ],
   controllers: [],
   providers: [AppService],

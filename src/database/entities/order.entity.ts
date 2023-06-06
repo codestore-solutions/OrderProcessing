@@ -17,25 +17,24 @@ export class Order extends Model {
     @PrimaryKey
     @AllowNull(false)
     @Column({
-        type: DataType.STRING(36),
-        defaultValue: UUIDV4,
+        type: DataType.NUMBER
     })
     id: string;
 
     @ForeignKey(() => User)
     @Column({
-        type: DataType.STRING(36)
+        type: DataType.NUMBER
     })
-    userId: string;
+    userId: number;
 
     @BelongsTo(() => User, 'userId')
     customer: User;
 
     @ForeignKey(() => User)
     @Column({
-        type: DataType.STRING(36)
+        type: DataType.NUMBER
     })
-    storeId: string;
+    storeId: number;
 
     @BelongsTo(() => User, 'storeId')
     store: User;
@@ -65,9 +64,9 @@ export class Order extends Model {
 
     @ForeignKey(() => Address)
     @Column({
-        type: DataType.STRING(36)
+        type: DataType.NUMBER
     })
-    shippingAddressId: string;
+    shippingAddressId: number;
     
     @BelongsTo(() => Address)
     address: Address;
@@ -127,4 +126,13 @@ export class Order extends Model {
         type: DataType.INTEGER,
     })
     quantity: number;
+
+    @ForeignKey(() => User)
+    @Column({
+        type: DataType.NUMBER
+    })
+    deliveryAgentId: number;
+
+    @BelongsTo(() => User, 'deliveryAgentId')
+    deliveryAgent: User;
 }

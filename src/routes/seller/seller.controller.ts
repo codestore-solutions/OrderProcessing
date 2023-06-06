@@ -23,7 +23,8 @@ export class SellerController {
         type: CartDto, isArray: true
     })
     async getOrdersByStoreId(@Param('sellerId') sellerId: string) {
-        return this.sellerService.getAllOrdersByStoreId(sellerId);
+        const parsedSellerId = parseInt(sellerId, 10);
+        return this.sellerService.getAllOrdersByStoreId(parsedSellerId);
     }
 
 

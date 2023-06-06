@@ -98,7 +98,6 @@ export class CustomerService {
 
 
     async verifyPayment(id: string, totalAmount: number) {
-
         const payment = await this.paymentRepository.findByPk(id, {
             attributes: {
                 exclude: ['id', 'storeId', 'customerId']
