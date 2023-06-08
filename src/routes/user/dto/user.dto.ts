@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UserDto {
   @ApiProperty()
-  id: number;
+  id: string;
 
   @ApiProperty()
   name: string;
@@ -13,12 +13,31 @@ export class UserDto {
   @ApiProperty()
   password: string;
 
-  @ApiProperty()
+  @ApiProperty({ type: [String] })
   contacts: string[];
 
   @ApiProperty()
   role: string;
 
-  @ApiProperty({ required: false })
-  stores?: string[];
+  @ApiProperty()
+  businessAdmin?: string;
+
+  @ApiProperty()
+  isActive: boolean;
+}
+
+export class loginResponse {
+  @ApiProperty()
+  access_token: string;
+
+  @ApiProperty()
+  user: UserDto
+}
+
+export class loginRequestBody {
+  @ApiProperty({ example: 'rajiv@123gmail.com' })
+  username: string;
+
+  @ApiProperty({ example: 'password123' })
+  password: string;
 }

@@ -3,25 +3,15 @@ import { constants } from '../assets/constants';
 import * as wkx from 'wkx';
 import * as Sequelize2 from 'sequelize';
 import mysql2 from 'mysql2';
-import { User } from './entities/user.entity';
-import { Product } from './entities/product.entity';
-import { Payment } from './entities/payment.entity';
-import { Address } from './entities/address.entity';
-import { Attribute } from './entities/attributes.entity';
-import { ProductAttributes } from './entities/product-attributes.entity';
-import { ProductInventory } from './entities/product-inventory.entity';
 import { Order } from './entities/order.entity';
+import { OrderStatusEntity } from './entities/order_status.entity';
+import { OrderItem } from './entities/ordered_product';
 
 
 const MODELS = [
-    User,
-    Product,
-    Payment,
-    Address,
-    Attribute,
-    ProductAttributes,
-    ProductInventory,
     Order,
+    OrderStatusEntity,
+    OrderItem
 ];
 
 export const databaseProviders = [
@@ -51,7 +41,6 @@ export const databaseProviders = [
                 password: env.DB_PASSWORD ?? 'root@123',
                 database: env.DATABASE ??'order_processing_dev',
                 logging: false,
-                
             });
             sequelize.addModels([...MODELS]);
             await sequelize.sync();

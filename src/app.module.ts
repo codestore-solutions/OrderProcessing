@@ -9,6 +9,7 @@ import { GatewayModule } from './gateway/gateway.module';
 import { DeliveryModule } from './routes/delivery/delivery.module';
 import { UserModule } from './routes/user/user.module';
 import { BusinesModule } from './routes/business/business.module';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -20,12 +21,13 @@ import { BusinesModule } from './routes/business/business.module';
     DatabaseModule,
     SellerModule,
     CustomerModule,
-    DeliveryModule,
+    // DeliveryModule,
     GatewayModule,
     UserModule,
-    BusinesModule
+    BusinesModule,
+    AuthModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule { }

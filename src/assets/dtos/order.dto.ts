@@ -71,7 +71,7 @@ class AgentDTO {
 }
 
 
-export class BusinessOrderDTO {
+export class OrderDTO {
     @ApiProperty()
     id: string;
 
@@ -121,11 +121,47 @@ export class BusinessOrderDTO {
     updatedAt: string;
 
     @ApiProperty({ type: AgentDTO })
-    deliveryAgent: AgentDTO;
+    deliveryId: AgentDTO;
 
     @ApiProperty()
     deliveryAgentId: string;
 
     @ApiProperty()
     deliveryCharge: number;
+}
+
+
+export class OrderDBDto {
+
+  orderInstanceId: string;
+
+  product_count: number;
+
+  customerId: string;
+
+  storeId: string;
+
+  shippingAddressId: string;
+
+  paymentId?: string;
+
+  paymentStatus?: string;
+
+  paymentMode: string;
+
+  orderStatus?: string;
+
+  createdAt?: string;
+
+  createdBy: string;
+
+  updatedAt?: string;
+
+  deliveryId?: string;
+
+  deliveryMode?: string;
+
+  deliveryCharge?: number;
+
+  deliveryEstimatedTime?: number;
 }

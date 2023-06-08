@@ -1,8 +1,8 @@
 export const stores = [
     {
-        "id": 1,
-        "sellerId": 3,
-        "businessId": 2,
+        "id": '5577cf1c-c23c-4f4f-a350-6f39ecd95ef3',
+        "sellerId": '3',
+        "businessId": '2',
         "name": "Fashion Junction",
         "description": "A trendy fashion store offering a wide range of clothing and accessories.",
         "address": {
@@ -15,9 +15,9 @@ export const stores = [
         }
     },
     {
-        "id": 2,
-        "sellerId": 3,
-        "businessId": 2,
+        "id": '2edd3841-c902-43c8-862d-5e98b599d9ce',
+        "sellerId": '3',
+        "businessId": '2',
         "name": "Tech Bazaar",
         "description": "An electronics store specializing in the latest tech gadgets and devices.",
         "address": {
@@ -30,9 +30,9 @@ export const stores = [
         }
     },
     {
-        "id": 3,
-        "sellerId": 3,
-        "businessId": 2,
+        "id": '3',
+        "sellerId": '3',
+        "businessId": '2',
         "name": "Book Haven",
         "description": "A bookstore with a vast collection of books across various genres.",
         "address": {
@@ -45,9 +45,9 @@ export const stores = [
         }
     },
     {
-        "id": 4,
-        "sellerId": 1,
-        "businessId": 3,
+        "id": '4',
+        "sellerId": '1',
+        "businessId":'3',
         "name": "Sports Zone",
         "description": "A sports store catering to a wide range of athletic equipment and gear.",
         "address": {

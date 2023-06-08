@@ -1,14 +1,15 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { UserService } from './user.service';
+import { UserService } from '../user.service';
 import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserDto } from './dto/user.dto';
+import { UserDto } from '../dto/user.dto';
 
-@Controller('users')
+
+@Controller('v1/users')
 @ApiTags('Users')
 export class UserController {
     constructor(private readonly userService: UserService) { }
 
-    @Get()
+    @Get('listAllUsers')
     @ApiOperation({ summary: 'Get all users' })
     @ApiResponse({ status: 200, description: 'List of users', type: UserDto, isArray: true })
     getAllUsers(): UserDto[] {
@@ -16,13 +17,12 @@ export class UserController {
     }
 
 
-    @Get(':id')
+    @Get('getUserDetails/:id')
     @ApiOperation({ summary: 'Get user by ID' })
     @ApiParam({ name: 'id', description: 'User ID' })
     @ApiResponse({ status: 200, description: 'User details', type: UserDto })
     getUserById(@Param('id') id: string) {
-        const userId = parseInt(id, 10);
-        return this.userService.getUserById(userId);
+        return this.userService.getUserById(id);
     }
 
 }

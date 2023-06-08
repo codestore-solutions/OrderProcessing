@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { constants } from '../../assets/constants';
-import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
+import { constants, deliveryModes, roles } from '../../assets/constants';
+import { CreateOrderDto, OrderItemDto } from './dto/create-order-details.dto';
 import { Product } from 'src/database/entities/product.entity';
 import { Address } from 'src/database/entities/address.entity';
 import { ProductInventory } from 'src/database/entities/product-inventory.entity';
@@ -10,6 +10,9 @@ import { Payment } from 'src/database/entities/payment.entity';
 import { User } from 'src/database/entities/user.entity';
 import { Order } from 'src/database/entities/order.entity';
 import moment from 'moment';
+import { OrderItem } from 'src/database/entities/ordered_product';
+import { shippingAddresses } from 'src/assets/address';
+import { OrderDBDto } from 'src/assets/dtos/order.dto';
 
 
 @Injectable()
@@ -18,6 +21,9 @@ export class CustomerService {
     constructor(
         @Inject(constants.ORDER_REPOSITORY)
         private orderRepository: typeof Order,
+
+        @Inject(constants.ORDER_ITEM_REPOSITORY)
+        private orderItemRepository: typeof OrderItem,
 
         @Inject(constants.PRODUCT_REPOSITORY)
         private productRepository: typeof Product,
@@ -39,16 +45,16 @@ export class CustomerService {
     ) { }
 
 
-    async checkProductAndInventory(orderDtos: OrderDto[]) {
+    async checkProductAndInventory(orderDtos) {
         let totalAmount = 0
         let data = {};
         for (const orderDto of orderDtos) {
             const storeId = orderDto.storeId
-            if(data.hasOwnProperty("storeId")){
+            if (data.hasOwnProperty("storeId")) {
                 data[storeId]['count']++;
             } else {
                 data[storeId] = {
-                    count: 1, 
+                    count: 1,
                     paymentAmount: 0,
                     discount: 0
                 }
@@ -124,77 +130,131 @@ export class CustomerService {
     }
 
 
-    async createOrder(payload: OrderBodyDto, cartId: string) {
-        const { orders, paymentId, paymentMode, userId, shippingAddressId } = payload;
+    async createOrder(payload: CreateOrderDto, instanceId: string) {
+        const { ordersFromStore, paymentId, paymentMode,
+            shippingAddressId, customerId } = payload;
 
-        for (const order of orders) {
-            const product = await this.productRepository.findByPk(order.productId);
+        const createOrder = async (order: OrderItemDto, orderId: string) => {
+            try {
+                await this.orderItemRepository.create({ orderId, ...order });
+            } catch (error) {
+                console.error(`Error creating order`);
+            }
+        };
 
-            await this.orderRepository.create({
-                userId,
-                storeId: order.storeId,
-                productId: order.productId,
-                quantity: order.quantity,
-                productAttributeId: order.specificationId,
-                cartId,
+        for (const order of ordersFromStore) {
+            const orderInstance: OrderDBDto = {
                 paymentId,
-                price: product.price,
-                discount: product.discount,
-                shippingAddressId,
-                status: 'pending',
+                orderInstanceId: instanceId,
                 paymentMode,
-            });
+                shippingAddressId,
+                customerId,
+                deliveryMode: deliveryModes[0],
+                paymentStatus: 'CAPTURED',
+                product_count: order.orderItems.length,
+                createdBy: 'CUSTOMER',
+                deliveryCharge: order.deliveryCost,
+                storeId: order.storeId,
+            }
+            const { id } = await this.orderRepository.create({ ...orderInstance });
+            console.log(id, 'sssssss')
+            for (const orderItem of order.orderItems) {
+                await createOrder(orderItem, id);
+            }
         }
+
     }
 
 
-    async updateOrderStatus(id: string, status: string) {
-        const order = await this.orderRepository.findByPk(id);
+    // async createOrder(payload: OrderBodyDto, instanceId: string) {
+    //     const { orders, paymentId, paymentMode, shippingAddressId, customerId } = payload;
 
-        if (!order) {
-            throw new NotFoundException(ErrorMessages.ORDER_NOT_FOUND);
-        }
+    //     let storeOrders = {}
+    //     for (const order of orders) {
+    //         const { storeId, ...orderData } = order;
+    //         if (storeOrders.hasOwnProperty(order.storeId)) {
+    //             storeOrders[storeId]['productCount']++;
+    //             storeOrders[storeId]['orders'].push(orderData)
+    //         } else {
+    //             storeOrders[storeId]['productCount'] = 1;
+    //             storeOrders[storeId]['customerId'] = customerId;
+    //             storeOrders[storeId]['shippingAddressId'] = shippingAddressId;
+    //             storeOrders[storeId]['PaymentId'] = paymentId;
+    //             storeOrders[storeId]['storeId'] = storeId;
+    //             storeOrders[storeId]['paymentMode'] = paymentMode;
+    //             storeOrders[storeId]['paymentStatus'] = 'COMPLETED';
+    //             storeOrders[storeId]['createdBy'] = 'CUSTOMER';
+    //             storeOrders[storeId]['orders'] = [{ ...orderData }]
+    //             storeOrders[storeId]['orderinstanceId'] = instanceId
 
-        const productInventory = await this.inventoryRepository.findOne({
-            where: { productId: order.productId }
-        });
+    //         }
+    //     }
 
-        switch (status) {
-            case 'cancelled':
-                if (order.status !== 'processing' && order.status !== 'pending') {
-                    throw new BadRequestException(ErrorMessages.CANNOT_CANCEL_ORDER);
-                }
-                if (!productInventory.canCancel) {
-                    throw new BadRequestException(ErrorMessages.CANNOT_CANCEL_ORDER_INVENTORY);
-                }
-                break;
+    //     const createOrder = async (order: OrderDto, orderId: string) => {
+    //         try {
+    //             await this.orderItemRepository.create({ orderId, ...order });
+    //         } catch (error) {
+    //             console.error(`Error creating order`);
+    //         }
+    //     };
 
-            case 'return':
-            case 'exchanged':
-                if (order.status !== 'delivered') {
-                    throw new BadRequestException(ErrorMessages.CANNOT_RETURN_AND_EXCHANGE_ORDER);
-                }
-                const fourteenDaysAgo = new Date();
-                fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+    //     for (const key in storeOrders) {
+    //         const { id } = await this.orderRepository.create({ ...storeOrders[key] });
+    //         for (const order of storeOrders[key]['orders']) {
+    //             await createOrder(order, id);
+    //         }
+    //     }
 
-                if (moment(order.createdAt).isBefore(fourteenDaysAgo)) {
-                    throw new BadRequestException(ErrorMessages.TIMEFRAME_VALIDATION_ERROR);
-                }
+    // }
 
-                if (!productInventory.canExchange) {
-                    throw new BadRequestException(ErrorMessages.CANNOT_EXCHANGE_ORDER_INVENTORY);
-                }
 
-                if (!productInventory.canReturn) {
-                    throw new BadRequestException(ErrorMessages.CANNOT_RETURN_ORDER_INVENTORY);
-                }
-                break;
-        }
+    // async updateOrderStatus(id: string, status: string) {
+    //     const order = await this.orderRepository.findByPk(id);
 
-        order.status = status;
-        await order.save();
+    //     if (!order) {
+    //         throw new NotFoundException(ErrorMessages.ORDER_NOT_FOUND);
+    //     }
 
-        return order;
-    }
+    //     const productInventory = await this.inventoryRepository.findOne({
+    //         where: { productId: order.productId }
+    //     });
+
+    //     switch (status) {
+    //         case 'cancelled':
+    //             if (order.status !== 'processing' && order.status !== 'pending') {
+    //                 throw new BadRequestException(ErrorMessages.CANNOT_CANCEL_ORDER);
+    //             }
+    //             if (!productInventory.canCancel) {
+    //                 throw new BadRequestException(ErrorMessages.CANNOT_CANCEL_ORDER_INVENTORY);
+    //             }
+    //             break;
+
+    //         case 'return':
+    //         case 'exchanged':
+    //             if (order.status !== 'delivered') {
+    //                 throw new BadRequestException(ErrorMessages.CANNOT_RETURN_AND_EXCHANGE_ORDER);
+    //             }
+    //             const fourteenDaysAgo = new Date();
+    //             fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+
+    //             if (moment(order.createdAt).isBefore(fourteenDaysAgo)) {
+    //                 throw new BadRequestException(ErrorMessages.TIMEFRAME_VALIDATION_ERROR);
+    //             }
+
+    //             if (!productInventory.canExchange) {
+    //                 throw new BadRequestException(ErrorMessages.CANNOT_EXCHANGE_ORDER_INVENTORY);
+    //             }
+
+    //             if (!productInventory.canReturn) {
+    //                 throw new BadRequestException(ErrorMessages.CANNOT_RETURN_ORDER_INVENTORY);
+    //             }
+    //             break;
+    //     }
+
+    //     order.status = status;
+    //     await order.save();
+
+    //     return order;
+    // }
 
 }

@@ -1,11 +1,6 @@
-import { AllowNull, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
+import { AllowNull, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
 import { UUIDV4 } from "sequelize";
-import { PaymentMode, orderStatus, tableNameConstants } from '../../assets/constants'
-import { Product } from "src/database/entities/product.entity";
-import { User } from "src/database/entities/user.entity";
-import { Address } from "src/database/entities/address.entity";
-import { Payment } from "src/database/entities/payment.entity";
-import { ProductAttributes } from "src/database/entities/product-attributes.entity";
+import { PaymentMode, deliveryModes, orderStatus, paymentStatus, roles, tableNameConstants } from '../../assets/constants'
 
 
 @Table({
@@ -14,93 +9,66 @@ import { ProductAttributes } from "src/database/entities/product-attributes.enti
     tableName: tableNameConstants.ORDER,
 })
 export class Order extends Model {
+
     @PrimaryKey
     @AllowNull(false)
     @Column({
-        type: DataType.NUMBER
+        type: DataType.STRING(36),
+        defaultValue: UUIDV4,
     })
     id: string;
 
-    @ForeignKey(() => User)
+
+    @AllowNull(false)
     @Column({
-        type: DataType.NUMBER
+        type: DataType.STRING(36),
     })
-    userId: number;
+    orderInstanceId: string;
 
-    @BelongsTo(() => User, 'userId')
-    customer: User;
 
-    @ForeignKey(() => User)
+    @AllowNull(false)
     @Column({
-        type: DataType.NUMBER
+        type: DataType.INTEGER,
     })
-    storeId: number;
+    product_count: number;
 
-    @BelongsTo(() => User, 'storeId')
-    store: User;
 
-    @ForeignKey(() => ProductAttributes)
+    @AllowNull(false)
     @Column({
-        type: DataType.STRING(36)
+        type: DataType.STRING(36),
     })
-    productAttributeId: string;
+    customerId: string;
 
-    @BelongsTo(() => ProductAttributes)
-    productAttributes: ProductAttributes;
-
-    @ForeignKey(() => Product)
-    @Column({
-        type: DataType.STRING(36)
-    })
-    productId: string;
-
-    @Column({
-        type: DataType.STRING(36)
-    })
-    cartId: string;
-
-    @BelongsTo(() => Product)
-    product: Product;
-
-    @ForeignKey(() => Address)
-    @Column({
-        type: DataType.NUMBER
-    })
-    shippingAddressId: number;
     
-    @BelongsTo(() => Address)
-    address: Address;
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(36),
+    })
+    storeId: string;
 
-    @ForeignKey(() => Payment)
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.STRING(36),
+    })
+    shippingAddressId: string;
+
+
+    @AllowNull(true)
     @Column({
         type: DataType.STRING(36)
     })
     paymentId: string;
 
-    @BelongsTo(() => Payment)
-    payment: Payment;
 
     @AllowNull(false)
-    @Column({
-        type: DataType.FLOAT,
-    })
-    price: number;
-
-    @AllowNull(false)
-    @Column({
-        type: DataType.FLOAT,
-        defaultValue: 0,
-    })
-    discount: number;
-
-
     @Column({
         type: DataType.ENUM,
-        values: orderStatus,
+        values: paymentStatus,
         allowNull: false,
         defaultValue: 'pending'
     })
-    status: string
+    paymentStatus: string
 
     @Column({
         type: DataType.ENUM,
@@ -109,30 +77,67 @@ export class Order extends Model {
     })
     paymentMode: string;
 
+
+    @Column({
+        type: DataType.ENUM,
+        values: orderStatus,
+        allowNull: false,
+        defaultValue: 'pending'
+    })
+    orderStatus: string
+
+
     @Column({
         type: DataType.DATE,
         defaultValue: DataType.NOW,
     })
     createdAt: string;
 
+
+    @AllowNull(true)
+    @Column({
+        type: DataType.ENUM,
+        values: roles,
+        allowNull: false,
+    })
+    createdBy: string;
+
+
+    @AllowNull(true)
     @Column({
         type: DataType.DATE,
-        defaultValue: DataType.NOW,
     })
     updatedAt: string;
+
+
+    @AllowNull(true)
+    @Column({
+        type: DataType.STRING(36),
+        defaultValue: UUIDV4,
+    })
+    deliveryId: string;
+
 
     @AllowNull(false)
     @Column({
         type: DataType.INTEGER,
+        defaultValue: 0,
     })
-    quantity: number;
+    deliveryCharge: number;
 
-    @ForeignKey(() => User)
+
+    @AllowNull(true)
     @Column({
-        type: DataType.NUMBER
+        type: DataType.INTEGER,
+        defaultValue: 0,
     })
-    deliveryAgentId: number;
+    deliveryEstimatedTime: number
 
-    @BelongsTo(() => User, 'deliveryAgentId')
-    deliveryAgent: User;
+    @AllowNull(true)
+    @Column({
+        type: DataType.ENUM,
+        values: deliveryModes,
+        allowNull: false,
+    })
+    deliveryMode: string;
 }

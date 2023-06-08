@@ -30,9 +30,8 @@ const createTokenMiddleware =
     (jwtService: JwtService) =>
         async (socket: SocketWithAuth, next) => {
             // for Postman testing support, fallback to token header
-            const token = socket.handshake.auth.token || socket.handshake.headers['token'];
+            const token = socket.handshake.auth.token || socket.handshake.headers['token'] ||socket.handshake.query.token;
             console.log(token, 'token')
-
             try {
                 // const payload = jwtService.verify(token);
                 // socket.userID = payload.data.sub;

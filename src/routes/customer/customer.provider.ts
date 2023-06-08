@@ -6,12 +6,18 @@ import { ProductInventory } from "src/database/entities/product-inventory.entity
 import { Payment } from "src/database/entities/payment.entity";
 import { User } from "src/database/entities/user.entity";
 import { Order } from "src/database/entities/order.entity";
+import { OrderItem } from "src/database/entities/ordered_product";
 
 
 export const customerProviders = [
     {
         provide: constants.ORDER_REPOSITORY,
         useValue: Order,
+    },
+
+    {
+        provide: constants.ORDER_ITEM_REPOSITORY,
+        useValue: OrderItem,
     },
 
     {

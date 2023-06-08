@@ -13,6 +13,7 @@ import { Sequelize, literal } from 'sequelize';
 import { Attribute } from 'src/database/entities/attributes.entity';
 import moment from 'moment';
 import sequelize from 'sequelize';
+import { OrderItem } from 'src/database/entities/ordered_product';
 
 
 @Injectable()
@@ -21,6 +22,9 @@ export class SellerService {
     constructor(
         @Inject(constants.ORDER_REPOSITORY)
         private orderRepository: typeof Order,
+
+        @Inject(constants.ORDER_ITEM_REPOSITORY)
+        private orderItemRepository: typeof OrderItem,
 
         @Inject(constants.PRODUCT_REPOSITORY)
         private productRepository: typeof Product,
@@ -112,44 +116,38 @@ export class SellerService {
 
     async getAllOrdersByStoreId(storeId: number) {
         return this.orderRepository.findAll({
-            where: { storeId },
-            attributes: ['cartId',
-                [literal('COUNT(*)'), 'totalProductCount'],
-                [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
-                [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
-                [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
-                [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
-            ],
+            where: { storeId }
+        });
+    }
 
-            group: ['cartId'],
-            include: [
-                {
-                    model: User,
-                    as: 'customer',
-                    attributes: { exclude: ['id'] },
-                },
-                {
-                    model: Address,
-                    attributes: { exclude: ['id', 'userId'] }
-                },
-            ],
+
+    async getAllOrderItemsByOrderId(orderId: string) {
+        return this.orderItemRepository.findAll({
+            where: { orderId }
+        })
+    }
+
+
+    async getOrderItemDetailByOrderId(orderId: string){
+        return await this.orderItemRepository.findByPk(orderId);
+    }
+
+
+    async findByStatus(status: string, storeId: string) {
+        return this.orderRepository.findAll({
+            where: { orderStatus: status, storeId: storeId }
         });
     }
 
 
     async getAllOrdersByCartId(storeId: string, cartId: string) {
         return this.orderRepository.findAll({
-            where: { storeId, cartId },
+            where: { storeId, orderId: cartId },
             attributes: {
                 exclude: ['storeId', 'userId',
                     'productAttributeId', 'shippingAddressId', 'paymentId', 'productId']
             },
             include: [
-                {
-                    model: User,
-                    as: 'customer',
-                    attributes: { exclude: ['id'] },
-                },
                 {
                     model: Product,
                     attributes: { exclude: ['storeId', 'id'] },
@@ -181,128 +179,146 @@ export class SellerService {
         return this.orderRepository.findOne({
             where: { id: orderId },
             attributes: {
-                exclude: ['storeId', 'userId',
+                exclude: ['storeId', 'customerId',
                     'productAttributeId', 'shippingAddressId', 'paymentId', 'productId']
             },
-            include: [
-                {
-                    model: User,
-                    as: 'customer',
-                    attributes: { exclude: ['id'] },
-                },
-                {
-                    model: Product,
-                    attributes: { exclude: ['storeId', 'id'] },
-                },
+            // include: [
+            //     // {
+            //     //     model: User,
+            //     //     as: 'customer',
+            //     //     attributes: { exclude: ['id'] },
+            //     // },
+            //     {
+            //         model: Product,
+            //         attributes: { exclude: ['storeId', 'id'] },
+            //     },
 
-                {
-                    model: ProductAttributes,
-                    attributes: { exclude: ['id', 'attributeId', 'productId'] },
-                    include: [
-                        {
-                            model: Attribute,
-                            attributes: { exclude: ['id'] },
-                        },
-                    ]
-                },
-                {
-                    model: Payment,
-                    attributes: { exclude: ['id', 'storeId', 'customerId'] }
-                },
-                {
-                    model: Address,
-                    attributes: { exclude: ['id', 'userId'] }
-                },
-            ],
+            //     {
+            //         model: ProductAttributes,
+            //         attributes: { exclude: ['id', 'attributeId', 'productId'] },
+            //         include: [
+            //             {
+            //                 model: Attribute,
+            //                 attributes: { exclude: ['id'] },
+            //             },
+            //         ]
+            //     },
+            //     {
+            //         model: Payment,
+            //         attributes: { exclude: ['id', 'storeId', 'customerId'] }
+            //     },
+            //     {
+            //         model: Address,
+            //         attributes: { exclude: ['id', 'customerId'] }
+            //     },
+            // ],
         });
     }
 
 
-    async updateOrderStatusByCartId(cartId: string, storeId: string, status: string) {
+    
+    // async getAllOrdersByStoreId(storeId: number) {
+    //     return this.orderRepository.findAll({
+    //         where: { storeId },
+    //         attributes: ['cartId',
+    //             [literal('COUNT(*)'), 'totalProductCount'],
+    //             [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
+    //             [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
+    //             [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
+    //             [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
+    //         ],
 
-        //gets orders based on cart Id, store Id
-        const orders = await this.orderRepository.findAll({
-            where: { cartId, storeId },
-        });
-
-        if (orders.length === 0) {
-            throw new BadRequestException('Orders not found');
-        }
-
-        const currentState = orders[0].status;
-
-        for (const order of orders) {
-            if (order.status !== currentState) {
-                throw new BadRequestException('All orders must be in the same state');
-            }
-        }
-
-        if (status === 'processing' && currentState !== 'pending') {
-            throw new BadRequestException('All orders must be in the "pending" state to update to "processing"');
-        } else if (status === 'shipped' && currentState !== 'processing') {
-            throw new BadRequestException('All orders must be in the "processing" state to update to "shipped"');
-        }
-
-        for (const order of orders) {
-            order.status = status;
-            await order.save();
-        }
-    }
+    //         group: ['cartId'],
+    //     });
+    // }
 
 
-    async updateOrderStatus(id: string, status: string) {
-        const order = await this.orderRepository.findByPk(id);
 
-        if (!order) {
-            throw new NotFoundException(ErrorMessages.ORDER_NOT_FOUND);
-        }
+    // async updateOrderStatusByCartId(cartId: string, storeId: string, status: string) {
 
-        switch (status) {
-            case 'cancel':
-                if (order.status !== 'processing' && order.status !== 'pending') {
-                    throw new BadRequestException(ErrorMessages.CANNOT_CANCEL_ORDER);
-                }
-                break;
-        }
+    //     //gets orders based on cart Id, store Id
+    //     const orders = await this.orderRepository.findAll({
+    //         where: { cartId, storeId },
+    //     });
 
-        order.status = status;
-        await order.save();
+    //     if (orders.length === 0) {
+    //         throw new BadRequestException('Orders not found');
+    //     }
 
-        return order;
-    }
+    //     const currentState = orders[0].status;
 
-    async findByStatus(status: string, storeId: string) {
+    //     for (const order of orders) {
+    //         if (order.status !== currentState) {
+    //             throw new BadRequestException('All orders must be in the same state');
+    //         }
+    //     }
 
-        const validStatus = [...orderStatus];
+    //     if (status === 'processing' && currentState !== 'pending') {
+    //         throw new BadRequestException('All orders must be in the "pending" state to update to "processing"');
+    //     } else if (status === 'shipped' && currentState !== 'processing') {
+    //         throw new BadRequestException('All orders must be in the "processing" state to update to "shipped"');
+    //     }
 
-        if (!validStatus.includes(status)) {
-            throw new BadRequestException('Invalid status value');
-        }
+    //     for (const order of orders) {
+    //         order.status = status;
+    //         await order.save();
+    //     }
+    // }
+
+
+    // async updateOrderStatus(id: string, status: string) {
+    //     const order = await this.orderRepository.findByPk(id);
+
+    //     if (!order) {
+    //         throw new NotFoundException(ErrorMessages.ORDER_NOT_FOUND);
+    //     }
+
+    //     switch (status) {
+    //         case 'cancel':
+    //             if (order.status !== 'processing' && order.status !== 'pending') {
+    //                 throw new BadRequestException(ErrorMessages.CANNOT_CANCEL_ORDER);
+    //             }
+    //             break;
+    //     }
+
+    //     order.status = status;
+    //     await order.save();
+
+    //     return order;
+    // }
+
+    // async findByStatus(status: string, storeId: string) {
+
+    //     const validStatus = [...orderStatus];
+
+    //     if (!validStatus.includes(status)) {
+    //         throw new BadRequestException('Invalid status value');
+    //     }
         
-        return this.orderRepository.findAll({
-            where: { storeId, status },
-            attributes: ['cartId',
-                [literal('COUNT(*)'), 'totalProductCount'],
-                [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
-                [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
-                [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
-                [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
-            ],
+    //     return this.orderRepository.findAll({
+    //         where: { storeId, status },
+    //         attributes: ['cartId',
+    //             [literal('COUNT(*)'), 'totalProductCount'],
+    //             [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
+    //             [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
+    //             [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
+    //             [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
+    //         ],
 
-            group: ['cartId'],
-            include: [
-                {
-                    model: User,
-                    as: 'customer',
-                    attributes: { exclude: ['id'] },
-                },
-                {
-                    model: Address,
-                    attributes: { exclude: ['id', 'userId'] }
-                },
-            ],
-        });
-    }
+    //         group: ['cartId'],
+    //         include: [
+    //             {
+    //                 model: User,
+    //                 as: 'customer',
+    //                 attributes: { exclude: ['id'] },
+    //             },
+    //             {
+    //                 model: Address,
+    //                 attributes: { exclude: ['id', 'userId'] }
+    //             },
+    //         ],
+    //     });
+    // }
 
 
     // async getOrderWithDetails() {

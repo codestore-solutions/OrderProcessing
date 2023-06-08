@@ -2,6 +2,7 @@ export const constants = {
     SEQUELIZE: 'SEQUELIZE',
 
     ORDER_REPOSITORY: 'ORDER_REPOSITORY',
+    ORDER_ITEM_REPOSITORY: 'ORDER_ITEM_REPOSITORY',
     ORDER_DETAIL_REPOSITORY: 'ORDER_DETAIL_REPOSITORY',
 
     PRODUCT_REPOSITORY: 'PRODUCT_REPOSITORY',
@@ -24,6 +25,8 @@ export const constants = {
 
 export const tableNameConstants = {
     ORDER: 'orders',
+    ORDERED_ITEM: 'order_item',
+    ORDER_STATUS: 'order_status',
     BOOKING: 'bookings',
     USER: 'users',
     PAYMENT: 'payments',
@@ -35,8 +38,33 @@ export const tableNameConstants = {
 
 };
 
-export const orderStatus = ['pending', 'cancel', 'processing', 'packing_completed', 'agent_assigned', 'picked_up',
-    'delivered', 'return', 'exchanged', 'payment_failed', 'issue']
+
+export const orderStatus = ['pending', 'cancel', 'processing', 'packing_completed', 
+    'agent_assigned', 'picked_up', 'delivered', 'return', 'exchanged', 
+    'payment_failed', 'issue']
+
+
+export const paymentStatus = [
+    "PENDING",
+    "CAPTURED",
+    "REFUNDED",
+    "PARTIALLY_REFUNDED",
+    "FAILED",
+]
+
+export const roles = [
+    "ADMIN",
+    "GUEST",
+    "DELIVERY_AGENT",
+    "BUSINESS_ADMIN",
+    "SELLER",
+    "CUSTOMER"
+]
+
+export const deliveryModes = [
+    'PERSONAL_DELIVERY_AGENT',
+    'THIRD_PARTY_SHIPPMENT'
+]
 
 export enum OrderStatusEnum {
     Pending = 'pending',

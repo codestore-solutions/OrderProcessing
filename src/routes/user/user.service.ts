@@ -6,11 +6,15 @@ import { UserDto } from './dto/user.dto';
 export class UserService {
     private readonly users: UserDto[] = users;
 
-    getUserById(id: number): UserDto {
+    getUserById(id: string): UserDto {
         return this.users.find(user => user.id === id);
     }
 
     getAllUsers(): UserDto[] {
         return this.users;
+    }
+
+    findByEmail(email: string): UserDto {
+        return this.users.find(user => user.email === email);
     }
 }

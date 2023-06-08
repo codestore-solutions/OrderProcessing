@@ -7,16 +7,20 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
 import { SocketIOAdapter } from './gateway/socket.io.adapter';
+import { VERSION_NEUTRAL, VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix(constants.APIS_PREFIX);
   app.enableCors();
   //Configuring Swagger
+
   const config = new DocumentBuilder()
     .setTitle(swaggerConstants.SWAGGER_TITLE)
     .setDescription(swaggerConstants.SWAGGER_DESCRIPTION)
     .setVersion(swaggerConstants.SWAGGER_VERSION)
+    // .addServer('v1', 'Version 1')
+    // .addServer('v2', 'Version 2')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
@@ -37,7 +41,6 @@ async function bootstrap() {
   } catch (err) {
     console.log(err);
   }
-  console.log(process.env.PORT || 3000)
   await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

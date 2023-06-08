@@ -55,7 +55,7 @@ export class OrderBodyDto {
 //dto for cart
 export class CartDto {
     @ApiProperty({ example: '95494fb5-b4f7-4a37-845c-e6c5c122c321' })
-    cartId: string;
+    orderId: string;
 
     @ApiProperty({ example: 2 })
     totalProductCount: number;
@@ -108,7 +108,7 @@ export class OrderListDto {
     id: string;
 
     @ApiProperty({ example: '95494fb5-b4f7-4a37-845c-e6c5c122c321' })
-    cartId: string;
+    orderId: string;
 
     @ApiProperty({ example: 1300 })
     price: number;
@@ -282,7 +282,7 @@ export class OrderDetailDto {
     id: string;
 
     @ApiProperty({ example: '95494fb5-b4f7-4a37-845c-e6c5c122c321' })
-    cartId: string;
+    orderId: string;
 
     @ApiProperty({ example: 1300 })
     price: number;

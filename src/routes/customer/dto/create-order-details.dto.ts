@@ -1,67 +1,146 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaymentMode } from 'src/assets/constants';
-import { IsNotEmpty, IsUUID, IsEnum, IsOptional, Min } from 'class-validator';
+import { IsNotEmpty, IsArray, ValidateNested, IsUUID, IsNumber, Min, MinLength, ValidateIf, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
 
 
-export class OrderDto {
 
-    @IsUUID()
+const orderObject = {
+    shippingAddressesId: '4024dd19-e44c-4c13-9757-629ed513d34d',
+    customerId: '5',
+    paymentId: '9e0e6f33-cd33-45f0-a012-057b1c57816c',
+    paymentMode: 'Credit card',
+    ordersFromStore: [
+        {
+            storeId: '5577cf1c-c23c-4f4f-a350-6f39ecd95ef3',
+            deliveryCost: 59,
+            deliveryEstimatedTime: 10000,
+            orderItems: [
+                {
+                    "productId": "686e34c8-7d1f-42e0-9cb8-564663ae3213",
+                    "variantId": "11b38359-4e8b-4f2b-8484-7cb9d932ebdb",
+                    "price": 999,
+                    "discount": 10,
+                    "quantity": 1,
+                    "gst": 18
+                },
+                {
+                    "productId": "d6aa7c01-b13d-4a44-8c43-7c8e2f11d864",
+                    "variantId": "ffbaa511-191d-4c07-ba02-62ffb14ab7db",
+                    "price": 1999,
+                    "discount": 0,
+                    "quantity": 1,
+                    "gst": 18
+                }
+            ]
+        },
+
+        {
+            storeId: '2edd3841-c902-43c8-862d-5e98b599d9ce',
+            deliveryCost: 159,
+            deliveryEstimatedTime: 100000,
+            orderItems: [
+                {
+                    "productId": "4a7033b5-66d9-4f85-858a-ffd9426aa02f",
+                    "variantId": "ce8ed04e-eec7-41ab-bc5b-c771e0ff8974",
+                    "price": 999,
+                    "discount": 10,
+                    "quantity": 1,
+                    "gst": 18
+                },
+            ]
+        }
+    ]
+}
+
+export class OrderItemDto {
+    @ApiProperty({ example: '686e34c8-7d1f-42e0-9cb8-564663ae3213' })
     @IsNotEmpty()
-    @ApiProperty()
+    @IsUUID()
     productId: string;
-  
-    @IsUUID()
-    @IsNotEmpty()
-    @ApiProperty()
-    storeId: string;
 
-  
-    @IsUUID()
+    @ApiProperty({ example: '11b38359-4e8b-4f2b-8484-7cb9d932ebdb' })
     @IsNotEmpty()
-    @ApiProperty()
-    specificationId: string;
-  
+    @IsUUID()
+    variantId: string;
+
+    @ApiProperty({ example: 999 })
+    @IsNotEmpty()
+    @IsNumber()
+    @Min(0)
+    price: number;
+
+    @ApiProperty({ example: 10 })
+    @IsNotEmpty()
+    @IsNumber()
+    @Min(0)
+    discount: number;
+    
+    @ApiProperty({ example: 10 })
+    @IsOptional()
+    @IsNumber()
+    @Min(0)
+    gst: number;
+
+    @ApiProperty({ example: 1 })
+    @IsNotEmpty()
+    @IsNumber()
     @Min(1)
-    @ApiProperty()
     quantity: number;
 }
 
-
-export class OrderBodyDto {
-    @ApiProperty({ type: () => OrderDto, isArray:true })
-    orders: OrderDto[];
-
+class StoreDto {
+    @ApiProperty({ example: '5577cf1c-c23c-4f4f-a350-6f39ecd95ef3' })
+    @IsNotEmpty()
     @IsUUID()
+    storeId: string;
+
+    @ApiProperty({ example: 59 })
+    @IsNotEmpty()
+    @IsNumber()
+    @Min(0)
+    deliveryCost: number;
+
+    @ApiProperty({ example: 10000, required: false })
     @IsOptional()
-    @ApiProperty()
-    paymentId?: string;
-  
-    @IsEnum(PaymentMode)
-    @IsNotEmpty()
-    @ApiProperty({ enum: Object.keys(PaymentMode).map((key) => PaymentMode[key]) })
-    paymentMode: PaymentMode;
+    @IsNumber()
+    @Min(0)
+    deliveryEstimatedTime?: number;
 
-    @IsUUID()
+    @ApiProperty({ type: [OrderItemDto], example: [{ productId: '686e34c8-7d1f-42e0-9cb8-564663ae3213', variantId: '11b38359-4e8b-4f2b-8484-7cb9d932ebdb', price: 999, discount: 10, quantity: 1, gst: 18 }] })
     @IsNotEmpty()
-    @ApiProperty()
-    userId: string;
-  
-    @IsUUID()
-    @IsNotEmpty()
-    @ApiProperty()
-    shippingAddressId: string;
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => OrderItemDto)
+    orderItems: OrderItemDto[];
 }
 
-// [
-//     {
-//         "productId": "fcbabb2b-5d5b-4733-b9f8-777ef267240a",
-//         "storeId": "642352d6-ccdd-4add-8ec8-594d4b4470c9",
-//         "userId": "552bc7d3-66cc-4a14-bf77-7193af1bb4bc",
-//         "shippingAddressId": "4590cdbf-3c48-4132-b13a-54e447d542f5",
-//         "specificationId": "2bf627c2-592b-4f23-8aa3-7fc487206d8e",
-//         "paymentId": "ba2bea24-9530-48ba-b214-ffc290d4b512",
-//         "paymentMode": 1,
-//         "quantity": 2,
-//         "createdAt": "timestamp",
-//     }
-// ]
+export class CreateOrderDto {
+    @ApiProperty({ example: '4024dd19-e44c-4c13-9757-629ed513d34d' })
+    @IsNotEmpty()
+    @IsUUID()
+    shippingAddressId: string;
+
+    @ApiProperty({ example: '5' })
+    @IsNotEmpty()
+    @IsUUID()
+    customerId: string;
+
+    @ApiProperty({ example: '9e0e6f33-cd33-45f0-a012-057b1c57816c' })
+    @IsNotEmpty()
+    @IsUUID()
+    paymentId: string;
+
+    @ApiProperty({ example: 'Credit card' })
+    @IsNotEmpty()
+    @MinLength(1)
+    paymentMode: string;
+
+    @ApiProperty({ type: [StoreDto], example: [...orderObject.ordersFromStore] })
+    @IsNotEmpty()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => StoreDto)
+    ordersFromStore: StoreDto[];
+}
+
+
