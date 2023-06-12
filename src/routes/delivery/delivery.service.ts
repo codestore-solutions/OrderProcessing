@@ -20,21 +20,13 @@ export class DeliveryService {
     constructor(
         @Inject(constants.ORDER_REPOSITORY)
         private orderRepository: typeof Order,
-
-        @Inject(constants.PRODUCT_REPOSITORY)
-        private productRepository: typeof Product,
-
-        @Inject(constants.ADDRESS_REPOSITORY)
-        private addressRepository: typeof Address,
-
-        @Inject(constants.PRODUCT_INVENTORY_REPOSITORY)
-        private inventoryRepository: typeof ProductInventory,
-
-        @Inject(constants.PRODUCT_SPECIFICATION_REPOSITORY)
-        private attributesRepository: typeof ProductAttributes,
-
-        @Inject(constants.PAYMENT_REPOSITORY)
-        private paymentRepository: typeof Payment,
     ) { }
+
+
+    async getAllOrdersByDeliveryAgentId(agentId: number) {
+        return this.orderRepository.findAll({
+            where: { deliveryAgentId: agentId }
+        });
+    }
 
 }

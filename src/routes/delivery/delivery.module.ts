@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DeliveryService } from './delivery.service';
-import { DeliveryController } from './delivery.controller';
+import { DeliveryController } from './v1/delivery.controller';
 import { deliveryProviders } from './delivery.provider';
 
 

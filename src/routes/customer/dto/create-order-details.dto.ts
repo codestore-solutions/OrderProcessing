@@ -2,8 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsArray, ValidateNested, IsUUID, IsNumber, Min, MinLength, ValidateIf, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
 
-
-
+//example
 const orderObject = {
     shippingAddressesId: '4024dd19-e44c-4c13-9757-629ed513d34d',
     customerId: '5',
@@ -99,12 +98,6 @@ class StoreDto {
     @IsNumber()
     @Min(0)
     deliveryCost: number;
-
-    @ApiProperty({ example: 10000, required: false })
-    @IsOptional()
-    @IsNumber()
-    @Min(0)
-    deliveryEstimatedTime?: number;
 
     @ApiProperty({ type: [OrderItemDto], example: [{ productId: '686e34c8-7d1f-42e0-9cb8-564663ae3213', variantId: '11b38359-4e8b-4f2b-8484-7cb9d932ebdb', price: 999, discount: 10, quantity: 1, gst: 18 }] })
     @IsNotEmpty()

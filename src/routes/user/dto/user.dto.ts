@@ -23,6 +23,12 @@ export class UserDto {
   businessAdmin?: string;
 
   @ApiProperty()
+  businessAdminId?: string;
+
+  @ApiProperty()
+  address?: string;
+
+  @ApiProperty()
   isActive: boolean;
 }
 

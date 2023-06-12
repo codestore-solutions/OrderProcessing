@@ -15,6 +15,8 @@ export class JwtAuthGuard extends AuthGuard(jwtConstants.guardKey) {
               }, HttpStatus.UNAUTHORIZED);
         }
 
+        console.log(user, 'ss')
+
         return super.handleRequest(err, user, info, context, status);
     }
 }

@@ -57,7 +57,9 @@ export const users: UserDto[] = [
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
     "role": "delivery-agent",
-    "isActive": true
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": '2'
 
   },
   {
@@ -67,7 +69,9 @@ export const users: UserDto[] = [
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
     "role": "delivery-agent",
-    "isActive": true
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": '2'
 
   },
   {
@@ -77,7 +81,9 @@ export const users: UserDto[] = [
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
     "role": "delivery-agent",
-    "isActive": true
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": '2'
 
   },
   {
@@ -87,8 +93,9 @@ export const users: UserDto[] = [
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
     "role": "delivery-agent",
-    "isActive": true
-
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": '2'
   }
 ]
 

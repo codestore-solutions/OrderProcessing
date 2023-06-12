@@ -5,13 +5,13 @@ export class OrderItemDTO {
     id: string;
 
     @ApiProperty()
+    productId: string;
+
+    @ApiProperty()
+    orderId: string;
+
+    @ApiProperty()
     variantId: string;
-
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    description: string;
 
     @ApiProperty()
     price: number;

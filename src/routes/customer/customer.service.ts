@@ -157,7 +157,6 @@ export class CustomerService {
                 storeId: order.storeId,
             }
             const { id } = await this.orderRepository.create({ ...orderInstance });
-            console.log(id, 'sssssss')
             for (const orderItem of order.orderItems) {
                 await createOrder(orderItem, id);
             }

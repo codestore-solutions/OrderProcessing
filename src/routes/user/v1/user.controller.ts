@@ -1,7 +1,8 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { UserService } from '../user.service';
-import { ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from '../dto/user.dto';
+import { StoreDto } from 'src/assets/dtos/store.dto';
 
 
 @Controller('v1/users')
@@ -23,6 +24,30 @@ export class UserController {
     @ApiResponse({ status: 200, description: 'User details', type: UserDto })
     getUserById(@Param('id') id: string) {
         return this.userService.getUserById(id);
+    }
+
+    @Get('getUsersByRole')
+    @ApiOperation({ summary: 'Get users by role' })
+    @ApiQuery({ name: 'role', description: 'User role' })
+    @ApiResponse({ status: 200, description: 'Users with the specified role', type: [UserDto] })
+    getUsersByRole(@Query('role') role: string) {
+        return this.userService.getUsersByRole(role);
+    }
+
+    @Get('listAllStoresOfSeller')
+    @ApiOperation({ summary: 'Get all stores' })
+    @ApiResponse({ status: 200, description: 'List of stores', type: StoreDto, isArray: true })
+    getAllStoresOfSeller(): StoreDto[] {
+        return this.userService.getAllStores();
+    }
+
+
+    @Get('getStoreDetailsById/:id')
+    @ApiOperation({ summary: 'Get store by store id or seller id' })
+    @ApiParam({ name: 'id', description: 'Store Id / Selleer Id' })
+    @ApiResponse({ status: 200, description: 'Store details', type: StoreDto })
+    getStoreDetailsById(@Param('id') id: string) {
+        return this.userService.getStoreById(id);
     }
 
 }

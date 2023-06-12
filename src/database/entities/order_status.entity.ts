@@ -22,11 +22,11 @@ export class OrderStatusEntity extends Model {
     @AllowNull(false)
     @Column({
         type: DataType.ENUM,
-        values: Object.values(orderStatus),
+        values: orderStatus,
         allowNull: false,
+        defaultValue: 'pending'
     })
     event_type: string;
-
 
     @ForeignKey(() => User)
     @AllowNull(false)

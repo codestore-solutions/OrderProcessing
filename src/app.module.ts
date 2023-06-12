@@ -10,6 +10,7 @@ import { DeliveryModule } from './routes/delivery/delivery.module';
 import { UserModule } from './routes/user/user.module';
 import { BusinesModule } from './routes/business/business.module';
 import { AuthModule } from './auth/auth.module';
+import { OrdersModule } from './routes/orders/orders.module';
 
 
 @Module({
@@ -21,7 +22,8 @@ import { AuthModule } from './auth/auth.module';
     DatabaseModule,
     SellerModule,
     CustomerModule,
-    // DeliveryModule,
+    DeliveryModule,
+    OrdersModule,
     GatewayModule,
     UserModule,
     BusinesModule,

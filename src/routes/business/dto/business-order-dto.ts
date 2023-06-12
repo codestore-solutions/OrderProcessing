@@ -68,6 +68,12 @@ class AgentDTO {
 
     @ApiProperty({ type: [String] })
     contacts: string[];
+
+    @ApiProperty()
+    address: string;
+
+    @ApiProperty()
+    businessAdminId: string;
 }
 
 
@@ -124,8 +130,17 @@ export class BusinessOrderDTO {
     deliveryAgent: AgentDTO;
 
     @ApiProperty()
-    deliveryAgentId: string;
+    deliveryId: string;
 
     @ApiProperty()
     deliveryCharge: number;
+}
+
+
+export class orderDto {
+    @ApiProperty()
+    "total": number
+
+    @ApiProperty({ type: BusinessOrderDTO, isArray:true })
+    list: BusinessOrderDTO[]
 }

@@ -1,4 +1,56 @@
 export const ErrorMessages = {
+
+    INVALID_PACKING_COMPLETE_UPDATE: {
+        code: 'INVALID_PACKING_COMPLETE_UPDATE',
+        message: 'Packing is not yet started'
+    },
+
+    INVALID_PACKING_UPDATE: {
+        code: 'INVALID_PACKING_UPDATE',
+        message: 'Only new order can be packed'
+    },
+    
+    INVALID_NOT_ACCEPTED_CUSTOMER_UPDATE: {
+        code: 'INVALID_NOT_ACCEPTED_CUSTOMER_UPDATE',
+        message: 'Order is not reached at destination'
+    },
+
+    INVALID_DELIVERED_UPDATE: {
+        code: 'INVALID_DELIVERED_UPDATE',
+        message: 'Order is not reached at destination'
+    },
+
+    INVALID_REACHED_DESINATION_UPDATE: {
+        code: 'INVALID_REACHED_DESINATION_UPDATE',
+        message: 'Orders are not yet picked up'
+    },
+
+    INVALID_PICKUP: {
+        code: 'INVALID_PICKUP',
+        message: 'Orders are not assigned to current delivery agent'
+    },
+
+    NOT_AUTHORIZED: {
+        code: 'NOT_AUTHORIZED.',
+        message: 'Author is not authorized to update this status'
+    },
+
+    INVALID_RE_ASSIGNING: {
+        code : 'INVALID_RE_ASSIGNING',
+        message: 'Only assigned orders can be re-assigned to delivery agent'
+
+    },
+
+    INVALID_ASSIGNING: {
+        code : 'INVALID_ASSIGNING',
+        message: 'Only packed orders can be assigned to delivery agent'
+    },
+
+    AGENT_ID_REQUIRED: {
+        code: 'AGENT_ID_REQUIRED',
+        message: 'Delivery agent id required for assigning order'
+    },
+
     CANNOT_EXCHANGE_ORDER_INVENTORY: {
         code: 'CANNOT_EXCHANGE_ORDER_INVENTORY',
         message: 'Cannot exchange the order as per product inventory'

@@ -3,7 +3,7 @@ import {
     ApiBearerAuth,
     ApiOperation, ApiResponse, ApiTags
 } from '@nestjs/swagger';
-import { BusinessOrderDTO } from '../dto/business-order-dto';
+import { BusinessOrderDTO, orderDto } from '../dto/business-order-dto';
 import { BusinessService } from '../business.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { PaginationDto } from 'src/assets/dtos/pagination.dto';
@@ -23,7 +23,7 @@ export class BusinessController {
     })
     @ApiResponse({
         status: 200, description: 'Returns the packed orders with the specified stores',
-        type: BusinessOrderDTO, isArray: true
+        type: orderDto,
     })
     async getOrdersByBusinessIds(@Query('storeIds') businessIds: string[],
         @Query('page', ParseIntPipe) page: number,

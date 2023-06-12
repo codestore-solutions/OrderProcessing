@@ -1,76 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 
-class StoreAddressDTO {
-    @ApiProperty()
-    street: string;
-
-    @ApiProperty()
-    city: string;
-
-    @ApiProperty()
-    state: string;
-
-    @ApiProperty()
-    country: string;
-
-    @ApiProperty()
-    pincode: string;
-
-    @ApiProperty()
-    landmark: string;
-}
-
-class StoreDTO {
-    @ApiProperty()
-    id: number;
-
-    @ApiProperty()
-    sellerId: number;
-
-    @ApiProperty()
-    businessId: number;
-
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    description: string;
-
-    @ApiProperty({ type: StoreAddressDTO })
-    address: StoreAddressDTO;
-}
-
-class CustomerDTO {
-    @ApiProperty()
-    id: number;
-
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    email: string;
-
-    @ApiProperty({ type: [String] })
-    contacts: string[];
-}
-
-
-class AgentDTO {
-    @ApiProperty()
-    id: number;
-
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    email: string;
-
-    @ApiProperty({ type: [String] })
-    contacts: string[];
-}
-
-
 export class OrderDTO {
     @ApiProperty()
     id: string;
@@ -86,12 +16,6 @@ export class OrderDTO {
 
     @ApiProperty()
     storeId: string;
-
-    @ApiProperty({ type: CustomerDTO })
-    customer: CustomerDTO;
-
-    @ApiProperty({ type: StoreDTO })
-    store: StoreDTO;
 
     @ApiProperty()
     variantId: string;
@@ -120,11 +44,8 @@ export class OrderDTO {
     @ApiProperty()
     updatedAt: string;
 
-    @ApiProperty({ type: AgentDTO })
-    deliveryId: AgentDTO;
-
     @ApiProperty()
-    deliveryAgentId: string;
+    deliveryId: string;
 
     @ApiProperty()
     deliveryCharge: number;
@@ -162,6 +83,4 @@ export class OrderDBDto {
   deliveryMode?: string;
 
   deliveryCharge?: number;
-
-  deliveryEstimatedTime?: number;
 }

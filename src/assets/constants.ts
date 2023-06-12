@@ -5,6 +5,8 @@ export const constants = {
     ORDER_ITEM_REPOSITORY: 'ORDER_ITEM_REPOSITORY',
     ORDER_DETAIL_REPOSITORY: 'ORDER_DETAIL_REPOSITORY',
 
+    ORDER_STATUS_REPOSITORY: 'ORDER_STATUS_REPOSITORY',
+
     PRODUCT_REPOSITORY: 'PRODUCT_REPOSITORY',
     PRODUCT_SPECIFICATION_REPOSITORY: 'PRODUCT_SPECIFICATION_REPOSITORY',
 
@@ -20,7 +22,11 @@ export const constants = {
     LOCAL_GUARD: 'local',
     MAIL_LOCAL_GUARD: 'mailLocal',
     APIS_PREFIX: 'api',
+
 };
+
+export const updateStatusSuccess = (status: string) => 
+    `order status updated successfully to ${status}`
 
 
 export const tableNameConstants = {
@@ -39,10 +45,6 @@ export const tableNameConstants = {
 };
 
 
-export const orderStatus = ['pending', 'cancel', 'processing', 'packing_completed', 
-    'agent_assigned', 'picked_up', 'delivered', 'return', 'exchanged', 
-    'payment_failed', 'issue']
-
 
 export const paymentStatus = [
     "PENDING",
@@ -53,31 +55,54 @@ export const paymentStatus = [
 ]
 
 export const roles = [
-    "ADMIN",
-    "GUEST",
-    "DELIVERY_AGENT",
-    "BUSINESS_ADMIN",
-    "SELLER",
-    "CUSTOMER"
+    "admin",
+    "guest",
+    "delivery_agent",
+    "business_admin",
+    "seller",
+    "customer"
 ]
+
+export enum rolesEnum {
+    ADMIN = 'admin',
+    GUEST = 'guest',
+    DELIVERY_AGENT = 'delivery_agent',
+    BUSINESS_ADMIN = 'business_admin',
+    SELLER = 'seller',
+    CUSTOMER = 'customer',
+}
 
 export const deliveryModes = [
     'PERSONAL_DELIVERY_AGENT',
     'THIRD_PARTY_SHIPPMENT'
 ]
 
+
+export const orderStatus = ['pending', 'cancel', 'packing', 'packing_completed',
+    'agent_assigned', 'agent_re_assigned', 'reached_destination', 'picked_up', 
+    'delivered', 'return', 'exchanged', 'not_accepted_by_customer',
+    'payment_failed',]
+
+
 export enum OrderStatusEnum {
     Pending = 'pending',
     Cancel = 'cancel',
-    Processing = 'processing',
+    Packing = 'packing',
     PackingCompleted = 'packing_completed',
+
     AgentAssigned = 'agent_assigned',
+    ReAssigning = 'agent_re_assigned',
     PickedUp = 'picked_up',
+    ReachedDesination = 'reached_destination',
+    NotAcceptedByCustomer = 'not_accepted_by_customer',
     Delivered = 'delivered',
+
     Return = 'return',
     Exchanged = 'exchanged',
     PaymentFailed = 'payment_failed',
-    Issue = 'issue'
+
+    CancelledBySeller = 'cancelled_by_seller',
+    CancelledByCustomer = 'cancelled_by_customer',
 }
 
 export const sellerOrderState = ['processing', 'shipping']

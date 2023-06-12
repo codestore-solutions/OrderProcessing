@@ -126,12 +126,12 @@ export class Order extends Model {
     deliveryCharge: number;
 
 
-    @AllowNull(true)
-    @Column({
-        type: DataType.INTEGER,
-        defaultValue: 0,
-    })
-    deliveryEstimatedTime: number
+    // @AllowNull(true)
+    // @Column({
+    //     type: DataType.INTEGER,
+    //     defaultValue: 0,
+    // })
+    // deliveryEstimatedTime: number
 
     @AllowNull(true)
     @Column({

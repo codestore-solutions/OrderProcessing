@@ -70,8 +70,13 @@ export class BusinessService {
 
         const offset = (page - 1) * pageSize;
         const limit =  pageSize;
-
-        console.log(offset, typeof limit)
+        const orders_count = await this.orderRepository.count({
+            where: {
+                storeId: {
+                    [Op.in]: parsedStoreIds
+                },
+            },
+        });
 
         const orders = await this.orderRepository.findAll({
             where: {
@@ -83,7 +88,10 @@ export class BusinessService {
             offset,
         });
 
-        return this.modifyOrder(orders)
+        return {
+            total: orders_count,
+            list: this.modifyOrder(orders)
+        }
     }
 
 
@@ -97,6 +105,9 @@ export class BusinessService {
             },
         });
 
-        return this.modifyOrder(orders)
+        return {
+            total: orders.length,
+            lists: this.modifyOrder(orders)
+        }
     }
 }

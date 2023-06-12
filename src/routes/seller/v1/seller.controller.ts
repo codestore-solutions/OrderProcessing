@@ -81,20 +81,20 @@ export class SellerController {
     }
 
 
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({ summary: 'Update the status of order based on order id, store id' })
-    @ApiParam({ name: 'orderId', description: 'Order ID', example: 'cf8d0e2a-d10c-442f-a73e-fd299e80c994' })
-    @ApiParam({ name: 'sellerId', description: 'Seller ID', example: '94bb9a10-dfe7-4b5b-819c-7d951d5d977b' })
-    @ApiResponse({ status: 200, description: 'Orders status updated successfully' })
-    @ApiResponse({ status: 400, description: 'Invalid status transition or order not found' })
-    @Put('updateOrder/:orderId/:sellerId')
-    async updateCartOrders(
-        @Param('orderId') cartId: string,
-        @Param('sellerId') sellerId: string,
-        @Body(ValidationPipe) sellerUpdateOrderStatusDto: sellerUpdateOrderStatusDto) { console.log(sellerUpdateOrderStatusDto);
-        // return this.sellerService.updateOrderStatusByCartId(cartId, sellerId, sellerUpdateOrderStatusDto.status);
-    }
+    // @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard)
+    // @ApiOperation({ summary: 'Update the status of order based on order id, store id' })
+    // @ApiParam({ name: 'orderId', description: 'Order ID', example: 'cf8d0e2a-d10c-442f-a73e-fd299e80c994' })
+    // @ApiParam({ name: 'sellerId', description: 'Seller ID', example: '94bb9a10-dfe7-4b5b-819c-7d951d5d977b' })
+    // @ApiResponse({ status: 200, description: 'Orders status updated successfully' })
+    // @ApiResponse({ status: 400, description: 'Invalid status transition or order not found' })
+    // @Put('updateOrder/:orderId/:sellerId')
+    // async updateCartOrders(
+    //     @Param('orderId') cartId: string,
+    //     @Param('sellerId') sellerId: string,
+    //     @Body(ValidationPipe) sellerUpdateOrderStatusDto: sellerUpdateOrderStatusDto) { console.log(sellerUpdateOrderStatusDto);
+    //     // return this.sellerService.updateOrderStatusByCartId(cartId, sellerId, sellerUpdateOrderStatusDto.status);
+    // }
 
     // @Put('order/status/:orderId')
     // @ApiOkResponse({ description: 'Order status updated successfully' })
