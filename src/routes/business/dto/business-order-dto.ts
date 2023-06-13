@@ -1,88 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 
-class StoreAddressDTO {
-    @ApiProperty()
-    street: string;
-
-    @ApiProperty()
-    city: string;
-
-    @ApiProperty()
-    state: string;
-
-    @ApiProperty()
-    country: string;
-
-    @ApiProperty()
-    pincode: string;
-
-    @ApiProperty()
-    landmark: string;
-}
-
-class StoreDTO {
-    @ApiProperty()
-    id: number;
-
-    @ApiProperty()
-    sellerId: number;
-
-    @ApiProperty()
-    businessId: number;
-
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    description: string;
-
-    @ApiProperty({ type: StoreAddressDTO })
-    address: StoreAddressDTO;
-}
-
-class CustomerDTO {
-    @ApiProperty()
-    id: number;
-
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    email: string;
-
-    @ApiProperty({ type: [String] })
-    contacts: string[];
-}
-
-
-class AgentDTO {
-    @ApiProperty()
-    id: number;
-
-    @ApiProperty()
-    name: string;
-
-    @ApiProperty()
-    email: string;
-
-    @ApiProperty({ type: [String] })
-    contacts: string[];
-
-    @ApiProperty()
-    address: string;
-
-    @ApiProperty()
-    businessAdminId: string;
-}
-
-
-export class BusinessOrderDTO {
+export class BusinessOrderDetailsDTO {
     @ApiProperty()
     id: string;
-
-    @ApiProperty()
-    orderInstanceId: string;
 
     @ApiProperty()
     product_count: number;
@@ -92,15 +13,6 @@ export class BusinessOrderDTO {
 
     @ApiProperty()
     storeId: string;
-
-    @ApiProperty({ type: CustomerDTO })
-    customer: CustomerDTO;
-
-    @ApiProperty({ type: StoreDTO })
-    store: StoreDTO;
-
-    @ApiProperty()
-    variantId: string;
 
     @ApiProperty()
     shippingAddressId: string;
@@ -121,15 +33,6 @@ export class BusinessOrderDTO {
     createdAt: string;
 
     @ApiProperty()
-    createdBy: string;
-
-    @ApiProperty()
-    updatedAt: string;
-
-    @ApiProperty({ type: AgentDTO })
-    deliveryAgent: AgentDTO;
-
-    @ApiProperty()
     deliveryId: string;
 
     @ApiProperty()
@@ -137,8 +40,29 @@ export class BusinessOrderDTO {
 }
 
 
-export class orderDto {
-    @ApiProperty()
+export class BusinessOrderDTO {
+  @ApiProperty({ example: 'Tech Bazaar', description: 'The name of the store' })
+  storeName: string;
+
+  @ApiProperty({ example: '2023-06-12T11:13:29.000Z', description: 'The creation date of the store' })
+  createdAt: string;
+
+  @ApiProperty({ example: '8b0802aa-cacf-40af-8c3a-290f6dd27741', description: 'The ID of the store' })
+  id: string;
+
+  @ApiProperty({ example: 'credit Card', description: 'The payment mode used by the store' })
+  paymentMode: string;
+
+  @ApiProperty({ example: '4024dd19-e44c-4c13-9757-629ed513d34d', description: 'The ID of the shipping address' })
+  shippingAddressId: string;
+
+  @ApiProperty({ example: '4', description: 'The ID of the store' })
+  storeId: string;
+}
+
+
+export class orderListDto {
+    @ApiProperty({ example: 1 })
     "total": number
 
     @ApiProperty({ type: BusinessOrderDTO, isArray:true })

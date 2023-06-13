@@ -1,18 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsArray, ValidateNested, IsUUID, IsNumber, Min, MinLength, ValidateIf, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsArray, ValidateNested, 
+    IsUUID, IsNumber, Min, MinLength, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
+
 
 //example
 const orderObject = {
     shippingAddressesId: '4024dd19-e44c-4c13-9757-629ed513d34d',
     customerId: '5',
     paymentId: '9e0e6f33-cd33-45f0-a012-057b1c57816c',
-    paymentMode: 'Credit card',
+    paymentMode: 'credit card',
     ordersFromStore: [
         {
-            storeId: '5577cf1c-c23c-4f4f-a350-6f39ecd95ef3',
+            storeId: '3',
             deliveryCost: 59,
-            deliveryEstimatedTime: 10000,
             orderItems: [
                 {
                     "productId": "686e34c8-7d1f-42e0-9cb8-564663ae3213",
@@ -34,9 +35,8 @@ const orderObject = {
         },
 
         {
-            storeId: '2edd3841-c902-43c8-862d-5e98b599d9ce',
+            storeId: '4',
             deliveryCost: 159,
-            deliveryEstimatedTime: 100000,
             orderItems: [
                 {
                     "productId": "4a7033b5-66d9-4f85-858a-ffd9426aa02f",
@@ -88,7 +88,7 @@ export class OrderItemDto {
 }
 
 class StoreDto {
-    @ApiProperty({ example: '5577cf1c-c23c-4f4f-a350-6f39ecd95ef3' })
+    @ApiProperty({ example: '3' })
     @IsNotEmpty()
     @IsUUID()
     storeId: string;
@@ -123,7 +123,7 @@ export class CreateOrderDto {
     @IsUUID()
     paymentId: string;
 
-    @ApiProperty({ example: 'Credit card' })
+    @ApiProperty({ example: 'credit card' })
     @IsNotEmpty()
     @MinLength(1)
     paymentMode: string;

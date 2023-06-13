@@ -17,47 +17,17 @@ export class BusinessService {
 
 
     modifyOrder(orders: any) {
-        const fetchCustomer = (id: string) => {
-            const index = users.findIndex((user) => user.id === id);
-            if (index === -1) {
-                return {};
-            }
-
-            const user = { ...users[index] };
-
-            delete user.password;
-            delete user.role
-
-            return user;
-        }
-
 
         const fetchStore = (id: string) => {
             const index = stores.findIndex((store) => store.id === id);
-            return index === -1 ? {} : stores[index]
-        }
-
-        const fetchDeliveryAgent = (id: string) => {
-            const index = users.findIndex((user) => user.id === id && user?.role === 'delivery-agent');
-
-            if (index === -1) {
-                return {};
-            }
-            const user = { ...users[index] };
-            delete user.password;
-            delete user.role
-            return user;
+            return index === -1 ? "" : stores[index].name
         }
 
         const modifiedOrders = orders.map((order) => {
-            const userId = order.customerId
             const storeId = order.storeId
-            const agentId = order.deliveryAgentId
-            const customer = fetchCustomer(userId)
-            const store = fetchStore(storeId)
-            const agent = agentId ? fetchDeliveryAgent(agentId) : {}
+            const storeName = fetchStore(storeId)
             return {
-                customer, store, deliveryAgent: agent,
+                storeName,
                 ...order.dataValues
             }
         })
@@ -69,7 +39,7 @@ export class BusinessService {
         page: number, pageSize: number) {
 
         const offset = (page - 1) * pageSize;
-        const limit =  pageSize;
+        const limit = pageSize;
         const orders_count = await this.orderRepository.count({
             where: {
                 storeId: {
@@ -84,6 +54,8 @@ export class BusinessService {
                     [Op.in]: parsedStoreIds
                 },
             },
+            attributes: ['createdAt', 'id',
+                'paymentMode', 'shippingAddressId', 'storeId'],
             limit,
             offset,
         });
@@ -103,11 +75,24 @@ export class BusinessService {
                     [Op.in]: parsedStoreIds
                 },
             },
+            attributes: ['createdAt', 'id',
+                'paymentMode', 'shippingAddressId', 'storeId'],
         });
 
         return {
             total: orders.length,
             lists: this.modifyOrder(orders)
         }
+    }
+
+
+    async getAllOrderDetailsByOrderId(orderId: string) {
+        const order = await this.orderRepository.findByPk(orderId, {
+            attributes: {
+                exclude: ['createdBy', 'updatedAt', 'orderInstanceId', 'deliveryMode']
+            },
+        });
+
+        return order
     }
 }

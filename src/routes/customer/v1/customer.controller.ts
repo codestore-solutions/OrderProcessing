@@ -67,8 +67,8 @@ export class CustomerController {
     // }
 
 
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    // @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Creates an order',
         description: 'Creates an order associated with given userId, and productId' })
     @ApiResponse({ status: 201, description: 'Orders created successfully' })

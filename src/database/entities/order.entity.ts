@@ -113,7 +113,6 @@ export class Order extends Model {
     @AllowNull(true)
     @Column({
         type: DataType.STRING(36),
-        defaultValue: UUIDV4,
     })
     deliveryId: string;
 
@@ -137,7 +136,7 @@ export class Order extends Model {
     @Column({
         type: DataType.ENUM,
         values: deliveryModes,
-        allowNull: false,
+        allowNull: true,
     })
     deliveryMode: string;
 }

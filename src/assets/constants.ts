@@ -111,8 +111,8 @@ export const persona = ['superadmin', 'customer', 'store']
 
 export enum PaymentMode {
     CASH_ON_DELIVERY = 'cash on delivery',
-    CREDIT_CARD = 'credit Card',
-    DEBIT_CARD = 'debit Card',
+    CREDIT_CARD = 'credit card',
+    DEBIT_CARD = 'debit card',
     PAYPAL = 'paypal',
 }
 

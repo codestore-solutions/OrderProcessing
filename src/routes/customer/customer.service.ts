@@ -149,7 +149,6 @@ export class CustomerService {
                 paymentMode,
                 shippingAddressId,
                 customerId,
-                deliveryMode: deliveryModes[0],
                 paymentStatus: 'CAPTURED',
                 product_count: order.orderItems.length,
                 createdBy: 'CUSTOMER',

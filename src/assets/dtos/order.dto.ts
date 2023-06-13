@@ -18,9 +18,6 @@ export class OrderDTO {
     storeId: string;
 
     @ApiProperty()
-    variantId: string;
-
-    @ApiProperty()
     shippingAddressId: string;
 
     @ApiProperty()

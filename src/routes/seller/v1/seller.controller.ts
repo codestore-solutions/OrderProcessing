@@ -60,8 +60,8 @@ export class SellerController {
         status: 200, description: 'Returns the ordered product details with the specified ordered product id',
         type: OrderItemDTO,
     })
-    async getOrderItemDetailsByOrderId(@Param('orderId') orderId: string) {
-        return this.sellerService.getOrderItemDetailByOrderId(orderId);
+    async getOrderItemDetailsByOrderId(@Param('orderItemId') orderItemId: string) {
+        return this.sellerService.getOrderItemDetailByOrderId(orderItemId);
     }
 
 
