@@ -14,8 +14,8 @@ import { PaginationDto } from 'src/assets/dtos/pagination.dto';
 export class BusinessController {
     constructor(private readonly businessService: BusinessService) { }
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Get('getOrdersByStoresId/')
     @ApiOperation({
         summary: 'Provides orders based on stores Id',
@@ -44,8 +44,8 @@ export class BusinessController {
     }
 
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @Get('/getOrderDetailsByOrderId/:orderId')
     @ApiOperation({
         summary: 'Provides order details based on order id',
