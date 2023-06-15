@@ -13,10 +13,11 @@ export class OrderStatusEntity extends Model {
     @PrimaryKey
     @AllowNull(false)
     @Column({
-        type: DataType.UUID,
-        defaultValue: UUIDV4,
+        type: DataType.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     })
-    id: string;
+    id: number;
 
 
     @AllowNull(false)
@@ -31,9 +32,9 @@ export class OrderStatusEntity extends Model {
     @ForeignKey(() => User)
     @AllowNull(false)
     @Column({
-        type: DataType.STRING(36),
+        type: DataType.INTEGER,
     })
-    order_id: string;
+    order_id: number;
 
 
     @AllowNull(false)

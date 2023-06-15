@@ -10,7 +10,7 @@ export class UserService {
     private readonly users: UserDto[] = users;
     private readonly stores: StoreDto[] = stores;
 
-    getUserById(id: string): UserDto {
+    getUserById(id: number): UserDto {
         return this.users.find(user => user.id === id);
     }
 
@@ -26,7 +26,7 @@ export class UserService {
         return this.users.find(user => user.email === email);
     }
 
-    getStoreById(id: string): StoreDto {
+    getStoreById(id: number): StoreDto {
         return this.stores.find(store => store.id === id);
     }
 

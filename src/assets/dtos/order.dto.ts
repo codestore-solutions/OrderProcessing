@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class OrderDTO {
     @ApiProperty()
-    id: string;
+    id: number;
 
     @ApiProperty()
     orderInstanceId: string;
@@ -12,16 +12,16 @@ export class OrderDTO {
     product_count: number;
 
     @ApiProperty()
-    customerId: string;
+    customerId: number;
 
     @ApiProperty()
-    storeId: string;
+    storeId: number;
 
     @ApiProperty()
-    shippingAddressId: string;
+    shippingAddressId: number;
 
     @ApiProperty()
-    paymentId: string;
+    paymentId: number;
 
     @ApiProperty()
     paymentStatus: string;
@@ -42,7 +42,7 @@ export class OrderDTO {
     updatedAt: string;
 
     @ApiProperty()
-    deliveryId: string;
+    deliveryId:  number;
 
     @ApiProperty()
     deliveryCharge: number;
@@ -55,13 +55,13 @@ export class OrderDBDto {
 
   product_count: number;
 
-  customerId: string;
+  customerId: number;
 
-  storeId: string;
+  storeId: number;
 
-  shippingAddressId: string;
+  shippingAddressId: number;
 
-  paymentId?: string;
+  paymentId?: number;
 
   paymentStatus?: string;
 
@@ -75,7 +75,7 @@ export class OrderDBDto {
 
   updatedAt?: string;
 
-  deliveryId?: string;
+  deliveryId?: number;
 
   deliveryMode?: string;
 

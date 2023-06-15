@@ -1,5 +1,4 @@
 import { AllowNull, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { UUIDV4 } from "sequelize";
 import { tableNameConstants } from "../../assets/constants";
 import { Order } from "./order.entity";
 
@@ -13,17 +12,18 @@ export class OrderItem extends Model {
     @PrimaryKey
     @AllowNull(false)
     @Column({
-        type: DataType.STRING(36),
-        defaultValue: UUIDV4,
+        type: DataType.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     })
-    id: string;
+    id: number;
 
     
     @ForeignKey(() => Order)
     @Column({
-        type: DataType.STRING(36),
+        type: DataType.INTEGER
     })
-    orderId: string;
+    orderId: number;
 
 
     @BelongsTo(() => Order)
@@ -31,15 +31,15 @@ export class OrderItem extends Model {
 
 
     @Column({
-        type: DataType.STRING(36),
+        type: DataType.INTEGER
     })
-    variantId: string;
+    variantId: number;
 
     
     @Column({
-        type: DataType.STRING(36),
+        type: DataType.INTEGER,
     })
-    productId: string;
+    productId: number;
 
 
     @AllowNull(false)
@@ -71,6 +71,4 @@ export class OrderItem extends Model {
         defaultValue: 1,
     })
     quantity: number;
-
-
 }

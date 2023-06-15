@@ -3,22 +3,22 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class BusinessOrderDetailsDTO {
     @ApiProperty()
-    id: string;
+    id: number;
 
     @ApiProperty()
     product_count: number;
 
     @ApiProperty()
-    customerId: string;
+    customerId: number;
 
     @ApiProperty()
-    storeId: string;
+    storeId: number;
 
     @ApiProperty()
-    shippingAddressId: string;
+    shippingAddressId: number;
 
     @ApiProperty()
-    paymentId: string;
+    paymentId: number;
 
     @ApiProperty()
     paymentStatus: string;
@@ -33,7 +33,7 @@ export class BusinessOrderDetailsDTO {
     createdAt: string;
 
     @ApiProperty()
-    deliveryId: string;
+    deliveryId: number;
 
     @ApiProperty()
     deliveryCharge: number;
@@ -41,23 +41,21 @@ export class BusinessOrderDetailsDTO {
 
 
 export class BusinessOrderDTO {
-  @ApiProperty({ example: 'Tech Bazaar', description: 'The name of the store' })
-  storeName: string;
 
   @ApiProperty({ example: '2023-06-12T11:13:29.000Z', description: 'The creation date of the store' })
   createdAt: string;
 
-  @ApiProperty({ example: '8b0802aa-cacf-40af-8c3a-290f6dd27741', description: 'The ID of the store' })
-  id: string;
+  @ApiProperty({ example: 1, description: 'The ID of the order' })
+  id: number;
 
   @ApiProperty({ example: 'credit Card', description: 'The payment mode used by the store' })
   paymentMode: string;
 
-  @ApiProperty({ example: '4024dd19-e44c-4c13-9757-629ed513d34d', description: 'The ID of the shipping address' })
-  shippingAddressId: string;
+  @ApiProperty({ example: 1, description: 'The ID of the shipping address' })
+  shippingAddressId: number;
 
-  @ApiProperty({ example: '4', description: 'The ID of the store' })
-  storeId: string;
+  @ApiProperty({ example: 4, description: 'The ID of the store' })
+  storeId: number;
 }
 
 

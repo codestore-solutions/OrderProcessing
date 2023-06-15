@@ -1,5 +1,4 @@
 import { AllowNull, Column, DataType, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { UUIDV4 } from "sequelize";
 import { PaymentMode, deliveryModes, orderStatus, paymentStatus, roles, tableNameConstants } from '../../assets/constants'
 
 
@@ -13,10 +12,11 @@ export class Order extends Model {
     @PrimaryKey
     @AllowNull(false)
     @Column({
-        type: DataType.STRING(36),
-        defaultValue: UUIDV4,
+        type: DataType.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
     })
-    id: string;
+    id: number;
 
 
     @AllowNull(false)
@@ -35,30 +35,30 @@ export class Order extends Model {
 
     @AllowNull(false)
     @Column({
-        type: DataType.STRING(36),
+        type: DataType.INTEGER,
     })
-    customerId: string;
-
-    
-    @AllowNull(false)
-    @Column({
-        type: DataType.STRING(36),
-    })
-    storeId: string;
+    customerId: number;
 
 
     @AllowNull(false)
     @Column({
-        type: DataType.STRING(36),
+        type: DataType.INTEGER,
     })
-    shippingAddressId: string;
+    storeId: number;
+
+
+    @AllowNull(false)
+    @Column({
+        type: DataType.INTEGER,
+    })
+    shippingAddressId: number;
 
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(36)
+        type: DataType.INTEGER,
     })
-    paymentId: string;
+    paymentId: number;
 
 
     @AllowNull(false)
@@ -112,9 +112,9 @@ export class Order extends Model {
 
     @AllowNull(true)
     @Column({
-        type: DataType.STRING(36),
+        type: DataType.INTEGER,
     })
-    deliveryId: string;
+    deliveryId: number;
 
 
     @AllowNull(false)

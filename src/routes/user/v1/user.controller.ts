@@ -22,7 +22,7 @@ export class UserController {
     @ApiOperation({ summary: 'Get user by ID' })
     @ApiParam({ name: 'id', description: 'User ID' })
     @ApiResponse({ status: 200, description: 'User details', type: UserDto })
-    getUserById(@Param('id') id: string) {
+    getUserById(@Param('id') id: number) {
         return this.userService.getUserById(id);
     }
 
@@ -46,7 +46,7 @@ export class UserController {
     @ApiOperation({ summary: 'Get store by store id or seller id' })
     @ApiParam({ name: 'id', description: 'Store Id / Selleer Id' })
     @ApiResponse({ status: 200, description: 'Store details', type: StoreDto })
-    getStoreDetailsById(@Param('id') id: string) {
+    getStoreDetailsById(@Param('id') id: number) {
         return this.userService.getStoreById(id);
     }
 

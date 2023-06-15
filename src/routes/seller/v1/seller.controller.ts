@@ -27,9 +27,24 @@ export class SellerController {
         status: 200, description: 'Returns the orders with the specified seller',
         type: OrderDTO, isArray: true
     })
-    async getOrdersByStoreId(@Param('sellerId') sellerId: string) {
-        const parsedSellerId = parseInt(sellerId, 10);
+    async getOrdersByStoreId(@Param('sellerId') sellerId: number) {
+        const parsedSellerId = sellerId;
         return this.sellerService.getAllOrdersByStoreId(parsedSellerId);
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get('/getOrderDetailsByOrderId/:orderId')
+    @ApiOperation({
+        summary: 'Provides order details based on order id',
+        description: 'Provides order details associated with a store by order id'
+    })
+    @ApiResponse({
+        status: 200, description: 'Returns order details by order id',
+        type: OrderDTO,
+    })
+    async getOrderDetailsByOrderId(@Param('orderId') orderId: number) {
+        return this.sellerService.getOrderDetailsByOrderId(orderId);
     }
 
 
@@ -44,7 +59,7 @@ export class SellerController {
         status: 200, description: 'Returns the list of products ordered with the specified seller and order id',
         type: OrderItemDTO, isArray: true
     })
-    async getOrderItemsByOrderId(@Param('orderId') orderId: string) {
+    async getOrderItemsByOrderId(@Param('orderId') orderId: number) {
         return this.sellerService.getAllOrderItemsByOrderId(orderId);
     }
 
@@ -60,7 +75,7 @@ export class SellerController {
         status: 200, description: 'Returns the ordered product details with the specified ordered product id',
         type: OrderItemDTO,
     })
-    async getOrderItemDetailsByOrderId(@Param('orderItemId') orderItemId: string) {
+    async getOrderItemDetailsByOrderId(@Param('orderItemId') orderItemId: number) {
         return this.sellerService.getOrderItemDetailByOrderId(orderItemId);
     }
 
@@ -76,7 +91,7 @@ export class SellerController {
     @ApiParam({ name: 'sellerId', description: 'Seller ID', example: 2 })
     @Get('/getSellerOrdersBystatus/:sellerId')
     async getOrdersByStatus(@Query('status') status: string,
-        @Param('sellerId') sellerId: string,) {
+        @Param('sellerId') sellerId: number) {
         return this.sellerService.findByStatus(status, sellerId);
     }
 

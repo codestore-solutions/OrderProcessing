@@ -1,8 +1,8 @@
 export const stores = [
     {
-        "id": '3',
-        "sellerId": '3',
-        "businessId": '2',
+        "id": 3,
+        "sellerId": 3,
+        "businessId": 2,
         "name": "Fashion Junction",
         "description": "A trendy fashion store offering a wide range of clothing and accessories.",
         "address": {
@@ -15,9 +15,9 @@ export const stores = [
         }
     },
     {
-        "id": '4',
-        "sellerId": '3',
-        "businessId": '2',
+        "id": 4,
+        "sellerId": 3,
+        "businessId": 2,
         "name": "Tech Bazaar",
         "description": "An electronics store specializing in the latest tech gadgets and devices.",
         "address": {

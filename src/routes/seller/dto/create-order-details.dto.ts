@@ -278,11 +278,11 @@ class AddressDto {
 
 //order details dto
 export class OrderDetailDto {
-    @ApiProperty({ example: '3364e750-07a3-4632-b3c8-e6f327d767a4' })
-    id: string;
+    @ApiProperty({ example: 1 })
+    id:  number;
 
-    @ApiProperty({ example: '95494fb5-b4f7-4a37-845c-e6c5c122c321' })
-    orderId: string;
+    @ApiProperty({ example: 1 })
+    orderId: number;
 
     @ApiProperty({ example: 1300 })
     price: number;

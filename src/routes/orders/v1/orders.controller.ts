@@ -35,7 +35,7 @@ export class OrderController {
     })
     @ApiParam({ name: 'orderId', description: 'Order ID', example: 2 })
     @Get('/getOrderTimeline/:orderId')
-    async getOrdersByStatus(@Param('orderId') orderId: string,) {
+    async getOrdersByStatus(@Param('orderId') orderId: number,) {
         return this.orderService.getOrderTimeline(orderId);
     }
 }

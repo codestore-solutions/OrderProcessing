@@ -1,31 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsArray, ValidateNested, 
-    IsUUID, IsNumber, Min, MinLength, IsOptional } from 'class-validator';
+    IsNumber, Min, MinLength, IsOptional, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
 
 
 //example
 const orderObject = {
-    shippingAddressesId: '4024dd19-e44c-4c13-9757-629ed513d34d',
-    customerId: '5',
-    paymentId: '9e0e6f33-cd33-45f0-a012-057b1c57816c',
+    shippingAddressesId: 1,
+    customerId: 5,
+    paymentId: 1,
     paymentMode: 'credit card',
     ordersFromStore: [
         {
-            storeId: '3',
+            storeId: 3,
             deliveryCost: 59,
             orderItems: [
                 {
-                    "productId": "686e34c8-7d1f-42e0-9cb8-564663ae3213",
-                    "variantId": "11b38359-4e8b-4f2b-8484-7cb9d932ebdb",
+                    "productId": 1,
+                    "variantId": 2,
                     "price": 999,
                     "discount": 10,
                     "quantity": 1,
                     "gst": 18
                 },
                 {
-                    "productId": "d6aa7c01-b13d-4a44-8c43-7c8e2f11d864",
-                    "variantId": "ffbaa511-191d-4c07-ba02-62ffb14ab7db",
+                    "productId": 2,
+                    "variantId": 3,
                     "price": 1999,
                     "discount": 0,
                     "quantity": 1,
@@ -35,12 +35,12 @@ const orderObject = {
         },
 
         {
-            storeId: '4',
+            storeId: 4,
             deliveryCost: 159,
             orderItems: [
                 {
-                    "productId": "4a7033b5-66d9-4f85-858a-ffd9426aa02f",
-                    "variantId": "ce8ed04e-eec7-41ab-bc5b-c771e0ff8974",
+                    "productId": 3,
+                    "variantId": 4,
                     "price": 999,
                     "discount": 10,
                     "quantity": 1,
@@ -52,15 +52,15 @@ const orderObject = {
 }
 
 export class OrderItemDto {
-    @ApiProperty({ example: '686e34c8-7d1f-42e0-9cb8-564663ae3213' })
+    @ApiProperty({ example: 1 })
     @IsNotEmpty()
-    @IsUUID()
-    productId: string;
+    @IsNumber()
+    productId: number;
 
-    @ApiProperty({ example: '11b38359-4e8b-4f2b-8484-7cb9d932ebdb' })
+    @ApiProperty({ example: 1 })
     @IsNotEmpty()
-    @IsUUID()
-    variantId: string;
+    @IsNumber()
+    variantId: number;
 
     @ApiProperty({ example: 999 })
     @IsNotEmpty()
@@ -88,10 +88,10 @@ export class OrderItemDto {
 }
 
 class StoreDto {
-    @ApiProperty({ example: '3' })
+    @ApiProperty({ example: 3 })
     @IsNotEmpty()
-    @IsUUID()
-    storeId: string;
+    @IsNumber()
+    storeId: number;
 
     @ApiProperty({ example: 59 })
     @IsNotEmpty()
@@ -99,7 +99,8 @@ class StoreDto {
     @Min(0)
     deliveryCost: number;
 
-    @ApiProperty({ type: [OrderItemDto], example: [{ productId: '686e34c8-7d1f-42e0-9cb8-564663ae3213', variantId: '11b38359-4e8b-4f2b-8484-7cb9d932ebdb', price: 999, discount: 10, quantity: 1, gst: 18 }] })
+    @ApiProperty({ type: [OrderItemDto], example: [{ productId: 1, variantId: 2, 
+        price: 999, discount: 10, quantity: 1, gst: 18 }] })
     @IsNotEmpty()
     @IsArray()
     @ValidateNested({ each: true })
@@ -108,20 +109,20 @@ class StoreDto {
 }
 
 export class CreateOrderDto {
-    @ApiProperty({ example: '4024dd19-e44c-4c13-9757-629ed513d34d' })
+    @ApiProperty({ example: 1 })
     @IsNotEmpty()
-    @IsUUID()
-    shippingAddressId: string;
+    @IsNumber()
+    shippingAddressId: number;
 
-    @ApiProperty({ example: '5' })
+    @ApiProperty({ example: 5 })
     @IsNotEmpty()
-    @IsUUID()
-    customerId: string;
+    @IsNumber()
+    customerId: number;
 
-    @ApiProperty({ example: '9e0e6f33-cd33-45f0-a012-057b1c57816c' })
+    @ApiProperty({ example: 1 })
     @IsNotEmpty()
-    @IsUUID()
-    paymentId: string;
+    @IsNumber()
+    paymentId: number;
 
     @ApiProperty({ example: 'credit card' })
     @IsNotEmpty()

@@ -10,14 +10,14 @@ class Address {
 }
 
 export class StoreDto {
-    @ApiProperty({ example: '3', description: 'Store ID' })
-    id: string;
+    @ApiProperty({ example: 3, description: 'Store ID' })
+    id: number;
 
     @ApiProperty({ example: '3', description: 'Seller ID' })
-    sellerId: string;
+    sellerId: number;
 
     @ApiProperty({ example: '2', description: 'Business ID' })
-    businessId: string;
+    businessId: number;
 
     @ApiProperty({ example: 'Fashion Junction', description: 'Store name' })
     name: string;

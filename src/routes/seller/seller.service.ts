@@ -121,22 +121,32 @@ export class SellerService {
     }
 
 
-    async getAllOrderItemsByOrderId(orderId: string) {
+    async getAllOrderItemsByOrderId(orderId: number) {
         return this.orderItemRepository.findAll({
             where: { orderId }
         })
     }
 
 
-    async getOrderItemDetailByOrderId(orderId: string){
+    async getOrderItemDetailByOrderId(orderId: number) {
         return await this.orderItemRepository.findByPk(orderId);
     }
 
 
-    async findByStatus(status: string, storeId: string) {
+    async findByStatus(status: string, storeId: number) {
         return this.orderRepository.findAll({
             where: { orderStatus: status, storeId: storeId }
         });
+    }
+
+    async getOrderDetailsByOrderId(orderId: number) {
+        const order = await this.orderRepository.findByPk(orderId, {
+            attributes: {
+                exclude: ['createdBy', 'updatedAt', 'orderInstanceId', 'deliveryMode']
+            },
+        });
+
+        return order
     }
 
 
@@ -216,7 +226,7 @@ export class SellerService {
     }
 
 
-    
+
     // async getAllOrdersByStoreId(storeId: number) {
     //     return this.orderRepository.findAll({
     //         where: { storeId },
@@ -294,7 +304,7 @@ export class SellerService {
     //     if (!validStatus.includes(status)) {
     //         throw new BadRequestException('Invalid status value');
     //     }
-        
+
     //     return this.orderRepository.findAll({
     //         where: { storeId, status },
     //         attributes: ['cartId',

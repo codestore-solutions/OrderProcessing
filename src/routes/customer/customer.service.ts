@@ -134,7 +134,7 @@ export class CustomerService {
         const { ordersFromStore, paymentId, paymentMode,
             shippingAddressId, customerId } = payload;
 
-        const createOrder = async (order: OrderItemDto, orderId: string) => {
+        const createOrder = async (order: OrderItemDto, orderId: number) => {
             try {
                 await this.orderItemRepository.create({ orderId, ...order });
             } catch (error) {

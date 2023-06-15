@@ -3,10 +3,9 @@ import {
     ApiBearerAuth,
     ApiOperation, ApiResponse, ApiTags
 } from '@nestjs/swagger';
-import { BusinessOrderDTO, BusinessOrderDetailsDTO, orderListDto,  } from '../dto/business-order-dto';
+import { BusinessOrderDetailsDTO, orderListDto,  } from '../dto/business-order-dto';
 import { BusinessService } from '../business.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import { PaginationDto } from 'src/assets/dtos/pagination.dto';
 
 
 @ApiTags('Orders - business')
@@ -25,12 +24,12 @@ export class BusinessController {
         status: 200, description: 'Returns the packed orders with the specified stores',
         type: orderListDto,
     })
-    async getOrdersByBusinessIds(@Query('storeIds') businessIds: string[],
+    async getOrdersByBusinessIds(@Query('storeIds') businessIds: number[],
         @Query('page', ParseIntPipe) page: number,
         @Query('pageSize', ParseIntPipe) pageSize: number,) {
 
         businessIds = Array.isArray(businessIds) ? businessIds : [businessIds];
-        const parsedBusinessIds = businessIds.map(id => parseInt(id, 10));
+        const parsedBusinessIds = businessIds.map(id => id);
 
         // Check if pagination details are provided
         if (page && pageSize) {
@@ -55,8 +54,8 @@ export class BusinessController {
         status: 200, description: 'Returns order details by order id',
         type: BusinessOrderDetailsDTO,
     })
-    async getOrderDetailsByOrderId(@Param('orderId') orderId: string) {
-        return this.businessService.getAllOrderDetailsByOrderId(orderId);
+    async getOrderDetailsByOrderId(@Param('orderId') orderId: number) {
+        return this.businessService.getOrderDetailsByOrderId(orderId);
     }
 
 }

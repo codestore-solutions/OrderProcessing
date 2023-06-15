@@ -32,7 +32,7 @@ export class OrderService {
     }
 
 
-    async addToOrderTimeline(orderId: string, orders: OrderDto[], status: string) {
+    async addToOrderTimeline(orderId: number, orders: OrderDto[], status: string) {
         try {
             const index = orders.findIndex(order => order.orderId === orderId);
             const { timestamp } = orders[index];
@@ -49,7 +49,7 @@ export class OrderService {
     }
 
 
-    async getOrders(Ids: string[]) {
+    async getOrders(Ids: number[]) {
         const orders = await this.orderRepository.findAll({
             where: {
                 id: {
@@ -60,7 +60,7 @@ export class OrderService {
         return orders
     }
 
-    async getOrderTimeline(orderId: string) {
+    async getOrderTimeline(orderId: number) {
         await this.orderStatusRepository.findAll({
             where: {
                 order_id: orderId

@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsArray, ArrayNotEmpty, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsArray, ArrayNotEmpty, ValidateNested, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OrderStatusEnum } from 'src/assets/constants';
@@ -10,17 +10,17 @@ export class OrderDto {
     @IsString()
     timestamp: string;
 
-    @ApiProperty({ description: 'Order ID', example: '122337' })
-    @IsString()
-    orderId: string;
+    @ApiProperty({ description: 'Order ID', example: 1 })
+    @IsNumber()
+    orderId: number;
 }
 
 
 class CreateOrderStatusDto {
-    @ApiPropertyOptional({ description: 'Agent ID', example: '123' })
+    @ApiPropertyOptional({ description: 'Agent ID', example: 1 })
     @IsOptional()
-    @IsString()
-    agentId?: string;
+    @IsNumber()
+    agentId?: number;
 
     @ApiProperty({ enum: OrderStatusEnum, example: OrderStatusEnum.Pending })
     @IsString()
