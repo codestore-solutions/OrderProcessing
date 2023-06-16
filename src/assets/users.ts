@@ -16,9 +16,8 @@ export const users: UserDto[] = [
     "email": "aman.shah@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "business-admin",
+    "role": "business_admin",
     "isActive": true
-
   },
   {
     "id": 3,
@@ -68,7 +67,7 @@ export const users: UserDto[] = [
     "email": "omkar.sharma@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "delivery-agent",
+    "role": "delivery_agent",
     "isActive": true,
     "address": "Noida",
     "businessAdminId": 2
@@ -80,7 +79,7 @@ export const users: UserDto[] = [
     "email": "niranjan.koti@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "delivery-agent",
+    "role": "delivery_agent",
     "isActive": true,
     "address": "Noida",
     "businessAdminId": 2
@@ -92,7 +91,7 @@ export const users: UserDto[] = [
     "email": "akhilesh.kumar@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "delivery-agent",
+    "role": "delivery_agent",
     "isActive": true,
     "address": "Noida",
     "businessAdminId": 2
