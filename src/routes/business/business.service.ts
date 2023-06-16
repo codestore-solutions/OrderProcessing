@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { constants } from '../../assets/constants';
+import { OrderStatusEnum, constants, orderStatus } from '../../assets/constants';
 import { Order } from 'src/database/entities/order.entity';
 import { Op } from 'sequelize';
 
@@ -29,7 +29,8 @@ export class BusinessService {
         const orders = await this.orderRepository.findAll({
             where: {
                 storeId: {
-                    [Op.in]: parsedStoreIds
+                    [Op.in]: parsedStoreIds,
+                    orderStatus: OrderStatusEnum.PackingCompleted
                 },
             },
             attributes: ['createdAt', 'id',
@@ -50,7 +51,8 @@ export class BusinessService {
         const orders = await this.orderRepository.findAll({
             where: {
                 storeId: {
-                    [Op.in]: parsedStoreIds
+                    [Op.in]: parsedStoreIds,
+                    orderStatus: OrderStatusEnum.PackingCompleted
                 },
             },
             attributes: ['createdAt', 'id',
