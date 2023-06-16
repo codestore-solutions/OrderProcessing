@@ -23,6 +23,7 @@ export class BusinessService {
                 storeId: {
                     [Op.in]: parsedStoreIds
                 },
+                orderStatus: OrderStatusEnum.PackingCompleted
             },
         });
 
@@ -30,8 +31,8 @@ export class BusinessService {
             where: {
                 storeId: {
                     [Op.in]: parsedStoreIds,
-                    orderStatus: OrderStatusEnum.PackingCompleted
                 },
+                orderStatus: OrderStatusEnum.PackingCompleted
             },
             attributes: ['createdAt', 'id',
                 'paymentMode', 'shippingAddressId', 'storeId'],
@@ -52,8 +53,8 @@ export class BusinessService {
             where: {
                 storeId: {
                     [Op.in]: parsedStoreIds,
-                    orderStatus: OrderStatusEnum.PackingCompleted
                 },
+                orderStatus: OrderStatusEnum.PackingCompleted
             },
             attributes: ['createdAt', 'id',
                 'paymentMode', 'shippingAddressId', 'storeId'],

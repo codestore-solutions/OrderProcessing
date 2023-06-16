@@ -18,13 +18,25 @@ export class OrderService {
     ) { }
 
 
-    async updateStatus(orders: Order[], ordersDto: OrderDto[], status: string) {
+    async updateStatus(orders: Order[], status: string, 
+        timestamp:string, agentId?: number) {
         try {
-            for (const order of orders) {
-                order.orderStatus = status;
-                await this.addToOrderTimeline(order.id, ordersDto, status)
-                await order.save();
+
+            if(agentId){
+                for (const order of orders) {
+                    order.orderStatus = status;
+                    order.deliveryId = agentId;
+                    await this.addToOrderTimeline(order.id, status, timestamp)
+                    await order.save();
+                }
+            } else {
+                for (const order of orders) {
+                    order.orderStatus = status;
+                    await this.addToOrderTimeline(order.id, status, timestamp)
+                    await order.save();
+                }
             }
+
         } catch (err) {
             console.log(err)
             throw err;
@@ -32,11 +44,9 @@ export class OrderService {
     }
 
 
-    async addToOrderTimeline(orderId: number, orders: OrderDto[], status: string) {
+    async addToOrderTimeline(orderId: number,
+        status: string, timestamp: string) {
         try {
-            const index = orders.findIndex(order => order.orderId === orderId);
-            const { timestamp } = orders[index];
-            console.log(status, index, timestamp)
             await this.orderStatusRepository.create({
                 timestamp,
                 order_id: orderId, event_type: status
@@ -45,7 +55,6 @@ export class OrderService {
             console.log(err)
             throw err;
         }
-
     }
 
 
@@ -73,8 +82,10 @@ export class OrderService {
 
     async updateOrderStatus(orderStatusDto: CreateOrderStatusDto, user: any) {
         const role = user.role;
-        const orderIds = orderStatusDto.orders.map((item) => item.orderId)
+        const orderIds = [ ...orderStatusDto.orders ]
         const orders = await this.getOrders(orderIds)
+
+        const { status, timestamp } = orderStatusDto;
 
         //validate role - only business admin can assign order
         if (orders.length === 0) {
@@ -91,6 +102,7 @@ export class OrderService {
             }
             return true;
         }
+        
 
         //assigning the delivery agent to order/orders
         if (orderStatusDto.status === OrderStatusEnum.AgentAssigned) {
@@ -125,18 +137,9 @@ export class OrderService {
                 }, HttpStatus.NOT_FOUND);
             }
 
-            async function assignOrders() {
-                for (const order of orders) {
-                    order.orderStatus = orderStatusDto.status;
-                    order.deliveryId = orderStatusDto.agentId;
-                    this.addToOrderTimeline(order, orderStatusDto.orders)
-                    await order.save();
-                }
-            }
-
             //Assign and update order status after all validation
             //sends a notification to delivery agent
-            await assignOrders();
+            await this.updateStatus(orders, status, timestamp, orderStatusDto.agentId)
             return updateStatusSuccess(orderStatusDto.status);
         }
 
@@ -174,19 +177,11 @@ export class OrderService {
                 }, HttpStatus.NOT_FOUND);
             }
 
-            async function reAssignOrders() {
-                for (const order of orders) {
-                    order.orderStatus = orderStatusDto.status;
-                    order.deliveryId = orderStatusDto.agentId;
-                    this.addToOrderTimeline(order)
-                    await order.save();
-                }
-            }
-
             //Assign and update order status after all validation
             //sends a notification to both previous and current delivery agent
             //----------
-            await reAssignOrders();
+            await this.updateStatus(orders, status, timestamp, orderStatusDto.agentId)
+
             return updateStatusSuccess(orderStatusDto.status);
         }
 
@@ -232,7 +227,7 @@ export class OrderService {
             //update order status after all validation and 
             //sends a notification to customer when item is picked
             //----------
-            await this.updateStatus(orders, orderStatusDto.orders, orderStatusDto.status)
+            await this.updateStatus(orders, status, timestamp)
             return updateStatusSuccess(orderStatusDto.status);
         }
 
@@ -267,7 +262,7 @@ export class OrderService {
             //update order status after all validation and 
             //sends a notification to seller and customer
             //---------
-            await this.updateStatus(orders, orderStatusDto.orders, orderStatusDto.status)
+            await this.updateStatus(orders, status, timestamp)
             return updateStatusSuccess(orderStatusDto.status);
         }
 
@@ -298,7 +293,7 @@ export class OrderService {
             //update orders status after all validation and 
             //sends a notification to seller and customer regarding delivered orders
             //---------
-            await this.updateStatus(orders, orderStatusDto.orders, orderStatusDto.status)
+            await this.updateStatus(orders, status, timestamp)
             return updateStatusSuccess(orderStatusDto.status);
         }
 
@@ -329,7 +324,7 @@ export class OrderService {
             //update orders status after all validation and 
             //sends a notification to seller and customer
             //---------
-            await this.updateStatus(orders, orderStatusDto.orders, orderStatusDto.status)
+            await this.updateStatus(orders, status, timestamp)
             return updateStatusSuccess(orderStatusDto.status);
         }
 
@@ -359,7 +354,7 @@ export class OrderService {
             //update orders status after all validation and 
             //sends a notification to customer
             //---------
-            await this.updateStatus(orders, orderStatusDto.orders, orderStatusDto.status)
+            await this.updateStatus(orders, status, timestamp)
             return updateStatusSuccess(orderStatusDto.status);
         }
 
@@ -390,7 +385,7 @@ export class OrderService {
             //update orders status after all validation and 
             //sends a notification to customer and busines admin
             //---------
-            await this.updateStatus(orders, orderStatusDto.orders, orderStatusDto.status)
+            await this.updateStatus(orders, status, timestamp)
             return updateStatusSuccess(orderStatusDto.status);
         }
     }

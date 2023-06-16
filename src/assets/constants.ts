@@ -26,7 +26,7 @@ export const constants = {
 };
 
 export const updateStatusSuccess = (status: string) => 
-    `order status updated successfully to ${status}`
+    `order status updated successfully`
 
 
 export const tableNameConstants = {

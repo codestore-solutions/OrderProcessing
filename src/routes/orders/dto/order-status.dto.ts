@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsArray, ArrayNotEmpty, ValidateNested, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsArray, IsNumber, IsISO8601 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OrderStatusEnum } from 'src/assets/constants';
@@ -6,9 +6,6 @@ import { OrderStatusEnum } from 'src/assets/constants';
 
 
 export class OrderDto {
-    @ApiProperty({ description: 'Timestamp', example: '01918' })
-    @IsString()
-    timestamp: string;
 
     @ApiProperty({ description: 'Order ID', example: 1 })
     @IsNumber()
@@ -26,11 +23,14 @@ class CreateOrderStatusDto {
     @IsString()
     status: OrderStatusEnum;
 
-    @ApiProperty({ type: [OrderDto] })
+    @ApiProperty({ description: 'Timestamp', example: '2020-07-10 15:00:00.000' })
+    @IsString()
+    @IsISO8601({ strict: true })
+    timestamp: string;
+
+    @ApiProperty({ description: 'list of order ids', example: [1,2] })
     @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => OrderDto)
-    orders: OrderDto[];
+    orders: number[];
 }
 
 
@@ -38,9 +38,6 @@ export class OrderStatusTimelineDTO {
 
   @ApiProperty({ example: 'pending', description: 'Order status event type' })
   event_type: string;
-
-  @ApiProperty({ example: '2023-06-12T10:30:00.000Z', description: 'Timestamp of the order status event' })
-  timestamp: Date;
 }
 
 
