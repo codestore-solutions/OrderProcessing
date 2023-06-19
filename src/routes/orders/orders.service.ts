@@ -19,15 +19,20 @@ export class OrderService {
 
 
     async updateStatus(orders: Order[], status: string, 
-        timestamp:string, agentId?: number) {
+        timestamp:string, agentId?: number[], orderIds?: number[]) {
         try {
 
             if(agentId){
                 for (const order of orders) {
-                    order.orderStatus = status;
-                    order.deliveryId = agentId;
-                    await this.addToOrderTimeline(order.id, status, timestamp)
-                    await order.save();
+
+                    const index = orderIds.findIndex(id => id === order.id)
+                    if(index !== -1){
+                        order.orderStatus = status;
+                        order.deliveryId = agentId[index];
+                        await this.addToOrderTimeline(order.id, status, timestamp)
+                        await order.save();
+                    }
+
                 }
             } else {
                 for (const order of orders) {
@@ -139,7 +144,8 @@ export class OrderService {
 
             //Assign and update order status after all validation
             //sends a notification to delivery agent
-            await this.updateStatus(orders, status, timestamp, orderStatusDto.agentId)
+            await this.updateStatus(orders, status, timestamp, 
+                orderStatusDto.agentId, orderStatusDto.orders)
             return updateStatusSuccess(orderStatusDto.status);
         }
 
@@ -180,7 +186,8 @@ export class OrderService {
             //Assign and update order status after all validation
             //sends a notification to both previous and current delivery agent
             //----------
-            await this.updateStatus(orders, status, timestamp, orderStatusDto.agentId)
+            await this.updateStatus(orders, status, timestamp, 
+                orderStatusDto.agentId, orderStatusDto.orders)
 
             return updateStatusSuccess(orderStatusDto.status);
         }

@@ -14,12 +14,12 @@ export class OrderDto {
 
 
 class CreateOrderStatusDto {
-    @ApiPropertyOptional({ description: 'Agent ID', example: 1 })
+    @ApiPropertyOptional({ description: 'Agent ID', example: [ 1, 2 ] })
     @IsOptional()
-    @IsNumber()
-    agentId?: number;
+    @IsArray()
+    agentId?: number[];
 
-    @ApiProperty({ enum: OrderStatusEnum, example: OrderStatusEnum.Pending })
+    @ApiProperty({ enum: OrderStatusEnum, example: OrderStatusEnum.AgentAssigned })
     @IsString()
     status: OrderStatusEnum;
 
