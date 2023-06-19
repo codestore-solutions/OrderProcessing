@@ -22,7 +22,7 @@ import { OrdersModule } from './routes/orders/orders.module';
     DatabaseModule,
     SellerModule,
     CustomerModule,
-    DeliveryModule,
+    // DeliveryModule,
     OrdersModule,
     GatewayModule,
     UserModule,

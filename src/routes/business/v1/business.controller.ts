@@ -1,11 +1,14 @@
-import { Controller, Get, Param, ParseIntPipe, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Param, ParseArrayPipe, ParseIntPipe, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
     ApiBearerAuth,
-    ApiOperation, ApiResponse, ApiTags
+    ApiOperation, ApiQuery, ApiResponse, ApiTags
 } from '@nestjs/swagger';
-import { BusinessOrderDetailsDTO, orderListDto,  } from '../dto/business-order-dto';
+import { BusinessOrderDetailsDTO, GetOrdersQuery, orderListDto, } from '../dto/business-order-dto';
 import { BusinessService } from '../business.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { OrderStatusEnum } from 'src/assets/constants';
+import { ErrorMessages } from 'src/assets/errorMessages';
+
 
 
 @ApiTags('Orders - business')
@@ -15,29 +18,38 @@ export class BusinessController {
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    @Get('getOrdersByStoresId/')
+    @Get('getOrdersByStoresIdAndStatus')
     @ApiOperation({
-        summary: 'Provides orders based on stores Id',
-        description: 'Provides a list of orders associated with a store using stores id'
+        summary: 'Provides orders based on stores Ids and status',
+        description: 'Provides a list of orders associated with a store using stores id and status'
     })
     @ApiResponse({
-        status: 200, description: 'Returns the packed orders with the specified stores',
+        status: 200, description: 'Returns the orders with the specified stores and status',
         type: orderListDto,
     })
-    async getOrdersByBusinessIds(@Query('storeIds') businessIds: number[],
-        @Query('page', ParseIntPipe) page: number,
-        @Query('pageSize', ParseIntPipe) pageSize: number,) {
+    @UsePipes(new ValidationPipe({ transform: true }))
+    @ApiQuery({ name: 'orderStatus', description: 'Order status', enum: OrderStatusEnum, })
+    async getOrdersByBusinessIds(
+        @Query(ValidationPipe) query: GetOrdersQuery) {
+            console.log(query)
+        const { storeIds, page, pageSize, orderStatus } = query;
+        const stores = Array.isArray(storeIds) ? storeIds : [storeIds];
 
-        businessIds = Array.isArray(businessIds) ? businessIds : [businessIds];
-        const parsedBusinessIds = businessIds.map(id => id);
-
+        if ((pageSize && !page) || (!pageSize && page)) {
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
+                code: ErrorMessages.INVALID_PAGINATON_INPUT.code,
+            }, HttpStatus.BAD_REQUEST);
+        }
         // Check if pagination details are provided
         if (page && pageSize) {
-            return this.businessService.getAllOrdersByStoreIdsWithPagination(parsedBusinessIds, page, pageSize);
+            return this.businessService.getAllOrdersByStoreIdsWithPagination(stores,
+                page, pageSize, orderStatus);
         } else {
             // Retrieve all data
             // No pagination details provided, return all results
-            return this.businessService.getAllOrdersByStoreIds(parsedBusinessIds);
+            return this.businessService.getAllOrdersByStoreIds(stores, orderStatus);
 
         }
     }

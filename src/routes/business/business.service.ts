@@ -14,7 +14,7 @@ export class BusinessService {
 
 
     async getAllOrdersByStoreIdsWithPagination(parsedStoreIds: number[],
-        page: number, pageSize: number) {
+        page: number, pageSize: number, orderStatus: string) {
 
         const offset = (page - 1) * pageSize;
         const limit = pageSize;
@@ -23,7 +23,7 @@ export class BusinessService {
                 storeId: {
                     [Op.in]: parsedStoreIds
                 },
-                orderStatus: OrderStatusEnum.PackingCompleted
+                orderStatus: orderStatus
             },
         });
 
@@ -32,7 +32,7 @@ export class BusinessService {
                 storeId: {
                     [Op.in]: parsedStoreIds,
                 },
-                orderStatus: OrderStatusEnum.PackingCompleted
+                orderStatus: orderStatus
             },
             attributes: ['createdAt', 'id',
                 'paymentMode', 'shippingAddressId', 'storeId'],
@@ -47,14 +47,14 @@ export class BusinessService {
     }
 
 
-    async getAllOrdersByStoreIds(parsedStoreIds: number[]) {
+    async getAllOrdersByStoreIds(parsedStoreIds: number[],  orderStatus:string) {
 
         const orders = await this.orderRepository.findAll({
             where: {
                 storeId: {
                     [Op.in]: parsedStoreIds,
                 },
-                orderStatus: OrderStatusEnum.PackingCompleted
+                orderStatus: orderStatus
             },
             attributes: ['createdAt', 'id',
                 'paymentMode', 'shippingAddressId', 'storeId'],

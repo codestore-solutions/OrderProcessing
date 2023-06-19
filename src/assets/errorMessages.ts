@@ -9,6 +9,16 @@ export const ErrorMessages = {
         code: 'INVALID_PACKING_UPDATE',
         message: 'Only new order can be packed'
     },
+
+    INVALID_PAGINATON_INPUT: {
+        code: 'INVALID_PAGINATON_INPUT',
+        message: 'Both pageSize and pageNumber must be provided together'
+    },
+
+    INVALID_VALUE: {
+        code: 'INVALID_VALUE',
+        message: 'Values are not valid, retry'
+    },
     
     INVALID_NOT_ACCEPTED_CUSTOMER_UPDATE: {
         code: 'INVALID_NOT_ACCEPTED_CUSTOMER_UPDATE',
