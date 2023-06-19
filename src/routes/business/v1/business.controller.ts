@@ -28,7 +28,7 @@ export class BusinessController {
         type: orderListDto,
     })
     @UsePipes(new ValidationPipe({ transform: true }))
-    @ApiQuery({ name: 'orderStatus', description: 'Order status', enum: OrderStatusEnum, })
+    @ApiQuery({ name: 'orderStatus', description: 'Order status', enum: OrderStatusEnum, isArray: true})
     async getOrdersByBusinessIds(
         @Query(ValidationPipe) query: GetOrdersQuery) {
             console.log(query)

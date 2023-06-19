@@ -61,6 +61,9 @@ export class BusinessOrderDTO {
 
   @ApiProperty({ example: 4, description: 'The ID of the store' })
   storeId: number;
+
+  @ApiProperty({ example: 1, description: 'The ID of the delivery agent' })
+  deliveryId: number
 }
 
 
@@ -79,8 +82,8 @@ export class GetOrdersQuery {
   @ApiProperty({ type: [Number], })
   storeIds: number[];
 
-  @IsEnum(OrderStatusEnum)
-  orderStatus: string;
+  @IsArray()
+  orderStatus: string[];
 
   @Transform(({ value }) => transformToInt(value))
   @ApiPropertyOptional()
