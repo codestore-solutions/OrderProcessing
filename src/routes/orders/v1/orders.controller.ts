@@ -6,7 +6,7 @@ import { OrderService } from '../orders.service';
 
 
 @ApiTags('Orders')
-@Controller('/order')
+@Controller('v1/order')
 export class OrderController {
     constructor(
         private readonly orderService: OrderService,
