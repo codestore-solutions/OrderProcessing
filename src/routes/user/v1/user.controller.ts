@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { UserService } from '../user.service';
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from '../dto/user.dto';
 import { StoreDto } from 'src/assets/dtos/store.dto';
 
@@ -26,6 +26,7 @@ export class UserController {
         return this.userService.getUserById(id);
     }
 
+
     @Get('getUsersByRole')
     @ApiOperation({ summary: 'Get users by role' })
     @ApiQuery({ name: 'role', description: 'User role' })
@@ -34,6 +35,8 @@ export class UserController {
         return this.userService.getUsersByRole(role);
     }
 
+
+    @ApiExcludeEndpoint()
     @Get('listAllStoresOfSeller')
     @ApiOperation({ summary: 'Get all stores' })
     @ApiResponse({ status: 200, description: 'List of stores', type: StoreDto, isArray: true })
@@ -42,6 +45,7 @@ export class UserController {
     }
 
 
+    @ApiExcludeEndpoint()
     @Get('getStoreDetailsById/:id')
     @ApiOperation({ summary: 'Get store by store id or seller id' })
     @ApiParam({ name: 'id', description: 'Store Id / Selleer Id' })

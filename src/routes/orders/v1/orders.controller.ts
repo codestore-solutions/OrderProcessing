@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@ne
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { CreateOrderStatusDto, OrderStatusTimelineDTO } from '../dto/order-status.dto';
 import { OrderService } from '../orders.service';
+import { OrderItemDTO } from 'src/assets/dtos/orderItem.dto';
 
 
 @ApiTags('Orders')
@@ -11,6 +12,39 @@ export class OrderController {
     constructor(
         private readonly orderService: OrderService,
     ) { }
+    
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get('/getOrderItemsByOrderId/:orderId')
+    @ApiOperation({
+        summary: 'Provides list of products ordered based on order id',
+        description: 'Provides a list of products ordered by order id'
+    })
+    @ApiResponse({
+        status: 200, description: 'Returns the list of products ordered with the order id',
+        type: OrderItemDTO, isArray: true
+    })
+    async getOrderItemsByOrderId(@Param('orderId') orderId: number) {
+        return this.orderService.getAllOrderItemsByOrderId(orderId);
+    }
+
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get('/getOrderedItemDetails/:orderItemId')
+    @ApiOperation({
+        summary: 'Provides ordered product details based on ordered item id',
+        description: 'Provides details about the product order by ordered item id'
+    })
+    @ApiResponse({
+        status: 200, description: 'Returns the ordered product details with the specified ordered product id',
+        type: OrderItemDTO,
+    })
+    async getOrderItemDetailsByOrderId(@Param('orderItemId') orderItemId: number) {
+        return this.orderService.getOrderItemDetailByOrderId(orderItemId);
+    }
+
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
@@ -35,7 +69,7 @@ export class OrderController {
     })
     @ApiParam({ name: 'orderId', description: 'Order ID', example: 2 })
     @Get('/getOrderTimeline/:orderId')
-    async getOrdersByStatus(@Param('orderId') orderId: number,) {
+    async getOrderTimeline(@Param('orderId') orderId: number,) {
         return this.orderService.getOrderTimeline(orderId);
     }
 }

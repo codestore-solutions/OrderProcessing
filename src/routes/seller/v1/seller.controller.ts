@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Put, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Put, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import {
     ApiBearerAuth,
+    ApiExcludeEndpoint,
     ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags
 } from '@nestjs/swagger';
 import { SellerService } from '../seller.service';
@@ -9,6 +10,9 @@ import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { OrderDTO } from 'src/assets/dtos/order.dto';
 import { OrderItemDTO } from 'src/assets/dtos/orderItem.dto';
 import { sellerUpdateOrderStatusDto } from '../dto/update-order-details.dto';
+import { PaginationDto } from 'src/assets/dtos/pagination.dto';
+import { ErrorMessages } from 'src/assets/errorMessages';
+import { SellerOrderListDto } from '../dto/seller-order.dto';
 
 
 @ApiTags('Orders - seller')
@@ -25,11 +29,31 @@ export class SellerController {
     })
     @ApiResponse({
         status: 200, description: 'Returns the orders with the specified seller',
-        type: OrderDTO, isArray: true
+        type: SellerOrderListDto, isArray: true
     })
-    async getOrdersByStoreId(@Param('sellerId') sellerId: number) {
+    async getOrdersByStoreId(
+        @Param('sellerId') sellerId: number,
+        @Query(ValidationPipe) query: PaginationDto) {
+        const { pageSize, page } = query;
+
+        if ((pageSize && !page) || (!pageSize && page)) {
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
+                code: ErrorMessages.INVALID_PAGINATON_INPUT.code,
+            }, HttpStatus.BAD_REQUEST);
+        }
+
         const parsedSellerId = sellerId;
-        return this.sellerService.getAllOrdersByStoreId(parsedSellerId);
+        // Check if pagination details are provided
+        if (page && pageSize) {
+            return this.sellerService.getAllOrdersBySellerIdWithPagination(parsedSellerId,
+                page, pageSize);
+        } else {
+            // Retrieve all data
+            // No pagination details provided, return all results
+            return this.sellerService.getAllOrdersBySellerId(parsedSellerId);
+        }
     }
 
     @ApiBearerAuth()
@@ -49,6 +73,7 @@ export class SellerController {
 
 
     @ApiBearerAuth()
+    @ApiExcludeEndpoint()
     @UseGuards(JwtAuthGuard)
     @Get('/getOrderItemsByOrderId/:orderId')
     @ApiOperation({
@@ -65,6 +90,7 @@ export class SellerController {
 
 
     @ApiBearerAuth()
+    @ApiExcludeEndpoint()
     @UseGuards(JwtAuthGuard)
     @Get('/getOrderedItemDetails/:orderItemId')
     @ApiOperation({

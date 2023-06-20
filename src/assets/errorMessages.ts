@@ -17,7 +17,12 @@ export const ErrorMessages = {
 
     INVALID_VALUE: {
         code: 'INVALID_VALUE',
-        message: 'Values are not valid, retry'
+        message: 'value is not valid, retry'
+    },
+
+    INVALID_NEGATIVE_VALUE: {
+        code: "INVALID_NEGATIVE_VALUE",
+        message: "negative value is not allowed"
     },
     
     INVALID_NOT_ACCEPTED_CUSTOMER_UPDATE: {

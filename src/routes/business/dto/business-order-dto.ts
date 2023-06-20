@@ -2,8 +2,8 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsOptional, Min, IsInt, IsArray, IsPositive } from 'class-validator';
-import { OrderStatusEnum } from 'src/assets/constants';
 import { ErrorMessages } from 'src/assets/errorMessages';
+import { transformPaginationValueToInt } from 'src/utils';
 
 
 export class BusinessOrderDetailsDTO {
@@ -53,7 +53,7 @@ export class BusinessOrderDTO {
   @ApiProperty({ example: 1, description: 'The ID of the order' })
   id: number;
 
-  @ApiProperty({ example: 'credit Card', description: 'The payment mode used by the store' })
+  @ApiProperty({ example: 'credit Card', description: 'The payment mode used by the customer' })
   paymentMode: string;
 
   @ApiProperty({ example: 1, description: 'The ID of the shipping address' })
@@ -85,13 +85,13 @@ export class GetOrdersQuery {
   @IsArray()
   orderStatus: string[];
 
-  @Transform(({ value }) => transformToInt(value))
+  @Transform(({ value }) => transformPaginationValueToInt(value, 'page'))
   @ApiPropertyOptional()
   @IsOptional()
   @ApiProperty({ type: Number })
   page?: number;
 
-  @Transform(({ value }) => transformToInt(value))
+  @Transform(({ value }) => transformPaginationValueToInt(value, 'pagesize'))
   @ApiPropertyOptional()
   @IsOptional()
   @ApiProperty({ type: Number, })
@@ -112,21 +112,4 @@ function transformId(value: any): number[] {
     parsedValues.push(parsedValue)
   }
   return parsedValues;
-}
-
-
-function transformToInt(value: any): number {
-  const parsedValue = parseInt(value, 10);
-  if (isNaN(parsedValue) || parsedValue <= 0) {
-    throw new HttpException(
-      {
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: ErrorMessages.INVALID_VALUE.message,
-        code: ErrorMessages.INVALID_VALUE.code,
-      },
-      HttpStatus.BAD_REQUEST,
-    );
-  }
-  console.log(typeof parsedValue)
-  return parsedValue;
 }

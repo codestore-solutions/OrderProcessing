@@ -13,6 +13,7 @@ import moment from 'moment';
 import { OrderItem } from 'src/database/entities/ordered_product';
 import { shippingAddresses } from 'src/assets/address';
 import { OrderDBDto } from 'src/assets/dtos/order.dto';
+import { Op } from 'sequelize';
 
 
 @Injectable()
@@ -161,6 +162,115 @@ export class CustomerService {
             }
         }
 
+    }
+
+    async getAllOrdersByCustomerIdWithPagination(parsedId: number,
+        page: number, pageSize: number) {
+
+        const offset = (page - 1) * pageSize;
+        const limit = pageSize;
+        const orders_count = await this.orderRepository.count({
+            where: {
+                customerId: parsedId
+            },
+        });
+
+        const orders = await this.orderRepository.findAll({
+            where: {
+                customerId: parsedId
+            },
+            attributes: ['createdAt', 'id',
+                'paymentMode', 'shippingAddressId', 'storeId', 'deliveryId'],
+            limit,
+            offset,
+        });
+
+        return {
+            total: orders_count,
+            data: orders
+        }
+    }
+
+
+    async getAllOrdersByCustomerId(parsedId: number) {
+
+        const orders = await this.orderRepository.findAll({
+            where: {
+                customerId: parsedId
+            },
+            attributes: ['createdAt', 'id',
+                'paymentMode', 'shippingAddressId', 'storeId', 'deliveryId'],
+        });
+
+        return {
+            total: orders.length,
+            data: orders
+        }
+    }
+
+
+    async getOrderDetailsByOrderId(orderId: number) {
+        const order = await this.orderRepository.findByPk(orderId, {
+            attributes: {
+                exclude: ['createdBy', 'updatedAt', 'orderInstanceId', 'deliveryMode']
+            },
+        });
+
+        return order
+    }
+
+
+    async getAllOrdersBasedOnStatusWithPagination(customerId: number,
+        page: number, pageSize: number, orderStatus: string[]) {
+
+        const offset = (page - 1) * pageSize;
+        const limit = pageSize;
+        const orders_count = await this.orderRepository.count({
+            where: {
+                customerId: customerId,
+                orderStatus: {
+                    [Op.in]: orderStatus
+                },
+            },
+        });
+
+        const orders = await this.orderRepository.findAll({
+            where: {
+                customerId: customerId,
+                orderStatus: {
+                    [Op.in]: orderStatus
+                },
+            },
+            attributes: ['createdAt', 'id',
+                'paymentMode', 'shippingAddressId', 'storeId', 'deliveryId'],
+            limit,
+            offset,
+        });
+
+        return {
+            total: orders_count,
+            data: orders
+        }
+    }
+
+
+    async getAllOrdersBasedOnStatus(customerId: number,  orderStatus:string[]) {
+
+        const orders = await this.orderRepository.findAll({
+            where: {
+                customerId: customerId,
+                orderStatus: {
+                    [Op.in]: orderStatus
+                },
+            },
+            attributes: ['createdAt', 'id',
+                'paymentMode', 'shippingAddressId', 'storeId', 'deliveryId'],
+        });
+
+        return {
+            total: orders.length,
+            data: orders
+        }
     }
 
 

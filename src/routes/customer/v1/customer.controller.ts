@@ -1,14 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Put, ValidationPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Put, ValidationPipe, UseGuards, UsePipes, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateOrderDto } from '../dto/create-order-details.dto';
 import { UpdateOrderStatusDto } from '../dto/update-order-details.dto';
 import { CustomerService } from '../customer.service';
-import { PaymentMode } from 'src/assets/constants';
+import { OrderStatusEnum, PaymentMode } from 'src/assets/constants';
 import { uuid } from 'uuidv4';
 import { NotificationGateway } from 'src/gateway/gateway.provider';
 import { NEW_ORDER } from 'src/gateway/notification.constant';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
+import { CustomerOrderDTO, CustomerOrderListDto } from '../dto/customer-order.dto';
+import { PaginationDto } from 'src/assets/dtos/pagination.dto';
+import { ErrorMessages } from 'src/assets/errorMessages';
 
 
 @ApiTags('Orders - customer')
@@ -69,8 +72,10 @@ export class CustomerController {
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    @ApiOperation({ summary: 'Creates an order',
-        description: 'Creates an order associated with given userId, and productId' })
+    @ApiOperation({
+        summary: 'Creates an order',
+        description: 'Creates an order associated with given userId, and productId'
+    })
     @ApiResponse({ status: 201, description: 'Orders created successfully' })
     @Post('createOrder')
     async createOrder(@Body() OrderBodyDto: CreateOrderDto) {
@@ -82,6 +87,99 @@ export class CustomerController {
         await this.customerService.createOrder(OrderBodyDto, instanceId);
 
         // this.notificationService.io.to(key).emit(NEW_ORDER, orderData);
+    }
+
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get('getOrdersByCustomerId/:customerId')
+    @ApiOperation({
+        summary: 'Provides orders based on customer id',
+        description: 'Provides a list of orders associated with a customer using customer id'
+    })
+    @ApiResponse({
+        status: 200, description: 'Returns the orders with the specified customer',
+        type: CustomerOrderListDto, isArray: true
+    })
+    @UsePipes(new ValidationPipe({ transform: true }))
+    async getOrdersByStoreId(
+        @Param('customerId') customerId: number,
+        @Query(ValidationPipe) query: PaginationDto) {
+
+        const { pageSize, page } = query;
+        if ((pageSize && !page) || (!pageSize && page)) {
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
+                code: ErrorMessages.INVALID_PAGINATON_INPUT.code,
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        // Check if pagination details are provided
+        if (page && pageSize) {
+            return this.customerService.getAllOrdersByCustomerIdWithPagination(customerId,
+                page, pageSize);
+        } else {
+            // Retrieve all data
+            // No pagination details provided, return all results
+            return this.customerService.getAllOrdersByCustomerId(customerId);
+        }
+    }
+
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get('/getOrderDetailsByOrderId/:orderId')
+    @ApiOperation({
+        summary: 'Provides order details based on order id',
+        description: 'Provides order details associated with a customer by order id'
+    })
+    @ApiResponse({
+        status: 200, description: 'Returns order details by order id',
+        type: CustomerOrderDTO,
+    })
+    async getOrderDetailsByOrderId(@Param('orderId') orderId: number) {
+        return this.customerService.getOrderDetailsByOrderId(orderId);
+    }
+
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Get('getOrdersByCustomerIdAndStatus')
+    @ApiOperation({
+        summary: 'Provides orders based on customer Id and status',
+        description: 'Provides a list of orders associated with a customer using customer id and status'
+    })
+    @ApiResponse({
+        status: 200, description: 'Returns the orders with the specified customer and status',
+        type: CustomerOrderListDto,
+    })
+    @UsePipes(new ValidationPipe({ transform: true }))
+    @ApiQuery({ name: 'orderStatus', description: 'Order status', 
+        enum: OrderStatusEnum, isArray: true})
+    async getOrdersByBusinessIds(
+        @Param('customerId') customerId: number,
+        @Query('orderStatus') orderStatus: string[],
+        @Query(ValidationPipe) query: PaginationDto) {
+        const { page, pageSize,} = query;
+
+        if ((pageSize && !page) || (!pageSize && page)) {
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
+                code: ErrorMessages.INVALID_PAGINATON_INPUT.code,
+            }, HttpStatus.BAD_REQUEST);
+        }
+        // Check if pagination details are provided
+        if (page && pageSize) {
+            return this.customerService.getAllOrdersBasedOnStatusWithPagination(customerId,
+                page, pageSize, orderStatus);
+        } else {
+            // Retrieve all data
+            // No pagination details provided, return all results
+            return this.customerService.getAllOrdersBasedOnStatus(customerId, orderStatus);
+
+        }
     }
 
     // @ApiBearerAuth()

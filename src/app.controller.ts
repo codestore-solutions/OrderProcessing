@@ -19,6 +19,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  @ApiExcludeEndpoint()
   @UseGuards(LocalAuthGuard)
   @ApiOperation({ description: 'When user login, an access token and user details will be provided in the response' })
   @ApiBody({ type: loginRequestBody })

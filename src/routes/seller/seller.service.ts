@@ -26,98 +26,50 @@ export class SellerService {
         @Inject(constants.ORDER_ITEM_REPOSITORY)
         private orderItemRepository: typeof OrderItem,
 
-        @Inject(constants.PRODUCT_REPOSITORY)
-        private productRepository: typeof Product,
-
-        @Inject(constants.ADDRESS_REPOSITORY)
-        private addressRepository: typeof Address,
-
-        @Inject(constants.PRODUCT_INVENTORY_REPOSITORY)
-        private inventoryRepository: typeof ProductInventory,
-
-        @Inject(constants.PRODUCT_SPECIFICATION_REPOSITORY)
-        private attributesRepository: typeof ProductAttributes,
-
-        @Inject(constants.PAYMENT_REPOSITORY)
-        private paymentRepository: typeof Payment,
     ) { }
 
+    async getAllOrdersBySellerIdWithPagination(parsedId: number,
+        page: number, pageSize: number) {
 
-    async checkProductAndInventory(orderDtos: OrderDto[]) {
-        let totalAmount = 0
-        for (const orderDto of orderDtos) {
-            // Retrieve the product from the database
-            const productId = orderDto.productId;
-            const product = await this.productRepository.findByPk(productId);
-            totalAmount += product.price;
-
-            // Check if the product exists
-            if (!product) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_NOT_FOUND);
-            }
-
-            const variant = await this.attributesRepository.findOne({ where: { productId } })
-
-            // Check if the product variant exists
-            if (!variant) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_VARIANT_NOT_AVAILABLE);
-            }
-
-            const productInventory = await this.inventoryRepository.findOne({ where: { productId } });
-
-            // Check if the product inventory exists
-            if (!productInventory) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
-            } else if (productInventory.quantity - productInventory.quantitySold < orderDto.quantity) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
-            }
-        }
-        return { totalAmount };
-    }
-
-
-    async checkShippingAddress(id: string) {
-        const address = await this.addressRepository.findByPk(id);
-        if (!address) {
-            throw new NotFoundException(ErrorMessages.ADDRESS_NOT_FOUND);
-        }
-    }
-
-    async verifyPayment(id: string, totalAmount: number) {
-
-        const payment = await this.paymentRepository.findByPk(id);
-
-        if (!payment) {
-            throw new NotFoundException(ErrorMessages.PAYMENT_NOT_DONE);
-        } else if (payment.amountPaid !== totalAmount) {
-            throw new NotFoundException(ErrorMessages.PAYMENT_IS_PARTIALLY_DONE);
-        }
-    }
-
-    async createOrder(payload: OrderBodyDto, cartId: string) {
-        const { orders, paymentId, paymentMode, userId, shippingAddressId } = payload;
-
-        for (const order of orders) {
-            await this.orderRepository.create({
-                userId,
-                storeId: order.storeId,
-                productId: order.productId,
-                quantity: order.quantity,
-                productAttributeId: order.specificationId,
-                cartId,
-                paymentId,
-                shippingAddressId,
-                status: 'pending',
-                paymentMode,
-            });
-        }
-    }
-
-
-    async getAllOrdersByStoreId(storeId: number) {
-        return this.orderRepository.findAll({
-            where: { storeId }
+        const offset = (page - 1) * pageSize;
+        const limit = pageSize;
+        const orders_count = await this.orderRepository.count({
+            where: {
+                storeId: parsedId
+            },
         });
+
+        const orders = await this.orderRepository.findAll({
+            where: {
+                storeId: parsedId
+            },
+            attributes: ['createdAt', 'id',
+                'paymentMode', 'shippingAddressId', 'customerId', 'deliveryId'],
+            limit,
+            offset,
+        });
+
+        return {
+            total: orders_count,
+            data: orders
+        }
+    }
+
+
+    async getAllOrdersBySellerId(parsedId: number) {
+
+        const orders = await this.orderRepository.findAll({
+            where: {
+                storeId: parsedId
+            },
+            attributes: ['createdAt', 'id',
+                'paymentMode', 'shippingAddressId', 'customerId', 'deliveryId'],
+        });
+
+        return {
+            total: orders.length,
+            data: orders
+        }
     }
 
 

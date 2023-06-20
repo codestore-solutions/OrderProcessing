@@ -10,7 +10,6 @@ import { OrderStatusEnum } from 'src/assets/constants';
 import { ErrorMessages } from 'src/assets/errorMessages';
 
 
-
 @ApiTags('Orders - business')
 @Controller('v1/business')
 export class BusinessController {
@@ -31,7 +30,6 @@ export class BusinessController {
     @ApiQuery({ name: 'orderStatus', description: 'Order status', enum: OrderStatusEnum, isArray: true})
     async getOrdersByBusinessIds(
         @Query(ValidationPipe) query: GetOrdersQuery) {
-            console.log(query)
         const { storeIds, page, pageSize, orderStatus } = query;
         const stores = Array.isArray(storeIds) ? storeIds : [storeIds];
 

@@ -5,6 +5,7 @@ import { Order } from 'src/database/entities/order.entity';
 import { OrderStatusEntity } from 'src/database/entities/order_status.entity';
 import { OrderDto, CreateOrderStatusDto } from './dto/order-status.dto';
 import { ErrorMessages } from 'src/assets/errorMessages';
+import { OrderItem } from 'src/database/entities/ordered_product';
 
 @Injectable()
 export class OrderService {
@@ -15,7 +16,22 @@ export class OrderService {
 
         @Inject(constants.ORDER_STATUS_REPOSITORY)
         private orderStatusRepository: typeof OrderStatusEntity,
+
+        @Inject(constants.ORDER_ITEM_REPOSITORY)
+        private orderItemRepository: typeof OrderItem,
     ) { }
+
+    
+    async getAllOrderItemsByOrderId(orderId: number) {
+        return this.orderItemRepository.findAll({
+            where: { orderId }
+        })
+    }
+
+    
+    async getOrderItemDetailByOrderId(orderId: number) {
+        return await this.orderItemRepository.findByPk(orderId);
+    }
 
 
     async updateStatus(orders: Order[], status: string, 
