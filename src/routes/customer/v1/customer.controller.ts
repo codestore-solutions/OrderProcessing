@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Put, ValidationPipe, UseGuards, UsePipes, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateOrderDto } from '../dto/create-order-details.dto';
+import { CreateOrderDto, CreateOrderResposeDto } from '../dto/create-order-details.dto';
 import { UpdateOrderStatusDto } from '../dto/update-order-details.dto';
 import { CustomerService } from '../customer.service';
 import { OrderStatusEnum, PaymentMode } from 'src/assets/constants';
@@ -76,15 +76,18 @@ export class CustomerController {
         summary: 'Creates an order',
         description: 'Creates an order associated with given userId, and productId'
     })
-    @ApiResponse({ status: 201, description: 'Orders created successfully' })
+    @ApiResponse({ type: CreateOrderResposeDto, status: 201, description: 'Orders created successfully' })
     @Post('createOrder')
     async createOrder(@Body() OrderBodyDto: CreateOrderDto) {
 
         //creating orders using instance Id
         const instanceId = uuid();
 
+        const response = await this.customerService.createPaymentIntent(10000, 'USD');
+        const { clientSecret } = response.data;
         //creates an order
         await this.customerService.createOrder(OrderBodyDto, instanceId);
+        return { clientSecret }
 
         // this.notificationService.io.to(key).emit(NEW_ORDER, orderData);
     }

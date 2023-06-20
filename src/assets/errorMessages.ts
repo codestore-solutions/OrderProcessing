@@ -35,6 +35,11 @@ export const ErrorMessages = {
         message: 'Order is not reached at destination'
     },
 
+    INTERNAL_SERVER_ERROR: {
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Internal server error"
+    },
+
     INVALID_REACHED_DESINATION_UPDATE: {
         code: 'INVALID_REACHED_DESINATION_UPDATE',
         message: 'Orders are not yet picked up'

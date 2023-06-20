@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { constants, deliveryModes, roles } from '../../assets/constants';
 import { CreateOrderDto, OrderItemDto } from './dto/create-order-details.dto';
 import { Product } from 'src/database/entities/product.entity';
@@ -14,6 +14,10 @@ import { OrderItem } from 'src/database/entities/ordered_product';
 import { shippingAddresses } from 'src/assets/address';
 import { OrderDBDto } from 'src/assets/dtos/order.dto';
 import { Op } from 'sequelize';
+import AxiosService from 'src/utils/axios/axiosService';
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from 'src/https/https.service';
+import { PaymentService } from 'src/assets/endpoints';
 
 
 @Injectable()
@@ -26,110 +30,28 @@ export class CustomerService {
         @Inject(constants.ORDER_ITEM_REPOSITORY)
         private orderItemRepository: typeof OrderItem,
 
-        @Inject(constants.PRODUCT_REPOSITORY)
-        private productRepository: typeof Product,
-
-        @Inject(constants.ADDRESS_REPOSITORY)
-        private addressRepository: typeof Address,
-
-        @Inject(constants.PRODUCT_INVENTORY_REPOSITORY)
-        private inventoryRepository: typeof ProductInventory,
-
-        @Inject(constants.PRODUCT_SPECIFICATION_REPOSITORY)
-        private attributesRepository: typeof ProductAttributes,
-
-        @Inject(constants.PAYMENT_REPOSITORY)
-        private paymentRepository: typeof Payment,
-
-        @Inject(constants.USER_REPOSITORY)
-        private userRepository: typeof User,
+        private configService: ConfigService,
     ) { }
 
 
-    async checkProductAndInventory(orderDtos) {
-        let totalAmount = 0
-        let data = {};
-        for (const orderDto of orderDtos) {
-            const storeId = orderDto.storeId
-            if (data.hasOwnProperty("storeId")) {
-                data[storeId]['count']++;
-            } else {
-                data[storeId] = {
-                    count: 1,
-                    paymentAmount: 0,
-                    discount: 0
-                }
-            }
+    async createPaymentIntent (amount: number, currency: string) {
+        try{
+            const baseUrl = this.configService.get("PAYMENT_SERVICE_URL")
+            const endPoint = PaymentService.create_intent
+            const completeUrl = AxiosService.urlBuilder(baseUrl, endPoint)
+            console.log('110000', completeUrl)
 
-            // Retrieve the product from the database
-            const productId = orderDto.productId;
-            const product = await this.productRepository.findByPk(productId);
-            totalAmount += (product.price - product.discount);
-            data[storeId]['paymentAmount'] += product.price;
-            data[storeId]['discount'] += product.discount;
-
-            // Check if the product exists
-            if (!product) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_NOT_FOUND);
-            }
-
-            const variant = await this.attributesRepository.findOne({ where: { productId } })
-
-            // Check if the product variant exists
-            if (!variant) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_VARIANT_NOT_AVAILABLE);
-            }
-
-            const productInventory = await this.inventoryRepository.findOne({ where: { productId } });
-
-            // Check if the product inventory exists
-            if (!productInventory) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
-            } else if (productInventory.quantity - productInventory.quantitySold < orderDto.quantity) {
-                throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
-            }
+            return HttpService.post(completeUrl, { amount, currency });
+        } catch(err) {
+            console.log(err, '0000')
+            throw new HttpException({
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: ErrorMessages.INTERNAL_SERVER_ERROR.message,
+                code: ErrorMessages.INTERNAL_SERVER_ERROR.code,
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return { totalAmount, data };
-    }
-
-
-    async checkAndGetShippingAddress(id: string) {
-        const address = await this.addressRepository.findByPk(id, {
-            attributes: { exclude: ['id', 'userId'] }
-        });
-        if (!address) {
-            throw new NotFoundException(ErrorMessages.ADDRESS_NOT_FOUND);
-        }
-        return address;
-    }
-
-
-    async verifyPayment(id: string, totalAmount: number) {
-        const payment = await this.paymentRepository.findByPk(id, {
-            attributes: {
-                exclude: ['id', 'storeId', 'customerId']
-            }
-        });
-
-        if (!payment) {
-            throw new NotFoundException(ErrorMessages.PAYMENT_NOT_DONE);
-        } else if (payment.amountPaid !== totalAmount) {
-            throw new NotFoundException(ErrorMessages.PAYMENT_IS_PARTIALLY_DONE);
-        }
-        delete payment.amountPaid;
-        return payment;
-    }
-
-
-    async getCustomerInfo(userId: string) {
-        const user = await this.userRepository.findByPk(userId, {
-            attributes: {
-                exclude: ['id']
-            }
-        });
-        return user;
-    }
-
+    };
+    
 
     async createOrder(payload: CreateOrderDto, instanceId: string) {
         const { ordersFromStore, paymentId, paymentMode,
@@ -271,7 +193,91 @@ export class CustomerService {
             total: orders.length,
             data: orders
         }
-    }
+    }   
+
+    // async checkProductAndInventory(orderDtos) {
+    //     let totalAmount = 0
+    //     let data = {};
+    //     for (const orderDto of orderDtos) {
+    //         const storeId = orderDto.storeId
+    //         if (data.hasOwnProperty("storeId")) {
+    //             data[storeId]['count']++;
+    //         } else {
+    //             data[storeId] = {
+    //                 count: 1,
+    //                 paymentAmount: 0,
+    //                 discount: 0
+    //             }
+    //         }
+
+    //         // Retrieve the product from the database
+    //         const productId = orderDto.productId;
+    //         const product = await this.productRepository.findByPk(productId);
+    //         totalAmount += (product.price - product.discount);
+    //         data[storeId]['paymentAmount'] += product.price;
+    //         data[storeId]['discount'] += product.discount;
+
+    //         // Check if the product exists
+    //         if (!product) {
+    //             throw new NotFoundException(ErrorMessages.PRODUCT_NOT_FOUND);
+    //         }
+
+    //         const variant = await this.attributesRepository.findOne({ where: { productId } })
+
+    //         // Check if the product variant exists
+    //         if (!variant) {
+    //             throw new NotFoundException(ErrorMessages.PRODUCT_VARIANT_NOT_AVAILABLE);
+    //         }
+
+    //         const productInventory = await this.inventoryRepository.findOne({ where: { productId } });
+
+    //         // Check if the product inventory exists
+    //         if (!productInventory) {
+    //             throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
+    //         } else if (productInventory.quantity - productInventory.quantitySold < orderDto.quantity) {
+    //             throw new NotFoundException(ErrorMessages.PRODUCT_OUT_OF_STOCK);
+    //         }
+    //     }
+    //     return { totalAmount, data };
+    // }
+
+
+    // async checkAndGetShippingAddress(id: string) {
+    //     const address = await this.addressRepository.findByPk(id, {
+    //         attributes: { exclude: ['id', 'userId'] }
+    //     });
+    //     if (!address) {
+    //         throw new NotFoundException(ErrorMessages.ADDRESS_NOT_FOUND);
+    //     }
+    //     return address;
+    // }
+
+
+    // async verifyPayment(id: string, totalAmount: number) {
+    //     const payment = await this.paymentRepository.findByPk(id, {
+    //         attributes: {
+    //             exclude: ['id', 'storeId', 'customerId']
+    //         }
+    //     });
+
+    //     if (!payment) {
+    //         throw new NotFoundException(ErrorMessages.PAYMENT_NOT_DONE);
+    //     } else if (payment.amountPaid !== totalAmount) {
+    //         throw new NotFoundException(ErrorMessages.PAYMENT_IS_PARTIALLY_DONE);
+    //     }
+    //     delete payment.amountPaid;
+    //     return payment;
+    // }
+
+
+    // async getCustomerInfo(userId: string) {
+    //     const user = await this.userRepository.findByPk(userId, {
+    //         attributes: {
+    //             exclude: ['id']
+    //         }
+    //     });
+    //     return user;
+    // }
 
 
     // async createOrder(payload: OrderBodyDto, instanceId: string) {

@@ -3,7 +3,10 @@ import { IsNotEmpty, IsArray, ValidateNested,
     IsNumber, Min, MinLength, IsOptional, } from 'class-validator';
 import { Type } from 'class-transformer';
 
-
+export class CreateOrderResposeDto {
+    @ApiProperty()
+    clientSecret: string
+} 
 //example
 const orderObject = {
     shippingAddressesId: 1,
