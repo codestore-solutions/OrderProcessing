@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Op } from 'sequelize';
-import { OrderStatusEnum, constants, orderStatus, roles, rolesEnum, updateStatusSuccess } from 'src/assets/constants';
+import { OrderStatusEnum, PaymentStatusEnum, constants, orderStatus, paymentStatus, roles, rolesEnum, updateStatusSuccess } from 'src/assets/constants';
 import { Order } from 'src/database/entities/order.entity';
 import { OrderStatusEntity } from 'src/database/entities/order_status.entity';
 import { OrderDto, CreateOrderStatusDto } from './dto/order-status.dto';
@@ -100,6 +100,16 @@ export class OrderService {
             },
         });
     }
+
+
+    async updateOrderPaymentStatus(paymentId: string){
+        await this.orderStatusRepository.update(
+            { paymentStatus: PaymentStatusEnum.CAPTURED, 
+                orderStatus: OrderStatusEnum.Pending }, 
+            { where: { paymentId } } 
+        );
+    }
+
 
     async updateOrderStatus(orderStatusDto: CreateOrderStatusDto, user: any) {
         const role = user.role;

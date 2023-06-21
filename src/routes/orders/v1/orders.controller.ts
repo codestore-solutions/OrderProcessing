@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { CreateOrderStatusDto, OrderStatusTimelineDTO } from '../dto/order-status.dto';
 import { OrderService } from '../orders.service';
 import { OrderItemDTO } from 'src/assets/dtos/orderItem.dto';
+import { PaymentStatusDtoOfOrder } from '../dto/payment.dto';
 
 
 @ApiTags('Orders')
@@ -71,5 +72,19 @@ export class OrderController {
     @Get('/getOrderTimeline/:orderId')
     async getOrderTimeline(@Param('orderId') orderId: number,) {
         return this.orderService.getOrderTimeline(orderId);
+    }
+
+
+    // @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Update the payment status of orders by payment id' })
+    @ApiResponse({ status: 200, description: 'Orders payment status updated successfully' })
+    @ApiResponse({ status: 400, description: 'Invalid status transition or order not found' })
+    @Post('/updatePaymentStatusOfOrders')
+    async updatePaymentStatusOfOrder(@Body(ValidationPipe) paymentStatusDtoOfOrder: 
+        PaymentStatusDtoOfOrder ) { 
+            console.log(paymentStatusDtoOfOrder, 'sssssssssss')
+        const { paymentId } = paymentStatusDtoOfOrder;
+        return this.orderService.updateOrderPaymentStatus(paymentId);
     }
 }

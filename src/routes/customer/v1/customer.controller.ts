@@ -12,6 +12,7 @@ import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { CustomerOrderDTO, CustomerOrderListDto } from '../dto/customer-order.dto';
 import { PaginationDto } from 'src/assets/dtos/pagination.dto';
 import { ErrorMessages } from 'src/assets/errorMessages';
+import { calculateTotalPrice } from 'src/utils';
 
 
 @ApiTags('Orders - customer')
@@ -82,11 +83,14 @@ export class CustomerController {
 
         //creating orders using instance Id
         const instanceId = uuid();
+        const { currency } = OrderBodyDto
 
-        const response = await this.customerService.createPaymentIntent(10000, 'USD');
-        const { clientSecret } = response.data;
+        const totalAmount = calculateTotalPrice(OrderBodyDto)
+        const response = await this.customerService.createPaymentIntent(totalAmount, currency);
+        const { clientSecret, paymentId } = response.data;
+        
         //creates an order
-        await this.customerService.createOrder(OrderBodyDto, instanceId);
+        await this.customerService.createOrder(OrderBodyDto, paymentId , instanceId);
         return { clientSecret }
 
         // this.notificationService.io.to(key).emit(NEW_ORDER, orderData);

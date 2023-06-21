@@ -61,7 +61,7 @@ export class OrderDBDto {
 
   shippingAddressId: number;
 
-  paymentId?: number;
+  paymentId?: string;
 
   paymentStatus?: string;
 

@@ -1,18 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsArray, ValidateNested, 
-    IsNumber, Min, MinLength, IsOptional, } from 'class-validator';
+    IsNumber, Min, MinLength, IsOptional, IsIn, } from 'class-validator';
 import { Type } from 'class-transformer';
+import { PaymentMode } from 'src/assets/constants';
+import { getCurrencies } from 'src/utils';
 
 export class CreateOrderResposeDto {
     @ApiProperty()
     clientSecret: string
 } 
+
 //example
 const orderObject = {
     shippingAddressesId: 1,
     customerId: 5,
-    paymentId: 1,
-    paymentMode: 'credit card',
+    paymentMode: PaymentMode.ONLINE,
     ordersFromStore: [
         {
             storeId: 3,
@@ -54,7 +56,7 @@ const orderObject = {
     ]
 }
 
-export class OrderItemDto {
+export class StoreOrderItemDto {
     @ApiProperty({ example: 1 })
     @IsNotEmpty()
     @IsNumber()
@@ -90,7 +92,7 @@ export class OrderItemDto {
     quantity: number;
 }
 
-class StoreDto {
+export class StoreDto {
     @ApiProperty({ example: 3 })
     @IsNotEmpty()
     @IsNumber()
@@ -102,13 +104,13 @@ class StoreDto {
     @Min(0)
     deliveryCost: number;
 
-    @ApiProperty({ type: [OrderItemDto], example: [{ productId: 1, variantId: 2, 
+    @ApiProperty({ type: [StoreOrderItemDto], example: [{ productId: 1, variantId: 2, 
         price: 999, discount: 10, quantity: 1, gst: 18 }] })
     @IsNotEmpty()
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => OrderItemDto)
-    orderItems: OrderItemDto[];
+    @Type(() => StoreOrderItemDto)
+    orderItems: StoreOrderItemDto[];
 }
 
 export class CreateOrderDto {
@@ -122,15 +124,14 @@ export class CreateOrderDto {
     @IsNumber()
     customerId: number;
 
-    @ApiProperty({ example: 1 })
+    @ApiProperty({ example: 'online' })
     @IsNotEmpty()
-    @IsNumber()
-    paymentId: number;
-
-    @ApiProperty({ example: 'credit card' })
-    @IsNotEmpty()
-    @MinLength(1)
     paymentMode: string;
+
+    @ApiProperty({ example: 'INR' })
+    @IsNotEmpty()
+    @IsIn(getCurrencies()) // Add validation for allowed currencies
+    currency: string;
 
     @ApiProperty({ type: [StoreDto], example: [...orderObject.ordersFromStore] })
     @IsNotEmpty()

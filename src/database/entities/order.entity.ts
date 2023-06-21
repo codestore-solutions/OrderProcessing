@@ -56,9 +56,9 @@ export class Order extends Model {
 
     @AllowNull(true)
     @Column({
-        type: DataType.INTEGER,
+        type: DataType.STRING,
     })
-    paymentId: number;
+    paymentId: string;
 
 
     @AllowNull(false)

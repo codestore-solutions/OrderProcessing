@@ -1,6 +1,6 @@
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { constants, deliveryModes, roles } from '../../assets/constants';
-import { CreateOrderDto, OrderItemDto } from './dto/create-order-details.dto';
+import { OrderStatusEnum, PaymentMode, constants, deliveryModes, roles } from '../../assets/constants';
+import { CreateOrderDto, StoreOrderItemDto } from './dto/create-order-details.dto';
 import { Product } from 'src/database/entities/product.entity';
 import { Address } from 'src/database/entities/address.entity';
 import { ProductInventory } from 'src/database/entities/product-inventory.entity';
@@ -53,11 +53,11 @@ export class CustomerService {
     };
     
 
-    async createOrder(payload: CreateOrderDto, instanceId: string) {
-        const { ordersFromStore, paymentId, paymentMode,
+    async createOrder(payload: CreateOrderDto, paymentId: string, instanceId: string) {
+        const { ordersFromStore, paymentMode,
             shippingAddressId, customerId } = payload;
 
-        const createOrder = async (order: OrderItemDto, orderId: number) => {
+        const createOrder = async (order: StoreOrderItemDto, orderId: number) => {
             try {
                 await this.orderItemRepository.create({ orderId, ...order });
             } catch (error) {
@@ -70,6 +70,8 @@ export class CustomerService {
                 paymentId,
                 orderInstanceId: instanceId,
                 paymentMode,
+                orderStatus: PaymentMode.CASH_ON_DELIVERY === paymentMode ? 
+                    OrderStatusEnum.Pending: OrderStatusEnum.NOT_PROCESSED,
                 shippingAddressId,
                 customerId,
                 paymentStatus: 'CAPTURED',

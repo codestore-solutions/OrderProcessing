@@ -25,7 +25,7 @@ export const constants = {
 
 };
 
-export const updateStatusSuccess = (status: string) => 
+export const updateStatusSuccess = (status: string) =>
     `order status updated successfully`
 
 
@@ -44,6 +44,14 @@ export const tableNameConstants = {
 
 };
 
+
+export enum PaymentStatusEnum {
+    PENDING = 'PENDING',
+    CAPTURED = 'CAPTURED',
+    REFUNDED = 'REFUNDED',
+    PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED',
+    FAILED = 'FAILED',
+}
 
 
 export const paymentStatus = [
@@ -78,13 +86,14 @@ export const deliveryModes = [
 ]
 
 
-export const orderStatus = ['pending', 'cancel', 'packing', 'packing_completed',
-    'agent_assigned', 'agent_re_assigned', 'reached_destination', 'picked_up', 
+export const orderStatus = [ 'not_processed', 'pending', 'cancel', 'packing', 'packing_completed',
+    'agent_assigned', 'agent_re_assigned', 'reached_destination', 'picked_up',
     'delivered', 'return', 'exchanged', 'not_accepted_by_customer',
     'payment_failed',]
 
 
 export enum OrderStatusEnum {
+    NOT_PROCESSED = 'not_processed',
     Pending = 'pending',
     Cancel = 'cancel',
     Packing = 'packing',
@@ -111,9 +120,7 @@ export const persona = ['superadmin', 'customer', 'store']
 
 export enum PaymentMode {
     CASH_ON_DELIVERY = 'cash on delivery',
-    CREDIT_CARD = 'credit card',
-    DEBIT_CARD = 'debit card',
-    PAYPAL = 'paypal',
+    ONLINE = 'online'
 }
 
 export const swaggerConstants = {
