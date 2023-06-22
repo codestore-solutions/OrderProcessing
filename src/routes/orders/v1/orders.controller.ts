@@ -14,7 +14,6 @@ export class OrderController {
     constructor(
         private readonly orderService: OrderService,
     ) { }
-    
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
@@ -90,6 +89,3 @@ export class OrderController {
         return this.orderService.updateOrderPaymentStatus(paymentId);
     }
 }
-
-
-
