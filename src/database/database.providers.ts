@@ -35,11 +35,11 @@ export const databaseProviders = [
             const sequelize = new Sequelize({
                 dialect: 'mysql',
                 dialectModule: mysql2,
-                host: env.DB_HOST??'order-processing-db-dev.mysql.database.azure.com',
+                host: env.DB_HOST,
                 port: 3306,
-                username: env.DB_USERNAME ?? 'admindev',
-                password: env.DB_PASSWORD ?? 'root@123',
-                database: env.DATABASE ??'order_processing_dev',
+                username: env.DB_USERNAME ,
+                password: env.DB_PASSWORD,
+                database: env.DATABASE,
                 logging: false,
             });
             sequelize.addModels([...MODELS]);
