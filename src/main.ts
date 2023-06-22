@@ -7,10 +7,15 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
 import { SocketIOAdapter } from './gateway/socket.io.adapter';
-import { VERSION_NEUTRAL, VersioningType } from '@nestjs/common';
+import { ResponseInterceptor } from './interceptors/response.interceptor';
+import { ErrorFilter } from './filters/error.filter';
+
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.useGlobalInterceptors(new ResponseInterceptor());
+  app.useGlobalFilters(new ErrorFilter());
+
   app.setGlobalPrefix(constants.APIS_PREFIX);
   app.enableCors();
   //Configuring Swagger

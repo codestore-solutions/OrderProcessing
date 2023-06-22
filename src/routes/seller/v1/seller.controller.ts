@@ -40,7 +40,7 @@ export class SellerController {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
-                code: ErrorMessages.INVALID_PAGINATON_INPUT.code,
+                success: false
             }, HttpStatus.BAD_REQUEST);
         }
 

@@ -11,7 +11,7 @@ export class JwtAuthGuard extends AuthGuard(jwtConstants.guardKey) {
             throw new HttpException({
                 statusCode: HttpStatus.UNAUTHORIZED,
                 message: ErrorMessages.SESSION_EXPIRED.message,
-				code: ErrorMessages.SESSION_EXPIRED.code,
+				success: false
               }, HttpStatus.UNAUTHORIZED);
         }
 

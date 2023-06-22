@@ -106,7 +106,7 @@ function transformId(value: any): number[] {
       throw new HttpException({
         statusCode: HttpStatus.BAD_REQUEST,
         message: ErrorMessages.INVALID_VALUE.message,
-        code: ErrorMessages.INVALID_VALUE.code,
+        success: false
       }, HttpStatus.BAD_REQUEST);
     }
     parsedValues.push(parsedValue)

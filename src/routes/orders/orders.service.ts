@@ -123,7 +123,7 @@ export class OrderService {
             throw new HttpException({
                 statusCode: HttpStatus.NOT_FOUND,
                 message: ErrorMessages.ORDER_NOT_FOUND.message,
-                code: ErrorMessages.ORDER_NOT_FOUND.code,
+                success: false
             }, HttpStatus.NOT_FOUND);
         }
 
@@ -143,7 +143,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
-                    code: ErrorMessages.NOT_AUTHORIZED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -152,7 +152,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.AGENT_ID_REQUIRED.message,
-                    code: ErrorMessages.AGENT_ID_REQUIRED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -164,7 +164,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_ASSIGNING.message,
-                    code: ErrorMessages.INVALID_ASSIGNING.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -184,7 +184,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
-                    code: ErrorMessages.NOT_AUTHORIZED.code,
+                    success: false,
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -193,7 +193,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.AGENT_ID_REQUIRED.message,
-                    code: ErrorMessages.AGENT_ID_REQUIRED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -205,7 +205,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_RE_ASSIGNING.message,
-                    code: ErrorMessages.INVALID_RE_ASSIGNING.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -226,7 +226,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
-                    code: ErrorMessages.NOT_AUTHORIZED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -235,7 +235,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.AGENT_ID_REQUIRED.message,
-                    code: ErrorMessages.AGENT_ID_REQUIRED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -253,7 +253,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_PICKUP.message,
-                    code: ErrorMessages.INVALID_PICKUP.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -273,7 +273,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
-                    code: ErrorMessages.NOT_AUTHORIZED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -288,7 +288,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_REACHED_DESINATION_UPDATE.message,
-                    code: ErrorMessages.INVALID_REACHED_DESINATION_UPDATE.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -308,7 +308,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
-                    code: ErrorMessages.NOT_AUTHORIZED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -319,7 +319,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_DELIVERED_UPDATE.message,
-                    code: ErrorMessages.INVALID_DELIVERED_UPDATE.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -339,7 +339,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
-                    code: ErrorMessages.NOT_AUTHORIZED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -350,7 +350,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_NOT_ACCEPTED_CUSTOMER_UPDATE.message,
-                    code: ErrorMessages.INVALID_NOT_ACCEPTED_CUSTOMER_UPDATE.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -369,7 +369,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
-                    code: ErrorMessages.NOT_AUTHORIZED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -380,7 +380,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_PACKING_UPDATE.message,
-                    code: ErrorMessages.INVALID_PACKING_UPDATE.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -400,7 +400,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
-                    code: ErrorMessages.NOT_AUTHORIZED.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 
@@ -411,7 +411,7 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_PACKING_COMPLETE_UPDATE.message,
-                    code: ErrorMessages.INVALID_PACKING_COMPLETE_UPDATE.code,
+                    success: false
                 }, HttpStatus.NOT_FOUND);
             }
 

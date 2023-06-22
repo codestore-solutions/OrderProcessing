@@ -37,7 +37,7 @@ export class BusinessController {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
-                code: ErrorMessages.INVALID_PAGINATON_INPUT.code,
+                success: false
             }, HttpStatus.BAD_REQUEST);
         }
         // Check if pagination details are provided
@@ -69,3 +69,49 @@ export class BusinessController {
     }
 
 }
+
+
+// {
+//     "shippingAddressId": 1,
+//     "customerId": 5,
+//     "paymentMode": "online",
+//     "currency": "INR",
+//     "ordersFromStore": [
+//       {
+//         "storeId": 3,
+//         "deliveryCost": 59,
+//         "orderItems": [
+//           {
+//             "productId": 1,
+//             "variantId": 2,
+//             "price": 999,
+//             "discount": 10,
+//             "quantity": 1,
+//             "gst": 18
+//           },
+//           {
+//             "productId": 2,
+//             "variantId": 3,
+//             "price": 1999,
+//             "discount": 0,
+//             "quantity": 1,
+//             "gst": 18
+//           }
+//         ]
+//       },
+//       {
+//         "storeId": 4,
+//         "deliveryCost": 159,
+//         "orderItems": [
+//           {
+//             "productId": 3,
+//             "variantId": 4,
+//             "price": 999,
+//             "discount": 10,
+//             "quantity": 1,
+//             "gst": 18
+//           }
+//         ]
+//       }
+//     ]
+//   }

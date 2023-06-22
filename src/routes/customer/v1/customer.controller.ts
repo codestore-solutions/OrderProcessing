@@ -7,7 +7,6 @@ import { CustomerService } from '../customer.service';
 import { OrderStatusEnum, PaymentMode } from 'src/assets/constants';
 import { uuid } from 'uuidv4';
 import { NotificationGateway } from 'src/gateway/gateway.provider';
-import { NEW_ORDER } from 'src/gateway/notification.constant';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { CustomerOrderDTO, CustomerOrderListDto } from '../dto/customer-order.dto';
 import { PaginationDto } from 'src/assets/dtos/pagination.dto';
@@ -118,7 +117,7 @@ export class CustomerController {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
-                code: ErrorMessages.INVALID_PAGINATON_INPUT.code,
+                success: false
             }, HttpStatus.BAD_REQUEST);
         }
 
@@ -174,7 +173,7 @@ export class CustomerController {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
-                code: ErrorMessages.INVALID_PAGINATON_INPUT.code,
+                success: false
             }, HttpStatus.BAD_REQUEST);
         }
         // Check if pagination details are provided

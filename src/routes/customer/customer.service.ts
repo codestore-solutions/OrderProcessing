@@ -47,7 +47,7 @@ export class CustomerService {
             throw new HttpException({
                 statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: ErrorMessages.INTERNAL_SERVER_ERROR.message,
-                code: ErrorMessages.INTERNAL_SERVER_ERROR.code,
+                success: false
             }, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     };

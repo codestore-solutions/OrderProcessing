@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Put, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { CreateOrderStatusDto, OrderStatusTimelineDTO } from '../dto/order-status.dto';
 import { OrderService } from '../orders.service';
 import { OrderItemDTO } from 'src/assets/dtos/orderItem.dto';
 import { PaymentStatusDtoOfOrder } from '../dto/payment.dto';
+import { ErrorMessages } from 'src/assets/errorMessages';
 
 
 @ApiTags('Orders')
@@ -56,6 +57,7 @@ export class OrderController {
     async updateStatus(
         @Req() request: any,
         @Body(ValidationPipe) orderStatusDto: CreateOrderStatusDto ) { 
+  
         const user = request.user;
         return this.orderService.updateOrderStatus(orderStatusDto, user);
     }
@@ -88,3 +90,6 @@ export class OrderController {
         return this.orderService.updateOrderPaymentStatus(paymentId);
     }
 }
+
+
+

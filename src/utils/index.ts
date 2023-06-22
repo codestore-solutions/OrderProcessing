@@ -11,7 +11,7 @@ export function transformPaginationValueToInt(value: any, key: string): number {
             {
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: key + " " + ErrorMessages.INVALID_VALUE.message,
-                code: ErrorMessages.INVALID_VALUE.code,
+                success: false
             },
             HttpStatus.BAD_REQUEST,
         );
@@ -22,7 +22,7 @@ export function transformPaginationValueToInt(value: any, key: string): number {
             {
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: key + " " + ErrorMessages.INVALID_NEGATIVE_VALUE.message,
-                code: ErrorMessages.INVALID_NEGATIVE_VALUE.code,
+                success: false
             },
             HttpStatus.BAD_REQUEST,
         );

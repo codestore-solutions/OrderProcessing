@@ -18,7 +18,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new HttpException({
         statusCode: HttpStatus.UNAUTHORIZED,
 			  message: ErrorMessages.INVALID_USERNAME_OR_PASSWORD.message,
-				code: ErrorMessages.INVALID_USERNAME_OR_PASSWORD.code,
+				success: false
       }, HttpStatus.UNAUTHORIZED);
     }
     return user;

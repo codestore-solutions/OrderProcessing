@@ -2,7 +2,7 @@ export const ErrorMessages = {
 
     INVALID_PACKING_COMPLETE_UPDATE: {
         code: 'INVALID_PACKING_COMPLETE_UPDATE',
-        message: 'Packing is not yet started'
+        message: 'Packing is not yet started',
     },
 
     INVALID_PACKING_UPDATE: {
