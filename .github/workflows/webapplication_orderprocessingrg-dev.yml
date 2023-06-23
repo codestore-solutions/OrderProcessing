@@ -50,7 +50,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
-        with:
           app-name: 'OrderProcessingRG-dev'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_A1F7F858C3E8464FBEEBC138E0AEECDD }}
