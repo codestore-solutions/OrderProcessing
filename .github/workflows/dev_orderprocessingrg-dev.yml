@@ -6,7 +6,7 @@ name: Build and deploy Node.js app to Azure Web App - OrderProcessingRG-dev
 on:
   push:
     branches:
-      - dev
+      - dev-backend
   workflow_dispatch:
 
 jobs:
