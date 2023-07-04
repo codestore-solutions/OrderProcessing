@@ -1,125 +1,181 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Put, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import {
+    Controller, Get, HttpException, HttpStatus, Param,
+    ParseIntPipe,
+    Query, UseGuards, UsePipes, ValidationPipe
+} from '@nestjs/common';
 import {
     ApiBearerAuth,
     ApiExcludeEndpoint,
     ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags
 } from '@nestjs/swagger';
 import { SellerService } from '../seller.service';
-import { orderStatus } from 'src/assets/constants';
+import { OrderStatusEnum, orderStatus } from 'src/assets/constants';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { OrderDTO } from 'src/assets/dtos/order.dto';
 import { OrderItemDTO } from 'src/assets/dtos/orderItem.dto';
-import { sellerUpdateOrderStatusDto } from '../dto/update-order-details.dto';
 import { PaginationDto } from 'src/assets/dtos/pagination.dto';
 import { ErrorMessages } from 'src/assets/errorMessages';
-import { SellerOrderListDto } from '../dto/seller-order.dto';
+import { GetVendorOrdersQuery, SellerOrderListDto } from '../dto/seller-order.dto';
+import { OrderService } from 'src/routes/orders/orders.service';
+import { VendorOrderResponseDTO } from '../dto/response.dto';
 
 
-@ApiTags('Orders - seller')
-@Controller('v1/seller')
+@ApiTags('Orders - vendor')
+@Controller('v1/vendor')
 export class SellerController {
-    constructor(private readonly sellerService: SellerService) { }
+    constructor(private readonly sellerService: SellerService,
+        private readonly orderService: OrderService) { }
 
+ 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get('getOrdersBySellerId/:sellerId')
     @ApiOperation({
         summary: 'Provides orders based on seller id',
-        description: 'Provides a list of orders associated with a seller using seller id'
+        description: 'Provides a list of orders associated with a seller using seller id and status'
     })
     @ApiResponse({
         status: 200, description: 'Returns the orders with the specified seller',
-        type: SellerOrderListDto, isArray: true
+        type: VendorOrderResponseDTO, isArray: true
+    })
+    @UsePipes(new ValidationPipe({ transform: true }))
+    @ApiQuery({
+        name: 'orderStatus', description: 'Order status',
+        enum: OrderStatusEnum, isArray: true
     })
     async getOrdersByStoreId(
-        @Param('sellerId') sellerId: number,
-        @Query(ValidationPipe) query: PaginationDto) {
-        const { pageSize, page } = query;
+        @Param('sellerId', ParseIntPipe) sellerId: number,
+        @Query(ValidationPipe) query: GetVendorOrdersQuery) {
 
-        if ((pageSize && !page) || (!pageSize && page)) {
+        const { page, pageSize, orderStatus } = query;
+
+        if (!pageSize || !page) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
-                message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
+                message: ErrorMessages.INVALID_PAGINATION_INPUT.message,
+                success: false
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        // Validate order status
+        if (!this.orderService.validateOrderStatus(orderStatus)) {
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.INVALID_ORDER_STATUS.message,
                 success: false
             }, HttpStatus.BAD_REQUEST);
         }
 
         const parsedSellerId = sellerId;
-        // Check if pagination details are provided
-        if (page && pageSize) {
-            return this.sellerService.getAllOrdersBySellerIdWithPagination(parsedSellerId,
-                page, pageSize);
-        } else {
-            // Retrieve all data
-            // No pagination details provided, return all results
-            return this.sellerService.getAllOrdersBySellerId(parsedSellerId);
+
+        // Initialize sets and arrays for data retrieval
+        const customerIdSet: Set<number> = new Set();
+        const shippingAddressIdSet: Set<number> = new Set();
+        const orderIdArray: number[] = [];
+
+        const { totalOrders, orders } = await this.sellerService.getOrdersBySellerId(parsedSellerId,
+            page, pageSize, orderStatus);
+
+        // Extract relevant data from orders
+        for (const order of orders) {
+            customerIdSet.add(order.customerId);
+            shippingAddressIdSet.add(order.shippingAddressId);
+            orderIdArray.push(order.id);
         }
+
+        // Convert sets to arrays
+        const customerIdArray = Array.from(customerIdSet);
+        const shippingAddressIdArray = Array.from(shippingAddressIdSet);
+
+
+        // Get mapping data from various services
+        const { orderData, customers, addresses } =
+            await this.sellerService.getMappingDatafromServices(
+                orderIdArray, customerIdArray, shippingAddressIdArray
+            );
+
+        // Create a map of orders based on the id
+        const ordersMap = new Map(orders.map(order => [order.id, order]));
+
+        // Map orderData using orderId and merge with corresponding order
+        const mappedData = orderData.map(data => {
+            const order = ordersMap.get(data.orderId);
+            return { ...order, ...data };
+        });
+
+        // Get mapped data
+        const data = await this.sellerService.getMappedData(customers,
+            addresses, mappedData
+        );
+
+        return { total: totalOrders, list: data };
     }
+
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @Get('/getOrderDetailsByOrderId/:orderId')
     @ApiOperation({
         summary: 'Provides order details based on order id',
-        description: 'Provides order details associated with a store by order id'
+        description: 'Provides order details by order id'
     })
     @ApiResponse({
-        status: 200, description: 'Returns order details by order id',
-        type: OrderDTO,
+        status: 200, description: 'Returns order details',
+        type: VendorOrderResponseDTO,
     })
-    async getOrderDetailsByOrderId(@Param('orderId') orderId: number) {
-        return this.sellerService.getOrderDetailsByOrderId(orderId);
+    async getOrderDetailsByOrderId(@Param('orderId', ParseIntPipe) orderId: number) {
+
+        const order = await this.sellerService.getOrderById(orderId,);
+        const customerId = order.customerId;
+        const shippingAddressId = order.shippingAddressId;
+
+        // Get mapping data from various services
+        const { orderData, customers, addresses } =
+            await this.sellerService.getMappingDatafromServices(
+                [ order.id ], [ customerId ], [ shippingAddressId ]
+            );
+
+        const mappedData = [{ ...orderData[0], ...order }];
+
+        // Get mapped data
+        const data = await this.sellerService.getMappedData(customers,
+            addresses, mappedData
+        );
+        return data[0];
     }
 
 
-    @ApiBearerAuth()
-    @ApiExcludeEndpoint()
-    @UseGuards(JwtAuthGuard)
-    @Get('/getOrderItemsByOrderId/:orderId')
-    @ApiOperation({
-        summary: 'Provides list of products ordered based on order id',
-        description: 'Provides a list of products ordered associated with a store by order id'
-    })
-    @ApiResponse({
-        status: 200, description: 'Returns the list of products ordered with the specified seller and order id',
-        type: OrderItemDTO, isArray: true
-    })
-    async getOrderItemsByOrderId(@Param('orderId') orderId: number) {
-        return this.sellerService.getAllOrderItemsByOrderId(orderId);
-    }
+    // @ApiBearerAuth()
+    // @ApiExcludeEndpoint()
+    // @UseGuards(JwtAuthGuard)
+    // @Get('/getOrderedItemDetails/:orderItemId')
+    // @ApiOperation({
+    //     summary: 'Provides ordered product details based on ordered item id',
+    //     description: 'Provides a details about the product order associated with a store by ordered item id'
+    // })
+    // @ApiResponse({
+    //     status: 200, description: 'Returns the ordered product details with the specified ordered product id',
+    //     type: OrderItemDTO,
+    // })
+    // async getOrderItemDetailsByOrderId(@Param('orderItemId') orderItemId: number) {
+    //     return this.sellerService.getOrderItemDetailByOrderId(orderItemId);
+    // }
 
 
-    @ApiBearerAuth()
-    @ApiExcludeEndpoint()
-    @UseGuards(JwtAuthGuard)
-    @Get('/getOrderedItemDetails/:orderItemId')
-    @ApiOperation({
-        summary: 'Provides ordered product details based on ordered item id',
-        description: 'Provides a details about the product order associated with a store by ordered item id'
-    })
-    @ApiResponse({
-        status: 200, description: 'Returns the ordered product details with the specified ordered product id',
-        type: OrderItemDTO,
-    })
-    async getOrderItemDetailsByOrderId(@Param('orderItemId') orderItemId: number) {
-        return this.sellerService.getOrderItemDetailByOrderId(orderItemId);
-    }
-
-
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({ summary: 'Get orders by status' })
-    @ApiResponse({
-        status: 200, description: 'Returns the orders with the specified status',
-        type: OrderDTO, isArray: true
-    })
-    @ApiQuery({ name: 'status', description: 'Order status', enum: [...orderStatus] })
-    @ApiParam({ name: 'sellerId', description: 'Seller ID', example: 2 })
-    @Get('/getSellerOrdersBystatus/:sellerId')
-    async getOrdersByStatus(@Query('status') status: string,
-        @Param('sellerId') sellerId: number) {
-        return this.sellerService.findByStatus(status, sellerId);
-    }
+    // @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard)
+    // @ApiOperation({ summary: 'Get orders by status' })
+    // @ApiResponse({
+    //     status: 200, description: 'Returns the orders with the specified status',
+    //     type: OrderDTO, isArray: true
+    // })
+    // @ApiQuery({ name: 'status', description: 'Order status', enum: [...orderStatus] })
+    // @ApiParam({ name: 'sellerId', description: 'Seller ID', example: 2 })
+    // @Get('/getSellerOrdersBystatus/:sellerId')
+    // async getOrdersByStatus(@Query('status', ParseIntPipe) status: number,
+    //     @Param('sellerId', ParseIntPipe) sellerId: number) {
+    //     return this.sellerService.findByStatus(status, sellerId);
+    // }
 
 
     // @ApiBearerAuth()
@@ -148,31 +204,3 @@ export class SellerController {
     // }
 
 }
-
-
-
-
-// {
-//     "orders": [
-//       {
-//         "productId": "7cfb6faf-7c25-4552-9f76-04b46d68136c",
-//         "storeId": "eb1f91cc-0b57-4fa2-ac55-8c1848bb0903",
-//         "specificationId": "614d9498-d0e0-48ec-be30-88010700e215",
-//         "quantity": 2
-//       },
-//       {
-//         "productId": "7cfb6faf-7c25-4552-9f76-04b46d68136c",
-//         "storeId": "eb1f91cc-0b57-4fa2-ac55-8c1848bb0903",
-//         "specificationId": "614d9498-d0e0-48ec-be30-88010700e215",
-//         "quantity": 2
-//       }
-//     ],
-//     "paymentId": "588ba8e8-d9d0-4758-90b8-6ac423ac4ba6",
-//     "paymentMode": "credit card",
-//     "userId": "eb1f91cc-0b57-4fa2-ac55-8c1848bb0903",
-//     "shippingAddressId": "46c45f71-ff55-4e5b-98a7-53f25ac27ef0"
-//   }
-
-
-
-// eb1f91cc-0b57-4fa2-ac55-8c1848bb0903

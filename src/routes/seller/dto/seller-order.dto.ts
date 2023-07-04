@@ -1,4 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
+import { transformArrayToIntArray, transformPaginationValueToInt } from "src/utils";
 
 export class SellerOrderDTO {
 
@@ -38,3 +40,20 @@ export class SellerOrderListDto {
     @ApiProperty({ type: SellerOrderDTO, isArray: true })
     data: SellerOrderDTO[]
 }
+
+
+
+export class GetVendorOrdersQuery {
+
+    @Transform(({ value }) => transformArrayToIntArray(value, 'order status'))
+    orderStatus: number[];
+
+    @Transform(({ value }) => transformPaginationValueToInt(value, 'page'))
+    @ApiProperty({ type: Number })
+    page: number;
+
+    @Transform(({ value }) => transformPaginationValueToInt(value, 'pagesize'))
+    @ApiProperty({ type: Number, })
+    pageSize: number;
+}
+

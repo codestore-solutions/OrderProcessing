@@ -1,63 +1,82 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { Op } from 'sequelize';
-import { OrderStatusEnum, PaymentStatusEnum, constants, orderStatus, paymentStatus, roles, rolesEnum, updateStatusSuccess } from 'src/assets/constants';
-import { Order } from 'src/database/entities/order.entity';
-import { OrderStatusEntity } from 'src/database/entities/order_status.entity';
-import { OrderDto, CreateOrderStatusDto } from './dto/order-status.dto';
+import {
+    OrderStatusEnum,
+    constants, orderStatus, rolesEnum, updateStatusSuccessMessage,
+} from 'src/assets/constants';
+import { AssigningStatusDto, CreateOrderStatusDto, OrderAssigningStatusDto } from './dto/order-status.dto';
 import { ErrorMessages } from 'src/assets/errorMessages';
-import { OrderItem } from 'src/database/entities/ordered_product';
+import { PrismaClient } from '@prisma/client';
+import { OrderEntityDto } from './dto/order.dto';
+
 
 @Injectable()
 export class OrderService {
 
-    constructor(
-        @Inject(constants.ORDER_REPOSITORY)
-        private orderRepository: typeof Order,
+    constructor(@Inject(constants.PRISMA_CLIENT) private readonly prisma: PrismaClient) { }
 
-        @Inject(constants.ORDER_STATUS_REPOSITORY)
-        private orderStatusRepository: typeof OrderStatusEntity,
+    async validateOrderStatus(status: number[]) {
+        try {
+            // Count the number of order status records where 
+            // the id is present in the status array
+            const count = await this.prisma.orderStatus.count({
+                where: {
+                    id: {
+                        in: status,
+                    },
+                },
+            });
 
-        @Inject(constants.ORDER_ITEM_REPOSITORY)
-        private orderItemRepository: typeof OrderItem,
-    ) { }
-
-    
-    async getAllOrderItemsByOrderId(orderId: number) {
-        return this.orderItemRepository.findAll({
-            where: { orderId }
-        })
+            // Return true if the count matches the 
+            // length of the status array
+            return count === status.length;
+        } catch (error) {
+            throw new HttpException({
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: ErrorMessages.INTERNAL_SERVER_ERROR.message,
+                success: false
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    
-    async getOrderItemDetailByOrderId(orderId: number) {
-        return await this.orderItemRepository.findByPk(orderId);
+
+    async getOrderTimeline(orderId: number) {
+        try {
+            const orderTimeline = await this.prisma.orderStatusTimeline.findMany({
+                where: { orderId },
+                select: { timestamp: true, orderStatusId: true }
+            });
+            return orderTimeline;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 
 
-    async updateStatus(orders: Order[], status: string, 
-        timestamp:string, agentId?: number[], orderIds?: number[]) {
+    async updateStatusWithAgent(orderArray: AssigningStatusDto[], orderStatus: number) {
+        for (const order of orderArray) {
+            await this.prisma.order.update({
+                where: { id: order.orderId },
+                data: {
+                    orderStatusId: orderStatus,
+                    deliveryAgentId: order.deliveryAgentId
+                }
+            });
+            await this.addToOrderTimeline(order.orderId, orderStatus);
+        }
+    }
+
+
+    async updateStatus(orders: OrderEntityDto[], status: number) {
         try {
 
-            if(agentId){
-                for (const order of orders) {
-
-                    const index = orderIds.findIndex(id => id === order.id)
-                    if(index !== -1){
-                        order.orderStatus = status;
-                        order.deliveryId = agentId[index];
-                        await this.addToOrderTimeline(order.id, status, timestamp)
-                        await order.save();
-                    }
-
-                }
-            } else {
-                for (const order of orders) {
-                    order.orderStatus = status;
-                    await this.addToOrderTimeline(order.id, status, timestamp)
-                    await order.save();
-                }
+            for (const order of orders) {
+                await this.prisma.order.update({
+                    where: { id: order.id },
+                    data: { orderStatusId: status }
+                });
+                await this.addToOrderTimeline(order.id, status);
             }
-
         } catch (err) {
             console.log(err)
             throw err;
@@ -66,11 +85,13 @@ export class OrderService {
 
 
     async addToOrderTimeline(orderId: number,
-        status: string, timestamp: string) {
+        status: number) {
         try {
-            await this.orderStatusRepository.create({
-                timestamp,
-                order_id: orderId, event_type: status
+            await this.prisma.orderStatusTimeline.create({
+                data: {
+                    orderStatusId: status,
+                    orderId,
+                },
             });
         } catch (err) {
             console.log(err)
@@ -79,44 +100,23 @@ export class OrderService {
     }
 
 
-    async getOrders(Ids: number[]) {
-        const orders = await this.orderRepository.findAll({
+    async getOrders(ids: number[]) {
+        const orders = await this.prisma.order.findMany({
             where: {
                 id: {
-                    [Op.in]: Ids
+                    in: ids,
                 },
-            }
-        });
-        return orders
-    }
-
-    async getOrderTimeline(orderId: number) {
-        await this.orderStatusRepository.findAll({
-            where: {
-                order_id: orderId
-            },
-            attributes: {
-                exclude: ['id', 'order_id']
             },
         });
+        return orders;
     }
 
-
-    async updateOrderPaymentStatus(paymentId: string){
-        await this.orderStatusRepository.update(
-            { paymentStatus: PaymentStatusEnum.CAPTURED, 
-                orderStatus: OrderStatusEnum.Pending }, 
-            { where: { paymentId } } 
-        );
-    }
-
-
-    async updateOrderStatus(orderStatusDto: CreateOrderStatusDto, user: any) {
+    async updateAndAssignAgent(orderStatusDto: OrderAssigningStatusDto, user: any) {
         const role = user.role;
-        const orderIds = [ ...orderStatusDto.orders ]
-        const orders = await this.getOrders(orderIds)
+        const orderIds = [...orderStatusDto.orders]
+        const orders = orderStatusDto.orders
 
-        const { status, timestamp } = orderStatusDto;
+        const { orderStatus } = orderStatusDto;
 
         //validate role - only business admin can assign order
         if (orders.length === 0) {
@@ -127,19 +127,21 @@ export class OrderService {
             }, HttpStatus.NOT_FOUND);
         }
 
-        function validatePreviousStatus(orders: Order[], status: string[]) {
+        const validatePreviousStatus = async (orderArray: AssigningStatusDto[],
+            status: number[]) => {
+            const ids = orderArray.map((item) => item.orderId)
+            const orders = await this.getOrders(ids);
             for (const order of orders) {
-                if (!(status.includes(order.orderStatus))) return false;
+                if (!(status.includes(order.orderStatusId))) return false;
             }
             return true;
         }
-        
 
         //assigning the delivery agent to order/orders
-        if (orderStatusDto.status === OrderStatusEnum.AgentAssigned) {
+        if (orderStatusDto.orderStatus === OrderStatusEnum.AGENT_ASSIGNED) {
 
             //validate role - only business admin can assign order
-            if (!role || role !== rolesEnum.BUSINESS_ADMIN) {
+            if (!role || role !== rolesEnum.BusinessAdmin) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
@@ -148,7 +150,7 @@ export class OrderService {
             }
 
             //must provide agent id in body dto
-            if (!('agentId' in orderStatusDto)) {
+            if (!('deliveryAgentId' in orderStatusDto.orders)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.AGENT_ID_REQUIRED.message,
@@ -159,7 +161,7 @@ export class OrderService {
             //validate orders previous status and 
             //for assigning agent it should be packing_completed
             //only those orders with status packing_completed will get to assigned
-            const previousStatus = [OrderStatusEnum.PackingCompleted];
+            const previousStatus = [OrderStatusEnum.PACKING_COMPLETED];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -170,17 +172,16 @@ export class OrderService {
 
             //Assign and update order status after all validation
             //sends a notification to delivery agent
-            await this.updateStatus(orders, status, timestamp, 
-                orderStatusDto.agentId, orderStatusDto.orders)
-            return updateStatusSuccess(orderStatusDto.status);
+            await this.updateStatusWithAgent(orders, orderStatus)
+            return updateStatusSuccessMessage;
         }
 
 
         //re-assigning the delivery agent to order/orders
-        if (orderStatusDto.status === OrderStatusEnum.ReAssigning) {
+        if (orderStatusDto.orderStatus === OrderStatusEnum.RE_ASSIGNING) {
 
             //validate role - only business admin can assign order
-            if (!role || role !== rolesEnum.BUSINESS_ADMIN) {
+            if (!role || role !== rolesEnum.BusinessAdmin) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
@@ -200,7 +201,7 @@ export class OrderService {
             //validate orders previous status and 
             //for re-assigning agent it should be agent_assigned
             //only those orders with status agent_assigned will get to re-assigned
-            const previousStatus = [OrderStatusEnum.AgentAssigned];
+            const previousStatus = [OrderStatusEnum.AGENT_ASSIGNED];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -212,17 +213,42 @@ export class OrderService {
             //Assign and update order status after all validation
             //sends a notification to both previous and current delivery agent
             //----------
-            await this.updateStatus(orders, status, timestamp, 
-                orderStatusDto.agentId, orderStatusDto.orders)
+            await this.updateStatusWithAgent(orders, orderStatus)
 
-            return updateStatusSuccess(orderStatusDto.status);
+            return updateStatusSuccessMessage;
+        }
+    }
+
+
+    async updateOrderStatus(orderStatusDto: CreateOrderStatusDto, user: any) {
+        const role = user.role;
+        const orderIds = [...orderStatusDto.orders]
+        const orders = await this.getOrders(orderIds)
+
+        const { status } = orderStatusDto;
+
+        console.log(orderStatusDto, user)
+        //validate role - only business admin can assign order
+        if (orders.length === 0) {
+            throw new HttpException({
+                statusCode: HttpStatus.NOT_FOUND,
+                message: ErrorMessages.ORDER_NOT_FOUND.message,
+                success: false
+            }, HttpStatus.NOT_FOUND);
+        }
+
+        function validatePreviousStatus(orders: OrderEntityDto[], status: number[]) {
+            for (const order of orders) {
+                if (!(status.includes(order.orderStatusId))) return false;
+            }
+            return true;
         }
 
         //update pick order status
-        if (orderStatusDto.status === OrderStatusEnum.PickedUp) {
+        if (orderStatusDto.status === OrderStatusEnum.PICKED_UP) {
 
             //validate role - only business admin can assign order
-            if (!role || role !== rolesEnum.DELIVERY_AGENT) {
+            if (!role || role !== rolesEnum.DeliveryAgent) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
@@ -247,8 +273,8 @@ export class OrderService {
             //for picking up, it should be agent_assigned or agent_re_assigned
             //only those orders with status agent_assigned or agent_re_assigned
             //will get to be picked up
-            const previousStatus = [OrderStatusEnum.AgentAssigned,
-            OrderStatusEnum.ReAssigning];
+            const previousStatus = [OrderStatusEnum.AGENT_ASSIGNED,
+            OrderStatusEnum.RE_ASSIGNING];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -260,16 +286,16 @@ export class OrderService {
             //update order status after all validation and 
             //sends a notification to customer when item is picked
             //----------
-            await this.updateStatus(orders, status, timestamp)
-            return updateStatusSuccess(orderStatusDto.status);
+            await this.updateStatus(orders, status)
+            return updateStatusSuccessMessage
         }
 
 
         //reached destination update
-        if (orderStatusDto.status === OrderStatusEnum.ReachedDesination) {
+        if (orderStatusDto.status === OrderStatusEnum.REACHED_DESTINATION) {
 
             //validate role - only business admin can assign order
-            if (!role || role !== rolesEnum.DELIVERY_AGENT) {
+            if (!role || role !== rolesEnum.DeliveryAgent) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
@@ -283,7 +309,7 @@ export class OrderService {
 
             //validate orders previous status and 
             //for reached desination, it should be picked_up
-            const previousStatus = [OrderStatusEnum.PickedUp];
+            const previousStatus = [OrderStatusEnum.PICKED_UP];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -295,16 +321,16 @@ export class OrderService {
             //update order status after all validation and 
             //sends a notification to seller and customer
             //---------
-            await this.updateStatus(orders, status, timestamp)
-            return updateStatusSuccess(orderStatusDto.status);
+            await this.updateStatus(orders, status)
+            return updateStatusSuccessMessage;
         }
 
 
         //delivered update
-        if (orderStatusDto.status === OrderStatusEnum.Delivered) {
+        if (orderStatusDto.status === OrderStatusEnum.DELIVERED) {
 
             //validate role - only delivery agent can deliver order
-            if (!role || role !== rolesEnum.DELIVERY_AGENT) {
+            if (!role || role !== rolesEnum.DeliveryAgent) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
@@ -314,7 +340,7 @@ export class OrderService {
 
             //validate orders previous status and 
             //for delivered, it should be reached desination
-            const previousStatus = [OrderStatusEnum.ReachedDesination];
+            const previousStatus = [OrderStatusEnum.REACHED_DESTINATION];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -326,16 +352,16 @@ export class OrderService {
             //update orders status after all validation and 
             //sends a notification to seller and customer regarding delivered orders
             //---------
-            await this.updateStatus(orders, status, timestamp)
-            return updateStatusSuccess(orderStatusDto.status);
+            await this.updateStatus(orders, status)
+            return updateStatusSuccessMessage;
         }
 
 
         //orders not accepted by customer
-        if (orderStatusDto.status === OrderStatusEnum.NotAcceptedByCustomer) {
+        if (orderStatusDto.status === OrderStatusEnum.NOT_ACCEPTED_BY_CUSTOMER) {
 
             //validate role - only deivery agent 
-            if (!role || role !== rolesEnum.DELIVERY_AGENT) {
+            if (!role || role !== rolesEnum.DeliveryAgent) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
@@ -345,7 +371,7 @@ export class OrderService {
 
             //validate orders previous status and 
             //for not accepted by customer, it should be reaced destination
-            const previousStatus = [OrderStatusEnum.ReachedDesination];
+            const previousStatus = [OrderStatusEnum.REACHED_DESTINATION];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -357,15 +383,15 @@ export class OrderService {
             //update orders status after all validation and 
             //sends a notification to seller and customer
             //---------
-            await this.updateStatus(orders, status, timestamp)
-            return updateStatusSuccess(orderStatusDto.status);
+            await this.updateStatus(orders, status)
+            return updateStatusSuccessMessage;
         }
 
         //orders packing started by seller
-        if (orderStatusDto.status === OrderStatusEnum.Packing) {
+        if (orderStatusDto.status === OrderStatusEnum.PACKING) {
 
             //validate role - only for seller 
-            if (!role || role !== rolesEnum.SELLER) {
+            if (!role || role !== rolesEnum.Seller) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
@@ -375,7 +401,7 @@ export class OrderService {
 
             //validate orders previous status and 
             //for packing, it should be pending
-            const previousStatus = [OrderStatusEnum.Pending];
+            const previousStatus = [OrderStatusEnum.NEW];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -387,16 +413,16 @@ export class OrderService {
             //update orders status after all validation and 
             //sends a notification to customer
             //---------
-            await this.updateStatus(orders, status, timestamp)
-            return updateStatusSuccess(orderStatusDto.status);
+            await this.updateStatus(orders, status)
+            return updateStatusSuccessMessage;
         }
 
 
         //orders packing completed
-        if (orderStatusDto.status === OrderStatusEnum.PackingCompleted) {
+        if (orderStatusDto.status === OrderStatusEnum.PACKING_COMPLETED) {
 
             //validate role - only seller
-            if (!role || role !== rolesEnum.SELLER) {
+            if (!role || role !== rolesEnum.Seller) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.NOT_AUTHORIZED.message,
@@ -406,7 +432,7 @@ export class OrderService {
 
             //validate orders previous status and 
             //for reached desination, it should be picked_up
-            const previousStatus = [OrderStatusEnum.Packing];
+            const previousStatus = [OrderStatusEnum.PACKING];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
@@ -418,8 +444,8 @@ export class OrderService {
             //update orders status after all validation and 
             //sends a notification to customer and busines admin
             //---------
-            await this.updateStatus(orders, status, timestamp)
-            return updateStatusSuccess(orderStatusDto.status);
+            await this.updateStatus(orders, status)
+            return updateStatusSuccessMessage;
         }
     }
 }

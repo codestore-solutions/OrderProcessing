@@ -1,5 +1,13 @@
 import { UserDto } from "src/routes/user/dto/user.dto";
 
+export enum UserRole {
+  Admin = 1,
+  BusinessAdmin = 2,
+  Seller = 3,
+  Customer = 4,
+  DeliveryAgent = 5
+}
+
 export const users: UserDto[] = [
   {
     "id": 1,
@@ -7,7 +15,7 @@ export const users: UserDto[] = [
     "email": "rajiv.kumar@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "admin",
+    "role": 1,
     "isActive": true
   },
   {
@@ -16,7 +24,7 @@ export const users: UserDto[] = [
     "email": "aman.shah@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "business_admin",
+    "role": 2,
     "isActive": true
   },
   {
@@ -25,7 +33,7 @@ export const users: UserDto[] = [
     "email": "ratnesh.chaudhary@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "seller",
+    "role": 3,
     "businessAdmin": 2,
     "isActive": true
   },
@@ -35,7 +43,7 @@ export const users: UserDto[] = [
     "email": "kamlesh.raj@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "seller",
+    "role": 3,
     "businessAdmin": 2,
     "isActive": true,
   },
@@ -45,7 +53,7 @@ export const users: UserDto[] = [
     "email": "ramesh.kapoor@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "customer",
+    "role": 4,
     "isActive": true
 
   },
@@ -55,7 +63,7 @@ export const users: UserDto[] = [
     "email": "kapil.prasad@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "delivery-agent",
+    "role": 5,
     "isActive": true,
     "address": "Noida",
     "businessAdminId": 2
@@ -67,7 +75,7 @@ export const users: UserDto[] = [
     "email": "omkar.sharma@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "delivery_agent",
+    "role": 5,
     "isActive": true,
     "address": "Noida",
     "businessAdminId": 2
@@ -79,7 +87,7 @@ export const users: UserDto[] = [
     "email": "niranjan.koti@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "delivery_agent",
+    "role": 5,
     "isActive": true,
     "address": "Noida",
     "businessAdminId": 2
@@ -91,7 +99,7 @@ export const users: UserDto[] = [
     "email": "akhilesh.kumar@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": "delivery_agent",
+    "role": 5,
     "isActive": true,
     "address": "Noida",
     "businessAdminId": 2

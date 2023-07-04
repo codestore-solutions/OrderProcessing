@@ -15,6 +15,7 @@ class AxiosInterceptor {
                 },
                 (error: any) => {
                     // handle error
+                    console.log(error, '1111111111111111111111111')
                     return Promise.reject(error);
                 },
             );
@@ -30,6 +31,16 @@ class AxiosInterceptor {
                     return response;
                 },
                 (error: any) => {
+                    // Extract error details
+                    const errorDetails = {
+                        domain: error.config?.url,
+                        status: error.response?.status || 500,
+                        message: error.response?.data?.message || 'Internal server error',
+                    };
+
+                    // Log the error details
+                    console.error('Error occurred:', errorDetails);
+
                     // handle the response error 
                     return Promise.reject(error);
                 },

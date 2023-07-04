@@ -3,7 +3,6 @@ import { IsNotEmpty, IsArray, ValidateNested,
     IsNumber, Min, MinLength, IsOptional, IsIn, } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PaymentMode } from 'src/assets/constants';
-import { getCurrencies } from 'src/utils';
 
 export class CreateOrderResposeDto {
     @ApiProperty()
@@ -128,10 +127,6 @@ export class CreateOrderDto {
     @IsNotEmpty()
     paymentMode: string;
 
-    @ApiProperty({ example: 'INR' })
-    @IsNotEmpty()
-    @IsIn(getCurrencies()) // Add validation for allowed currencies
-    currency: string;
 
     @ApiProperty({ type: [StoreDto], example: [...orderObject.ordersFromStore] })
     @IsNotEmpty()

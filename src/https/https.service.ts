@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import AxiosService from '../utils/axios/axiosService';
 import AxiosInterceptor from "src/utils/axios/axiosInterceptor";
+import QueryString from "qs";
 
 
 
@@ -9,7 +10,7 @@ export class HttpService {
     constructor() { }
 
     public static async headerBuilder() {
-        const token = '123';
+        const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFtYW4uc2hhaEBleGFtcGxlLmNvbSIsInJvbGUiOiJidXNpbmVzc19hZG1pbiIsImV4cCI6MTY5MzM5MzI4Nn0.Jzyg9ZP5cqmebrHV4zlKMifB93rRDbWlKSTcaVsb7X0';
         const headers = {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -24,10 +25,12 @@ export class HttpService {
         return await AxiosService.delete(url, headers);
     }
 
-    public static async get(url: string, headers?: any): Promise<any> {
-        headers = await this.headerBuilder();
+    public static async get(url: string, params?: any): Promise<any> {
+        const { headers } = await this.headerBuilder();
         this.InjectMiddleware();
-        return await AxiosService.get(url, headers);
+        return await AxiosService.get(url, {
+            headers, params
+        });
     }
 
     public static async post(

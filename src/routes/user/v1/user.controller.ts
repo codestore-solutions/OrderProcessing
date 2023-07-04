@@ -31,7 +31,7 @@ export class UserController {
     @ApiOperation({ summary: 'Get users by role' })
     @ApiQuery({ name: 'role', description: 'User role' })
     @ApiResponse({ status: 200, description: 'Users with the specified role', type: [UserDto] })
-    getUsersByRole(@Query('role') role: string) {
+    getUsersByRole(@Query('role') role: number) {
         return this.userService.getUsersByRole(role);
     }
 

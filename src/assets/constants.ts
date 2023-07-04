@@ -1,32 +1,49 @@
 export const constants = {
-    SEQUELIZE: 'SEQUELIZE',
-
-    ORDER_REPOSITORY: 'ORDER_REPOSITORY',
-    ORDER_ITEM_REPOSITORY: 'ORDER_ITEM_REPOSITORY',
-    ORDER_DETAIL_REPOSITORY: 'ORDER_DETAIL_REPOSITORY',
-
-    ORDER_STATUS_REPOSITORY: 'ORDER_STATUS_REPOSITORY',
-
-    PRODUCT_REPOSITORY: 'PRODUCT_REPOSITORY',
-    PRODUCT_SPECIFICATION_REPOSITORY: 'PRODUCT_SPECIFICATION_REPOSITORY',
-
-    ADDRESS_REPOSITORY: 'ADDRESS_REPOSITORY',
-
-    PRODUCT_INVENTORY_REPOSITORY: "PRODUCT_INVENTORY_REPOSITORY",
-
-    PAYMENT_REPOSITORY: "PAYMENT_REPOSITORY",
-
-    USER_REPOSITORY: "USER_REPOSITORY",
-
-
     LOCAL_GUARD: 'local',
     MAIL_LOCAL_GUARD: 'mailLocal',
     APIS_PREFIX: 'api',
-
+    PRISMA_CLIENT: 'PrismaClient'
 };
 
-export const updateStatusSuccess = (status: string) =>
-    `order status updated successfully`
+
+export enum OrderStatusEnum {
+    NEW = 1,
+    CANCEL = 2,
+    PACKING = 3,
+    PACKING_COMPLETED = 4,
+    AGENT_ASSIGNED = 5,
+    RE_ASSIGNING = 6,
+    PICKED_UP = 7,
+    REACHED_DESTINATION = 8,
+    NOT_ACCEPTED_BY_CUSTOMER = 9,
+    DELIVERED = 10,
+    RETURN = 11,
+    EXCHANGED = 12,
+    PAYMENT_FAILED = 13,
+    CANCELLED_BY_SELLER = 14,
+    CANCELLED_BY_CUSTOMER = 15,
+}
+
+
+export const order_status = [
+    { id: OrderStatusEnum.NEW, name: 'new' },
+    { id: OrderStatusEnum.CANCEL, name: 'cancel' },
+    { id: OrderStatusEnum.PACKING, name: 'packing' },
+    { id: OrderStatusEnum.PACKING_COMPLETED, name: 'packing_completed' },
+    { id: OrderStatusEnum.AGENT_ASSIGNED, name: 'agent_assigned' },
+    { id: OrderStatusEnum.RE_ASSIGNING, name: 'agent_re_assigning' },
+    { id: OrderStatusEnum.PICKED_UP, name: 'picked_up' },
+    { id: OrderStatusEnum.REACHED_DESTINATION, name: 'reached_destination' },
+    { id: OrderStatusEnum.NOT_ACCEPTED_BY_CUSTOMER, name: 'not_accepted_by_customer' },
+    { id: OrderStatusEnum.DELIVERED, name: 'delivered' },
+    { id: OrderStatusEnum.RETURN, name: 'return' },
+    { id: OrderStatusEnum.EXCHANGED, name: 'exchanged' },
+    { id: OrderStatusEnum.PAYMENT_FAILED, name: 'payment_failed' },
+    { id: OrderStatusEnum.CANCELLED_BY_SELLER, name: 'cancelled_by_seller' },
+    { id: OrderStatusEnum.CANCELLED_BY_CUSTOMER, name: 'cancelled_by_customer' },
+];
+
+export const updateStatusSuccessMessage = `Order status updated successfully`
 
 
 export const tableNameConstants = {
@@ -72,12 +89,11 @@ export const roles = [
 ]
 
 export enum rolesEnum {
-    ADMIN = 'admin',
-    GUEST = 'guest',
-    DELIVERY_AGENT = 'delivery_agent',
-    BUSINESS_ADMIN = 'business_admin',
-    SELLER = 'seller',
-    CUSTOMER = 'customer',
+    Admin = 1,
+    BusinessAdmin = 2,
+    Seller = 3,
+    Customer = 4,
+    DeliveryAgent = 5
 }
 
 export const deliveryModes = [
@@ -86,33 +102,12 @@ export const deliveryModes = [
 ]
 
 
-export const orderStatus = [ 'not_processed', 'pending', 'cancel', 'packing', 'packing_completed',
+export const orderStatus = ['not_processed', 'pending', 'cancel', 'packing', 'packing_completed',
     'agent_assigned', 'agent_re_assigned', 'reached_destination', 'picked_up',
     'delivered', 'return', 'exchanged', 'not_accepted_by_customer',
     'payment_failed',]
 
 
-export enum OrderStatusEnum {
-    NOT_PROCESSED = 'not_processed',
-    Pending = 'pending',
-    Cancel = 'cancel',
-    Packing = 'packing',
-    PackingCompleted = 'packing_completed',
-
-    AgentAssigned = 'agent_assigned',
-    ReAssigning = 'agent_re_assigned',
-    PickedUp = 'picked_up',
-    ReachedDesination = 'reached_destination',
-    NotAcceptedByCustomer = 'not_accepted_by_customer',
-    Delivered = 'delivered',
-
-    Return = 'return',
-    Exchanged = 'exchanged',
-    PaymentFailed = 'payment_failed',
-
-    CancelledBySeller = 'cancelled_by_seller',
-    CancelledByCustomer = 'cancelled_by_customer',
-}
 
 export const sellerOrderState = ['processing', 'shipping']
 

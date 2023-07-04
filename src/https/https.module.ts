@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { HttpService } from './https.service';
+import { DataManagementService } from './microservices';
 
 
 @Module({
     imports: [],
     providers: [
-        HttpService
+        HttpService,
+        DataManagementService
     ],
-    exports: [ HttpService ]
+    exports: [ HttpService, DataManagementService ]
 })
 export class HttpModule { }

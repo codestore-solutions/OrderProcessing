@@ -11,6 +11,8 @@ import { UserModule } from './routes/user/user.module';
 import { BusinesModule } from './routes/business/business.module';
 import { AuthModule } from './auth/auth.module';
 import { OrdersModule } from './routes/orders/orders.module';
+import { SeedService } from './seed/seed.service';
+import { ServiceBusModule } from './queue/service-bus.module';
 
 
 @Module({
@@ -20,9 +22,10 @@ import { OrdersModule } from './routes/orders/orders.module';
       envFilePath: `environments/${process.env.RUNNING_ENV}.env`
     }),
     DatabaseModule,
+    ServiceBusModule,
     SellerModule,
     CustomerModule,
-    // DeliveryModule,
+    DeliveryModule,
     OrdersModule,
     GatewayModule,
     UserModule,
@@ -30,6 +33,6 @@ import { OrdersModule } from './routes/orders/orders.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SeedService],
 })
 export class AppModule { }

@@ -1,8 +1,14 @@
 import { Module } from '@nestjs/common';
-import { databaseProviders } from './database.providers';
+import { PrismaClient } from '@prisma/client';
+import { constants } from 'src/assets/constants';
 
 @Module({
-  providers: [...databaseProviders],
-  exports: [...databaseProviders],
+  providers: [
+    {
+      provide: constants.PRISMA_CLIENT,
+      useValue: new PrismaClient(),
+    },
+  ],
+  exports: [ constants.PRISMA_CLIENT ],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }
