@@ -1,0 +1,348 @@
+.complete-order-detail-container {
+  margin: 5%;
+  display: flex;
+  gap: 3%;
+
+  .order-detail-card {
+    width: 40%;
+    height: 50%;
+    background-color: #FFFFFF;
+    border: 1px solid #EAEAEA;
+    box-shadow: 0px 4px 5px 0px #0000000D;
+    border-radius: 10px;
+
+    .detail-field {
+      margin: 2% 0% 2% 0%;
+      display: flex;
+      justify-content: space-between;
+
+      .field-name {
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 24px;
+        letter-spacing: 0em;
+        text-align: left;
+
+        color: #7E8299;
+      }
+
+      .field-value {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 24px;
+        letter-spacing: 0em;
+        text-align: right;
+        color: #7E8299;
+      }
+    }
+  }
+
+  .order-product-list {
+    width: 60%;
+    height: fit-content;
+    background-color: #FFFFFF;
+    border: 1px solid #EAEAEA;
+    box-shadow: 0px 4px 5px 0px #0000000D;
+    border-radius: 10px;
+
+    .header {
+      .title {
+        font-size: 22px;
+        font-weight: 500;
+        line-height: 33px;
+        letter-spacing: 0em;
+        text-align: left;
+        color: #141C38;
+      }
+    }
+
+    .product-list-container {
+      margin: 5% 0% 0% 0%;
+
+      .product-detail-container {
+        display: flex;
+        color: #7E8299;
+        justify-content: space-between;
+        align-items: center;
+
+        .image-title-container {
+          display: flex;
+
+          img {
+            width: 44px;
+            height: 62px;
+          }
+
+          .product-title {
+            margin-left: 3%;
+
+            .date {
+              font-size: 14px;
+              font-weight: 400;
+              text-align: left;
+              min-width: 177px;
+              width: fit-content;
+            }
+
+            .title {
+              font-size: 18px;
+              font-weight: 600;
+              text-align: left;
+            }
+          }
+
+          p {
+            font-size: 16px;
+            font-weight: 600;
+            text-align: right;
+            justify-self: center;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+.ongoing-order-container {
+  margin: 5%;
+
+  .card-container {
+    width: 100%;
+    display: flex;
+    gap: 2%;
+
+    .order-detail-card {
+      width: 40%;
+      border: 1px solid #EAEAEA;
+      box-shadow: 0px 4px 5px 0px #0000000D;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+
+      .order-field-container {
+        display: flex;
+        margin: 6% 0% 6% 0%;
+        justify-content: space-between;
+        color: #7E8299;
+        align-items: first baseline;
+
+        .field-name {
+          font-size: 16px;
+          font-weight: 400;
+          line-height: 24px;
+          letter-spacing: 0em;
+          text-align: left;
+        }
+
+        .field-value {
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 24px;
+          letter-spacing: 0em;
+          text-align: right;
+        }
+      }
+    }
+  }
+
+  .product-detail-container {
+    margin-top: 4%;
+    .product-card {
+      border: 1px solid #EAEAEA;
+      box-shadow: 0px 4px 5px 0px #0000000D;
+      border-radius: 10px;
+
+      .product-details {
+        margin-top: 1%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+
+        .image-title-container {
+          display: flex;
+          width: 50%;
+          gap: 2%;
+
+          img {
+            height: fit-content;
+            width: fit-content;
+          }
+
+          .title-container {
+            color: #7E8299;
+
+            .title-date {
+              .title {
+                font-size: 16px;
+                font-weight: 600;
+                line-height: 24px;
+                letter-spacing: 0em;
+                text-align: left;
+              }
+
+              .date {
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 24px;
+                letter-spacing: 0em;
+                text-align: left;
+              }
+            }
+
+            .price {
+              font-size: 18px;
+              font-weight: 600;
+              text-align: left;
+              min-width: 177px;
+              width: fit-content;
+            }
+          }
+        }
+
+        .description {
+          color: #7E8299;
+
+          .header {
+            font-size: 18px;
+            font-weight: 600;
+            text-align: left;
+            min-width: 177px;
+            width: fit-content;
+          }
+
+          .description-content {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 24px;
+            letter-spacing: 0em;
+            text-align: left;
+          }
+        }
+      }
+    }
+
+  }
+}
+
+.feedback-container {
+  margin: 5%;
+
+  .feedback-heading {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 33px;
+    letter-spacing: 0em;
+    color: #000000;
+  }
+
+  .feedback-card {
+    background-color: #FFFFFF;
+    border: 1px solid #EAEAEA;
+    box-shadow: 0px 4px 5px 0px #0000000D;
+    border-radius: 10px;
+
+    .rating-container {
+      display: flex;
+      gap: 2%;
+
+      p {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 33px;
+        letter-spacing: 0em;
+        color: #7E8299;
+      }
+    }
+
+    .comment-container {
+      display: flex;
+      gap: 2%;
+
+      .label {
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 33px;
+        letter-spacing: 0em;
+        color: #7E8299;
+      }
+
+      .comment {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 33px;
+        letter-spacing: 0em;
+        color: #141C38;
+      }
+    }
+  }
+}
+
+.cancellation-container {
+  margin: 5%;
+
+  .cancel-heading {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 33px;
+    letter-spacing: 0em;
+    color: #000000;
+  }
+
+
+  .card-container {
+    display: flex;
+    gap: 3%;
+
+    .cancellation-card {
+      min-width: 50%;
+      background-color: #FFFFFF;
+      border: 1px solid #EAEAEA;
+      box-shadow: 0px 4px 5px 0px #0000000D;
+      border-radius: 10px;
+
+      p {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 33px;
+        letter-spacing: 0em;
+        color: #141C38;
+      }
+    }
+
+    .replacement-card {
+      min-width: 50%;
+      background-color: #FFFFFF;
+      border: 1px solid #EAEAEA;
+      box-shadow: 0px 4px 5px 0px #0000000D;
+      border-radius: 10px;
+
+      .field-container {
+        margin: 2% 0% 2% 0%;
+        display: flex;
+        justify-content: space-between;
+
+        .field-name {
+          font-size: 16px;
+          font-weight: 400;
+          line-height: 24px;
+          letter-spacing: 0em;
+          text-align: left;
+
+          color: #7E8299;
+        }
+
+        .field-value {
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 24px;
+          letter-spacing: 0em;
+          text-align: right;
+          color: #7E8299;
+        }
+      }
+    }
+  }
+}

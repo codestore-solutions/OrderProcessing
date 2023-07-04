@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http"
+import { environment } from "../environments/environment";
 
 interface category {
     id: string;
@@ -15,9 +16,18 @@ export class DataService{
     constructor(private http:HttpClient){
 
     }
-    sellerId: string="eb1f91cc-0b57-4fa2-ac55-8c1848bb0903";
+    sellerId: string="3";
+    // orders APIs
     getOrders() {
-        return this.http.get('http://localhost:3000/api/seller/orders/' + `${this.sellerId}`);
+        return this.http.get( environment.orderURL + `getOrdersBySellerId/` + `${this.sellerId}?page=1&pageSize=10`);
+    }
+
+    getOrdersByStatus(status) {
+        return this.http.get(environment.orderURL + 'getSellerOrderBystatus/' + `${this.sellerId}?status=${status}`);
+    }
+
+    getOrderDetailByID(id) {
+        return this.http.get(environment.orderURL + 'getOrderDetailsByOrderId/' + `${id}`);
     }
 
     getBookingDetails(more: number) {
@@ -51,5 +61,9 @@ export class DataService{
 
     generateUUID() {
         return this.http.get("https://www.uuidtools.com/api/generate/timestamp-first")
+    }
+
+    loginService(userCred) {
+        return this.http.post(`https://app-deliveryagent-dev.azurewebsites.net/api/v1/testing/login`, userCred);
     }
 }
