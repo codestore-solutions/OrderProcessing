@@ -11,7 +11,6 @@ import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { CustomerOrderDTO, CustomerOrderListDto } from '../dto/customer-order.dto';
 import { PaginationDto } from 'src/assets/dtos/pagination.dto';
 import { ErrorMessages } from 'src/assets/errorMessages';
-import { calculateTotalPrice } from 'src/utils';
 
 
 @ApiTags('Orders - customer')
@@ -24,76 +23,28 @@ export class CustomerController {
 
     // @ApiBearerAuth()
     // @UseGuards(JwtAuthGuard)
-    // @ApiOperation({ summary: 'Creates an order',
-    //     description: 'Creates an order associated with given userId, and productId' })
-    // @ApiResponse({ status: 201, description: 'Orders created successfully' })
+    // @ApiOperation({
+    //     summary: 'Creates an order',
+    //     description: 'Creates an order associated with given userId, and productId'
+    // })
+    // @ApiResponse({ type: CreateOrderResposeDto, status: 201, description: 'Orders created successfully' })
     // @Post('createOrder')
-    // async createOrder(@Body() OrderBodyDto: OrderBodyDto) {
+    // async createOrder(@Body() OrderBodyDto: CreateOrderDto) {
 
-    //     const ordersArray = Array.isArray(OrderBodyDto.orders) ?
-    //         OrderBodyDto.orders : [OrderBodyDto.orders];
+    //     //creating orders using instance Id
+    //     const instanceId = uuid();
+    //     const { currency } = OrderBodyDto
 
-    //     //creating orders using cart Id, 
-    //     const cartId = uuid();
-
-    //     //verification of product, inventory and product specification
-    //     //takes prices of all product for validation with payment module
-    //     const { totalAmount, data } = await this.customerService.checkProductAndInventory(ordersArray)
-
-    //     //get and verification of address
-    //     const address = await this.customerService.checkAndGetShippingAddress(OrderBodyDto.shippingAddressId)
-
-    //     //payment verification if mode is online
-    //     let payment = null;
-    //     if (OrderBodyDto.paymentMode !== PaymentMode.CASH_ON_DELIVERY) {
-    //         payment = await this.customerService.verifyPayment(OrderBodyDto.paymentId, totalAmount)
-    //     }
-
-    //     //creates an order after validations
-    //     await this.customerService.createOrder(OrderBodyDto, cartId);
-
-    //     //get customer details
-    //     const customer = await this.customerService.getCustomerInfo(OrderBodyDto.userId);
-
-    //     for (let key in data) {
-    //         let orderData = {
-    //             ...data[key],
-    //             address,
-    //             paymentMode: OrderBodyDto.paymentMode,
-    //             cartId,
-    //             customer,
-    //             createdAt: new Date()
-    //         }
-    //         //sends data or notification to sellers when order placed
-    //         this.notificationService.io.to(key).emit(NEW_ORDER, orderData);
-    //     }
-    // }
-
-
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({
-        summary: 'Creates an order',
-        description: 'Creates an order associated with given userId, and productId'
-    })
-    @ApiResponse({ type: CreateOrderResposeDto, status: 201, description: 'Orders created successfully' })
-    @Post('createOrder')
-    async createOrder(@Body() OrderBodyDto: CreateOrderDto) {
-
-        //creating orders using instance Id
-        const instanceId = uuid();
-        const { currency } = OrderBodyDto
-
-        const totalAmount = calculateTotalPrice(OrderBodyDto)
-        const response = await this.customerService.createPaymentIntent(totalAmount, currency);
-        const { clientSecret, paymentId } = response.data;
+    //     const totalAmount = calculateTotalPrice(OrderBodyDto)
+    //     const response = await this.customerService.createPaymentIntent(totalAmount, currency);
+    //     const { clientSecret, paymentId } = response.data;
         
-        //creates an order
-        await this.customerService.createOrder(OrderBodyDto, paymentId , instanceId);
-        return { clientSecret }
+    //     //creates an order
+    //     await this.customerService.createOrder(OrderBodyDto, paymentId , instanceId);
+    //     return { clientSecret }
 
-        // this.notificationService.io.to(key).emit(NEW_ORDER, orderData);
-    }
+    //     // this.notificationService.io.to(key).emit(NEW_ORDER, orderData);
+    // }
 
 
     @ApiBearerAuth()
@@ -116,7 +67,7 @@ export class CustomerController {
         if ((pageSize && !page) || (!pageSize && page)) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
-                message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
+                message: ErrorMessages.INVALID_PAGINATION_INPUT.message,
                 success: false
             }, HttpStatus.BAD_REQUEST);
         }
@@ -165,14 +116,14 @@ export class CustomerController {
         enum: OrderStatusEnum, isArray: true})
     async getOrdersByBusinessIds(
         @Param('customerId') customerId: number,
-        @Query('orderStatus') orderStatus: string[],
+        @Query('orderStatus') orderStatus: number[],
         @Query(ValidationPipe) query: PaginationDto) {
         const { page, pageSize,} = query;
 
         if ((pageSize && !page) || (!pageSize && page)) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
-                message: ErrorMessages.INVALID_PAGINATON_INPUT.message,
+                message: ErrorMessages.INVALID_PAGINATION_INPUT.message,
                 success: false
             }, HttpStatus.BAD_REQUEST);
         }

@@ -4,12 +4,14 @@ import { CustomerController } from './v1/customer.controller';
 import { customerProviders } from './customer.provider';
 import { GatewayModule } from 'src/gateway/gateway.module';
 import { HttpModule } from 'src/https/https.module';
+import { DatabaseModule } from 'src/database/database.module';
 
 
 @Module({
   imports: [
     GatewayModule,
-    HttpModule
+    HttpModule,
+    DatabaseModule
   ],
   controllers: [ CustomerController ],
   providers: [

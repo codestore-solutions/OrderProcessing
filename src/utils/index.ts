@@ -27,31 +27,23 @@ export function transformPaginationValueToInt(value: any, key: string): number {
             HttpStatus.BAD_REQUEST,
         );
     }
+    console.log(parsedValue, key)
     return parsedValue;
 }
 
 
-export const calculateTotalPrice = (orderObject: CreateOrderDto): number => {
-    let totalPrice = 0;
-
-    for (const order of orderObject.ordersFromStore) {
-        let orderTotal = 0;
-
-        for (const orderItem of order.orderItems) {
-            const itemTotal =
-                (orderItem.price - orderItem.discount) * orderItem.quantity *
-                (1 + orderItem.gst / 100);
-            orderTotal += itemTotal;
+export function transformArrayToIntArray(value: any, key: string): number[] {
+    const parsedValues = [];
+    for (const ele of value) {
+        const parsedValue = parseInt(ele, 10);
+        if (isNaN(parsedValue)) {
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: key + " " + ErrorMessages.INVALID_VALUE.message,
+                success: false
+            }, HttpStatus.BAD_REQUEST);
         }
-
-        totalPrice += orderTotal + order.deliveryCost;
+        parsedValues.push(parsedValue)
     }
-
-    return totalPrice;
-};
-
-
-export const getCurrencies = () => {
-    const currencies = currencyData.map((currency) => currency.code);
-    return currencies;
-  }
+    return parsedValues;
+}

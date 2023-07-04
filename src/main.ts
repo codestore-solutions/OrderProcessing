@@ -9,6 +9,7 @@ import { json, urlencoded } from 'express';
 import { SocketIOAdapter } from './gateway/socket.io.adapter';
 import { ResponseInterceptor } from './interceptors/response.interceptor';
 import { ErrorFilter } from './filters/error.filter';
+import { SeedService } from './seed/seed.service';
 
 
 async function bootstrap() {
@@ -43,10 +44,11 @@ async function bootstrap() {
 
     //Setting websocket adapter
     app.useWebSocketAdapter(new SocketIOAdapter(app))
+    const seedService = app.get(SeedService);
+    await seedService.seedOrderStatus();
   } catch (err) {
     console.log(err);
   }
-  console.log(process.env.PORT, port,'order processing')
   await app.listen(process.env.PORT || port || 3000);
 }
 bootstrap();

@@ -18,7 +18,7 @@ export class UserService {
         return this.users;
     }
 
-    getUsersByRole(role: string): UserDto[] {
+    getUsersByRole(role: number): UserDto[] {
         return this.users.filter(user => user.role === role);
     }
 

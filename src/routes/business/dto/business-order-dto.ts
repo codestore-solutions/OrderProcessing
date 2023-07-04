@@ -3,7 +3,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsEnum, IsOptional, Min, IsInt, IsArray, IsPositive } from 'class-validator';
 import { ErrorMessages } from 'src/assets/errorMessages';
-import { transformPaginationValueToInt } from 'src/utils';
+import { transformArrayToIntArray, transformPaginationValueToInt } from 'src/utils';
+import { BusinessOrderResponseDTO } from './response.dto';
 
 
 export class BusinessOrderDetailsDTO {
@@ -67,23 +68,24 @@ export class BusinessOrderDTO {
 }
 
 
-export class orderListDto {
+export class OrderListDto {
   @ApiProperty({ example: 1 })
   "total": number
 
-  @ApiProperty({ type: BusinessOrderDTO, isArray: true })
-  list: BusinessOrderDTO[]
+  @ApiProperty({ type: BusinessOrderResponseDTO, isArray: true })
+  list: BusinessOrderResponseDTO[]
 }
 
 
 export class GetOrdersQuery {
-  @Transform(({ value }) => transformId(value))
-  @IsArray()
+  @Transform(({ value }) => transformArrayToIntArray(value, 'store id'))
+  // @IsArray()
   @ApiProperty({ type: [Number], })
-  storeIds: number[];
+  vendorIds: number[];
 
-  @IsArray()
-  orderStatus: string[];
+  // @IsArray()
+  @Transform(({ value }) => transformArrayToIntArray(value, 'order status'))
+  orderStatus: number[];
 
   @Transform(({ value }) => transformPaginationValueToInt(value, 'page'))
   @ApiPropertyOptional()
@@ -98,18 +100,3 @@ export class GetOrdersQuery {
   pageSize?: number;
 }
 
-function transformId(value: any): number[] {
-  const parsedValues = [];
-  for (const ele of value) {
-    const parsedValue = parseInt(ele, 10);
-    if (isNaN(parsedValue)) {
-      throw new HttpException({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: ErrorMessages.INVALID_VALUE.message,
-        success: false
-      }, HttpStatus.BAD_REQUEST);
-    }
-    parsedValues.push(parsedValue)
-  }
-  return parsedValues;
-}

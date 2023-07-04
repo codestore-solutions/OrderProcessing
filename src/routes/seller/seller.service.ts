@@ -1,327 +1,206 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { constants, orderStatus } from '../../assets/constants';
-import { OrderBodyDto, OrderDto } from './dto/create-order-details.dto';
-import { Product } from 'src/database/entities/product.entity';
-import { Address } from 'src/database/entities/address.entity';
-import { ProductInventory } from 'src/database/entities/product-inventory.entity';
-import { ProductAttributes } from 'src/database/entities/product-attributes.entity';
+import { HttpException, HttpStatus, Inject, Injectable, Logger, } from '@nestjs/common';
+import { constants, } from '../../assets/constants';
+import { PrismaClient } from '@prisma/client';
 import { ErrorMessages } from 'src/assets/errorMessages';
-import { Payment } from 'src/database/entities/payment.entity';
-import { User } from 'src/database/entities/user.entity';
-import { Order } from 'src/database/entities/order.entity';
-import { Sequelize, literal } from 'sequelize';
-import { Attribute } from 'src/database/entities/attributes.entity';
-import moment from 'moment';
-import sequelize from 'sequelize';
-import { OrderItem } from 'src/database/entities/ordered_product';
+import { DataManagementService } from 'src/https/microservices';
+import { DataMappingService } from 'src/data-mapping/data-mapping.service';
+import { FieldMapping } from 'src/data-mapping/field-mapping.interface';
 
 
 @Injectable()
 export class SellerService {
 
-    constructor(
-        @Inject(constants.ORDER_REPOSITORY)
-        private orderRepository: typeof Order,
+    private logger = new Logger(SellerService.name)
+    constructor(@Inject(constants.PRISMA_CLIENT) private readonly prisma: PrismaClient,
+        private dataManagementService: DataManagementService,
+        private dataMappingService: DataMappingService) { }
 
-        @Inject(constants.ORDER_ITEM_REPOSITORY)
-        private orderItemRepository: typeof OrderItem,
+    async getOrdersBySellerId(vendorId: number,
+        page: number, pageSize: number, orderStatus: number[]) {
+        try {
+            const offset = (page - 1) * pageSize;
+            const limit = pageSize;
 
-    ) { }
+            const [orders, orders_count] = await Promise.all([
+                this.prisma.order.findMany({
+                    where: {
+                        vendorId,
+                        orderStatusId: {
+                            in: orderStatus,
+                        },
+                    },
+                    select: {
+                        id: true,
+                        vendorId: true,
+                        orderStatusId: true,
+                        deliveryAgentId: true,
+                        customerId: true,
+                        shippingAddressId: true
+                    },
+                    skip: offset,
+                    take: limit,
+                }),
+                this.prisma.order.count({
+                    where: {
+                        vendorId,
+                        orderStatusId: {
+                            in: orderStatus,
+                        },
+                    },
+                }),
+            ]);
 
-    async getAllOrdersBySellerIdWithPagination(parsedId: number,
-        page: number, pageSize: number) {
-
-        const offset = (page - 1) * pageSize;
-        const limit = pageSize;
-        const orders_count = await this.orderRepository.count({
-            where: {
-                storeId: parsedId
-            },
-        });
-
-        const orders = await this.orderRepository.findAll({
-            where: {
-                storeId: parsedId
-            },
-            attributes: ['createdAt', 'id',
-                'paymentMode', 'shippingAddressId', 'customerId', 'deliveryId'],
-            limit,
-            offset,
-        });
-
-        return {
-            total: orders_count,
-            data: orders
+            return {
+                totalOrders: orders_count,
+                orders,
+            };
+        } catch (error) {
+            this.logger.error('An error occurred:', error);
+            throw new HttpException({
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: ErrorMessages.INTERNAL_SERVER_ERROR.message,
+                success: false
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
-    async getAllOrdersBySellerId(parsedId: number) {
+    async getMappingDatafromServices(
+        orderIdArray: number[], customerIdArray: number[],
+        addressIdArray: number[]
+    ) {
+        try {
 
-        const orders = await this.orderRepository.findAll({
-            where: {
-                storeId: parsedId
-            },
-            attributes: ['createdAt', 'id',
-                'paymentMode', 'shippingAddressId', 'customerId', 'deliveryId'],
-        });
+            // Promise.all to concurrently fetch data from multiple services
+            const [orderData, customerData, addressData] = await Promise.all([
+                // Fetch delivery agent data from delivery management service
+                this.dataManagementService.getOrders(orderIdArray),
+                // // Fetch customer data from customer service
+                this.dataManagementService.getCustomers(customerIdArray),
+                // Fetch address details from address service
+                this.dataManagementService.getAddresses(addressIdArray),
+            ]);
 
-        return {
-            total: orders.length,
-            data: orders
+            // console.log("ADDRESS:", addressData?.data.data, addressIdArray)
+            // console.log("CUSTOMER:", customerData, customerIdArray)
+
+            // Return the fetched data
+            return {
+                orderData: orderData && orderData.data ? orderData.data.data : [],
+                customers: customerData || [],
+                addresses: addressData && addressData.data ? addressData.data.data : [],
+            };
+
+        } catch (error) {
+            this.logger.error('An error occurred:', error);
+            throw new HttpException({
+                statusCode: HttpStatus.SERVICE_UNAVAILABLE,
+                message: ErrorMessages.SERVICE_UNAVAILABLE.message,
+                success: false
+            }, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 
 
-    async getAllOrderItemsByOrderId(orderId: number) {
-        return this.orderItemRepository.findAll({
-            where: { orderId }
-        })
+    async getMappedData(
+        customerArray: any[],
+        addressArray: any[], orders: any[]
+    ) {
+
+        type FieldMappings<T, U> = {
+            [K in keyof T]: FieldMapping<T, U>;
+        };
+
+        const fieldMappings: FieldMappings<any, any> = {
+            customer: {
+                idField: 'customerId',
+                map: new Map(customerArray.map(customer => [customer.id, customer])),
+                __all__: false,
+                selectedFields: ['id', 'name', 'email'],
+            },
+            shippingAddress: {
+                idField: 'shippingAddressId',
+                map: new Map(addressArray.map(address => [address.id, address])),
+                __all__: true,
+                selectedFields: [],
+            },
+        };
+        
+
+        const data = this.dataMappingService.replaceIdsWithData(orders, fieldMappings);
+        return data;
     }
+
 
 
     async getOrderItemDetailByOrderId(orderId: number) {
-        return await this.orderItemRepository.findByPk(orderId);
+        // return await this.orderItemRepository.findByPk(orderId);
     }
 
 
-    async findByStatus(status: string, storeId: number) {
-        return this.orderRepository.findAll({
-            where: { orderStatus: status, storeId: storeId }
+    async getOrderById(orderId: number) {
+        const order = await this.prisma.order.findUnique({
+            where: {
+                id: orderId,
+            },
+            select: {
+                id: true,
+                customerId: true,
+                orderStatusId: true,
+                shippingAddressId: true
+            },
         });
+
+        return order;
     }
+
+
+    async findByStatus(status: number, storeId: number) {
+        const orders = await this.prisma.order.findMany({
+            where: {
+                orderStatusId: status,
+                vendorId: storeId,
+            },
+        });
+
+        return orders;
+    }
+
 
     async getOrderDetailsByOrderId(orderId: number) {
-        const order = await this.orderRepository.findByPk(orderId, {
-            attributes: {
-                exclude: ['createdBy', 'updatedAt', 'orderInstanceId', 'deliveryMode']
+        const order = await this.prisma.order.findUnique({
+            where: {
+                id: orderId,
+            },
+            select: {
+                id: true,
+                customerId: true,
+                deliveryAgentId: true,
             },
         });
 
-        return order
+        return order;
     }
 
 
-    async getAllOrdersByCartId(storeId: string, cartId: string) {
-        return this.orderRepository.findAll({
-            where: { storeId, orderId: cartId },
-            attributes: {
-                exclude: ['storeId', 'userId',
-                    'productAttributeId', 'shippingAddressId', 'paymentId', 'productId']
+    async getOrderDetailByOrderId(orderId: number) {
+        const order = await this.prisma.order.findUnique({
+            where: {
+                id: orderId,
             },
-            include: [
-                {
-                    model: Product,
-                    attributes: { exclude: ['storeId', 'id'] },
-                },
-
-                {
-                    model: ProductAttributes,
-                    attributes: { exclude: ['id', 'attributeId', 'productId'] },
-                    include: [
-                        {
-                            model: Attribute,
-                            attributes: { exclude: ['id'] },
-                        },
-                    ]
-                },
-                {
-                    model: Payment,
-                    attributes: { exclude: ['id', 'storeId', 'customerId'] }
-                },
-                {
-                    model: Address,
-                    attributes: { exclude: ['id', 'userId'] }
-                },
-            ],
-        });
-    }
-
-    async getOrderDetailByOrderId(orderId: string) {
-        return this.orderRepository.findOne({
-            where: { id: orderId },
-            attributes: {
-                exclude: ['storeId', 'customerId',
-                    'productAttributeId', 'shippingAddressId', 'paymentId', 'productId']
+            select: {
+                orderStatus: true,
+                vendorId: false,
+                customerId: false,
             },
-            // include: [
-            //     // {
-            //     //     model: User,
-            //     //     as: 'customer',
-            //     //     attributes: { exclude: ['id'] },
-            //     // },
-            //     {
-            //         model: Product,
-            //         attributes: { exclude: ['storeId', 'id'] },
-            //     },
-
-            //     {
-            //         model: ProductAttributes,
-            //         attributes: { exclude: ['id', 'attributeId', 'productId'] },
-            //         include: [
-            //             {
-            //                 model: Attribute,
-            //                 attributes: { exclude: ['id'] },
-            //             },
-            //         ]
-            //     },
-            //     {
-            //         model: Payment,
-            //         attributes: { exclude: ['id', 'storeId', 'customerId'] }
-            //     },
-            //     {
-            //         model: Address,
-            //         attributes: { exclude: ['id', 'customerId'] }
-            //     },
-            // ],
         });
+
+        return order;
     }
 
-
-
-    // async getAllOrdersByStoreId(storeId: number) {
-    //     return this.orderRepository.findAll({
-    //         where: { storeId },
-    //         attributes: ['cartId',
-    //             [literal('COUNT(*)'), 'totalProductCount'],
-    //             [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
-    //             [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
-    //             [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
-    //             [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
-    //         ],
-
-    //         group: ['cartId'],
-    //     });
-    // }
-
-
-
-    // async updateOrderStatusByCartId(cartId: string, storeId: string, status: string) {
-
-    //     //gets orders based on cart Id, store Id
-    //     const orders = await this.orderRepository.findAll({
-    //         where: { cartId, storeId },
-    //     });
-
-    //     if (orders.length === 0) {
-    //         throw new BadRequestException('Orders not found');
-    //     }
-
-    //     const currentState = orders[0].status;
-
-    //     for (const order of orders) {
-    //         if (order.status !== currentState) {
-    //             throw new BadRequestException('All orders must be in the same state');
-    //         }
-    //     }
-
-    //     if (status === 'processing' && currentState !== 'pending') {
-    //         throw new BadRequestException('All orders must be in the "pending" state to update to "processing"');
-    //     } else if (status === 'shipped' && currentState !== 'processing') {
-    //         throw new BadRequestException('All orders must be in the "processing" state to update to "shipped"');
-    //     }
-
-    //     for (const order of orders) {
-    //         order.status = status;
-    //         await order.save();
-    //     }
-    // }
-
-
-    // async updateOrderStatus(id: string, status: string) {
-    //     const order = await this.orderRepository.findByPk(id);
-
-    //     if (!order) {
-    //         throw new NotFoundException(ErrorMessages.ORDER_NOT_FOUND);
-    //     }
-
-    //     switch (status) {
-    //         case 'cancel':
-    //             if (order.status !== 'processing' && order.status !== 'pending') {
-    //                 throw new BadRequestException(ErrorMessages.CANNOT_CANCEL_ORDER);
-    //             }
-    //             break;
-    //     }
-
-    //     order.status = status;
-    //     await order.save();
-
-    //     return order;
-    // }
-
-    // async findByStatus(status: string, storeId: string) {
-
-    //     const validStatus = [...orderStatus];
-
-    //     if (!validStatus.includes(status)) {
-    //         throw new BadRequestException('Invalid status value');
-    //     }
-
-    //     return this.orderRepository.findAll({
-    //         where: { storeId, status },
-    //         attributes: ['cartId',
-    //             [literal('COUNT(*)'), 'totalProductCount'],
-    //             [sequelize.fn('SUM', sequelize.col('price')), 'totalAmount'],
-    //             [sequelize.fn('SUM', sequelize.col('discount')), 'totalDiscount'],
-    //             [sequelize.fn('MAX', sequelize.col('createdAt')), 'createdAt'],
-    //             [sequelize.fn('MAX', sequelize.col('paymentMode')), 'paymentMode'],
-    //         ],
-
-    //         group: ['cartId'],
-    //         include: [
-    //             {
-    //                 model: User,
-    //                 as: 'customer',
-    //                 attributes: { exclude: ['id'] },
-    //             },
-    //             {
-    //                 model: Address,
-    //                 attributes: { exclude: ['id', 'userId'] }
-    //             },
-    //         ],
-    //     });
-    // }
-
-
-    // async getOrderWithDetails() {
-    //     return this.orderModel.findAll({
-    //         include: [
-    //             {
-    //                 model: Product,
-    //                 include: [
-    //                     { model: Store },
-    //                     { model: Specification },
-    //                 ],
-    //             },
-    //             { model: Payment },
-    //             { model: User },
-    //             { model: ShippingAddress },
-    //         ],
-    //     });
-    // }
-
-
-    // update(id: string, updateOrderDto: UpdateOrderDto) {
-    //     return this.orderRepository.update(updateOrderDto, { where: { id } })
-    // }
 
     remove(id: string) {
         return `This action removes a #${id} booking`;
     }
 
-    async getOrdersByStoreId(storeId: string) {
-        return this.orderRepository.findAll({ where: { storeId } });
-    }
-
-    async createOrderDetail(OrderDto: OrderDto): Promise<void> {
-        // await this.orderRepository.create(OrderDto);
-    }
-
-    async updateOrderDetail(id: string, OrderDto: OrderDto): Promise<void> {
-        const orderDetails = await this.orderRepository.findByPk(id);
-        if (!orderDetails) {
-            throw new NotFoundException('Order detail not found');
-        }
-        await orderDetails.update(OrderDto);
-    }
 }

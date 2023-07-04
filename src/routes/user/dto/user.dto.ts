@@ -17,7 +17,7 @@ export class UserDto {
   contacts: string[];
 
   @ApiProperty()
-  role: string;
+  role: number;
 
   @ApiProperty()
   businessAdmin?: number;

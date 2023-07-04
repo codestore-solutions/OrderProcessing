@@ -1,5 +1,20 @@
 export const ErrorMessages = {
 
+    SERVICE_UNAVAILABLE: {
+        message: "Service unavailable",
+        code: "SERVICE_UNAVAILABLE"
+    },
+
+    PAGINATION_REQUIRED: {
+        code: "PAGINATION_REQUIRED",
+        message: "Pagination is required"
+    },
+
+    INVALID_ORDER_STATUS: {
+        code: "INVALID_ORDER_STATUS",
+        message: "Provided order status are not valid"
+    },
+
     INVALID_PACKING_COMPLETE_UPDATE: {
         code: 'INVALID_PACKING_COMPLETE_UPDATE',
         message: 'Packing is not yet started',
@@ -10,7 +25,7 @@ export const ErrorMessages = {
         message: 'Only new order can be packed'
     },
 
-    INVALID_PAGINATON_INPUT: {
+    INVALID_PAGINATION_INPUT: {
         code: 'INVALID_PAGINATON_INPUT',
         message: 'Both pageSize and pageNumber must be provided together'
     },

@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Order {
+  id                    Int          @unique          
+  vendorId              Int
+  customerId            Int
+  deliveryAgentId       Int?
+  shippingAddressId     Int
+  orderStatus           OrderStatus  @relation(fields: [orderStatusId], references: [id])
+  orderStatusId         Int          @default(1)
+  orderStatusTimeline   OrderStatusTimeline[]
+}
+
+
+model OrderStatus {
+  id                    Int      @id @default(autoincrement())
+  name                  String
+  orders                Order[]
+  orderStatusTimeline   OrderStatusTimeline[]
+}
+
+
+model OrderStatusTimeline {
+  id              Int     @id @default(autoincrement())
+  orderStatus     OrderStatus  @relation(fields: [orderStatusId], references: [id])
+  orderStatusId   Int
+  orders          Order  @relation(fields: [orderId], references: [id])
+  orderId         Int
+  timestamp       DateTime @default(now())
+
+  @@map(name: "order_status_timeline")
+  @@index([orderId], name: "order_status_timeline_order_id_index")
+  @@index([orderStatusId], name: "order_status_timeline_event_type_index")
+}
+
+
+enum OrderStatusEnum {
+  NEW
+  CANCEL
+  PACKING
+  PACKING_COMPLETED
+  AGENT_ASSIGNED
+  REASSIGNING
+  PICKED_UP
+  REACHED_DESTINATION
+  NOT_ACCEPTED_BY_CUSTOMER
+  DELIVERED
+  RETURN
+  EXCHANGED
+  PAYMENT_FAILED
+  CANCELLED_BY_SELLER
+  CANCELLED_BY_CUSTOMER
+}
