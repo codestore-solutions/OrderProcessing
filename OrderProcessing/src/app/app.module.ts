@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { StoreModule } from '@ngrx/store';
 import { DataService } from './services/data.service';
 import { EffectsModule } from '@ngrx/effects';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { dataReducer } from './store/reducer/order.reducer';
 import { OrderEffects } from './store/effects/orders.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -26,6 +26,7 @@ import en from '@angular/common/locales/en';
 import { SharedModuleModule } from './shared-module/shared-module.module';
 import { IconsProviderModule } from './icons-provider.module';
 import { NavComponent } from './component/nav/nav.component';
+import { TokenIntercepter } from './services/token.intercepter';
 registerLocaleData(en);
 
 
@@ -52,7 +53,15 @@ registerLocaleData(en);
     IconsProviderModule,
     SharedModuleModule
   ],
-  providers: [DataService, { provide: NZ_I18N, useValue: en_US }],
+  providers: [
+    DataService, 
+    { provide: NZ_I18N, useValue: en_US },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenIntercepter,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
