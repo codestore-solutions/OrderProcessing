@@ -1,7 +1,5 @@
 import { HttpException, HttpStatus } from "@nestjs/common";
 import { ErrorMessages } from "src/assets/errorMessages";
-import { CreateOrderDto } from "src/routes/customer/dto/create-order-details.dto";
-import { data as currencyData } from 'currency-codes';
 
 
 export function transformPaginationValueToInt(value: any, key: string): number {
@@ -27,7 +25,6 @@ export function transformPaginationValueToInt(value: any, key: string): number {
             HttpStatus.BAD_REQUEST,
         );
     }
-    console.log(parsedValue, key)
     return parsedValue;
 }
 

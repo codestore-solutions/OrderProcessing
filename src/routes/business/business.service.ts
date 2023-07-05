@@ -130,8 +130,6 @@ export class BusinessService {
             },
         };
 
-        console.log(orders)
-
         const data = this.dataMappingService.replaceIdsWithData(orders, fieldMappings);
         return data;
     }

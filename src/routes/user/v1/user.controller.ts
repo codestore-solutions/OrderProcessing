@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { UserService } from '../user.service';
 import { ApiExcludeEndpoint, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from '../dto/user.dto';
@@ -31,7 +31,7 @@ export class UserController {
     @ApiOperation({ summary: 'Get users by role' })
     @ApiQuery({ name: 'role', description: 'User role' })
     @ApiResponse({ status: 200, description: 'Users with the specified role', type: [UserDto] })
-    getUsersByRole(@Query('role') role: number) {
+    getUsersByRole(@Query('role', ParseIntPipe) role: number) {
         return this.userService.getUsersByRole(role);
     }
 

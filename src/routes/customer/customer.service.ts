@@ -1,41 +1,23 @@
-import { HttpException, HttpStatus, Inject, Injectable, } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable, Logger, } from '@nestjs/common';
 import { constants } from '../../assets/constants';
 import { ErrorMessages } from 'src/assets/errorMessages';
-import AxiosService from 'src/utils/axios/axiosService';
-import { ConfigService } from '@nestjs/config';
-import { HttpService } from 'src/https/https.service';
-import { PaymentService } from 'src/assets/endpoints';
 import { PrismaClient } from '@prisma/client';
+import { FieldMapping } from 'src/data-mapping/field-mapping.interface';
+import { DataManagementService } from 'src/https/microservices';
+import { DataMappingService } from 'src/data-mapping/data-mapping.service';
 
 
 @Injectable()
 export class CustomerService {
 
+    private logger = new Logger(CustomerService.name)
     constructor(
         @Inject(constants.PRISMA_CLIENT) private readonly prisma: PrismaClient,
-        private configService: ConfigService,) { }
+        private dataManagementService: DataManagementService,
+        private dataMappingService: DataMappingService) { }
 
 
-    async createPaymentIntent(amount: number, currency: string) {
-        try {
-            const baseUrl = this.configService.get("PAYMENT_SERVICE_URL")
-            const endPoint = PaymentService.create_intent
-            const completeUrl = AxiosService.urlBuilder(baseUrl, endPoint)
-            console.log('110000', completeUrl)
-
-            return HttpService.post(completeUrl, { amount, currency });
-        } catch (err) {
-            console.log(err, '0000')
-            throw new HttpException({
-                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-                message: ErrorMessages.INTERNAL_SERVER_ERROR.message,
-                success: false
-            }, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    };
-
-
-    async getAllOrdersByCustomerIdWithPagination(parsedId: number, page: number, pageSize: number) {
+    async getOrdersByCustomerId(customerId: number, page: number, pageSize: number) {
         try {
             const offset = (page - 1) * pageSize;
             const limit = pageSize;
@@ -43,26 +25,28 @@ export class CustomerService {
             const [orders, total] = await Promise.all([
                 this.prisma.order.findMany({
                     where: {
-                        customerId: parsedId,
+                        customerId: customerId,
                     },
                     select: {
                         id: true,
                         vendorId: true,
+                        orderStatusId: true,
                         deliveryAgentId: true,
+                        shippingAddressId: true
                     },
                     skip: offset,
                     take: limit,
                 }),
                 this.prisma.order.count({
                     where: {
-                        customerId: parsedId,
+                        customerId: customerId,
                     },
                 }),
             ]);
 
             return {
-                total,
-                data: orders,
+                totalOrders: total,
+                orders,
             };
         } catch (error) {
             // Handle any errors or exceptions
@@ -72,122 +56,131 @@ export class CustomerService {
     }
 
 
-    async getAllOrdersByCustomerId(parsedId: number) {
-        try {
-            const orders = await this.prisma.order.findMany({
-                where: {
-                    customerId: parsedId,
-                },
-                select: {
-                    id: true,
-                    vendorId: true,
-                    deliveryAgentId: true,
-                },
-            });
-
-            return {
-                total: orders.length,
-                data: orders,
-            };
-        } catch (error) {
-            // Handle any errors or exceptions
-            console.error(error);
-            throw error;
-        }
-    }
-
-
-    async getOrderDetailsByOrderId(orderId: number) {
-        try {
-            const order = await this.prisma.order.findUnique({
-                where: {
-                    id: orderId,
-                },
-                select: {
-                    id: true,
-                    customerId: true,
-                    deliveryAgentId: true,
-                },
-            });
-
-            return order;
-        } catch (error) {
-            // Handle any errors or exceptions
-            console.error(error);
-            throw error;
-        }
-    }
-
-
-    async getAllOrdersBasedOnStatusWithPagination(customerId: number,
+    async getOrdersByCustomerIdAndStatus(customerId: number,
         page: number, pageSize: number, orderStatus: number[]) {
         try {
             const offset = (page - 1) * pageSize;
             const limit = pageSize;
 
-            const countPromise = this.prisma.order.count({
-                where: {
-                    customerId,
-                    orderStatusId: {
-                        in: orderStatus,
+            const [orders, ordersCount] = await Promise.all([
+                this.prisma.order.findMany({
+                    where: {
+                        customerId,
+                        orderStatusId: {
+                            in: orderStatus,
+                        },
                     },
-                },
-            });
-
-            const ordersPromise = this.prisma.order.findMany({
-                where: {
-                    customerId,
-                    orderStatusId: {
-                        in: orderStatus,
+                    select: {
+                        id: true,
+                        vendorId: true,
+                        orderStatusId: true,
+                        deliveryAgentId: true,
+                        shippingAddressId: true
                     },
-                },
-                select: {
-                    id: true,
-                    vendorId: true,
-                    deliveryAgentId: true,
-                },
-                take: limit,
-                skip: offset,
-            });
-
-            const [orders_count, orders] = await Promise.all([countPromise, ordersPromise]);
+                    skip: offset,
+                    take: limit,
+                }),
+                this.prisma.order.count({
+                    where: {
+                        customerId,
+                        orderStatusId: {
+                            in: orderStatus,
+                        },
+                    },
+                }),
+            ]);
 
             return {
-                total: orders_count,
-                data: orders,
+                total: ordersCount,
+                orders,
             };
         } catch (error) {
-            // Handle any errors or exceptions
-            console.error(error);
-            throw error;
+            this.logger.error('An error occurred:', error);
+            throw new HttpException({
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: ErrorMessages.INTERNAL_SERVER_ERROR.message,
+                success: false
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
-    async getAllOrdersBasedOnStatus(customerId: number, orderStatus: number[]) {
+    async getMappingDatafromServices(
+        orderIdArray: number[], deliveryAgentIdArray: number[],
+        vendorIdArray: number[], addressIdArray: number[]
+    ) {
         try {
-            const orders = await this.prisma.order.findMany({
-                where: {
-                    customerId,
-                    orderStatusId: {
-                        in: orderStatus,
-                    },
-                },
-                select: {
-                    id: true,
-                    vendorId: true,
-                    deliveryAgentId: true,
-                },
-            });
 
+            // Promise.all to concurrently fetch data from multiple services
+            const [orderData, deliveryAgentData,
+                vendorData, addressData] = await Promise.all([
+                    // Fetch delivery agent data from delivery management service
+                    this.dataManagementService.getOrders(orderIdArray),
+                    // Fetch delivery agent data from delivery management service
+                    this.dataManagementService.getDeliveryAgents(deliveryAgentIdArray),
+                    // Fetch store data from vendor management service
+                    this.dataManagementService.getVendors(vendorIdArray),
+                    // Fetch address details from address service
+                    this.dataManagementService.getAddresses(addressIdArray),
+                ]);
+
+            // console.log("ADDRESS:", addressData?.data.data, addressIdArray)
+            // console.log("DELIVERY:", deliveryAgentData?.data?.data, deliveryAgentIdArray)
+            // console.log("VENDORS:", vendorData?.data?.data, vendorIdArray)
+
+            // Return the fetched data
             return {
-                total: orders.length,
-                data: orders,
+                orderData: orderData && orderData.data ? orderData.data.data : [],
+                deliveryAgents: deliveryAgentData &&
+                    deliveryAgentData.data ? deliveryAgentData.data.data : [],
+                vendors: vendorData && vendorData.data ? vendorData.data.data : [],
+                addresses: addressData && addressData.data ? addressData.data.data : [],
             };
+
         } catch (error) {
-            // Handle any errors or exceptions
-            console.error(error);
-            throw error;
+            this.logger.error('An error occurred:', error);
+            throw new HttpException({
+                statusCode: HttpStatus.SERVICE_UNAVAILABLE,
+                message: ErrorMessages.SERVICE_UNAVAILABLE.message,
+                success: false
+            }, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
+
+
+    async getMappedData(
+        deliveryAgentArray: any[],
+        vendorArray: any[],
+        addressArray: any[], orders: any[]
+    ) {
+
+        type FieldMappings<T, U> = {
+            [K in keyof T]: FieldMapping<T, U>;
+        };
+
+        const fieldMappings: FieldMappings<any, any> = {
+            vendor: {
+                idField: 'vendorId',
+                map: new Map(vendorArray.map(vendor => [vendor.id, vendor])),
+                __all__: true,
+                selectedFields: ['first_name', 'last_name', 'business', 'id'],
+            },
+            deliveryAgent: {
+                idField: 'deliveryAgentId',
+                map: new Map(deliveryAgentArray.map(delivery => [delivery.deliveryAgentId, delivery])),
+                __all__: true,
+                selectedFields: [],
+            },
+            shippingAddress: {
+                idField: 'shippingAddressId',
+                map: new Map(addressArray.map(address => [address.id, address])),
+                __all__: true,
+                selectedFields: [],
+            },
+        };
+
+        const data = this.dataMappingService.replaceIdsWithData(orders, fieldMappings);
+        return data;
+    }
+
 }
