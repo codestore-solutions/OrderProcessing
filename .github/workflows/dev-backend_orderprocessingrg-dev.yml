@@ -37,7 +37,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     environment:
-      name: 'Production'
+      name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'order-processing-dev'
           slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_196354cbdcca474bb476b5f828ccd99a }}
+          publish-profile: ${{ secrets.AzureAppService_PublishProfile_70e833cf28934f828bc4de1856a0566f }}
           package: .
