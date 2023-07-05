@@ -1,16 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Put, ValidationPipe, UseGuards, UsePipes, Query, HttpException, HttpStatus } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateOrderDto, CreateOrderResposeDto } from '../dto/create-order-details.dto';
-import { UpdateOrderStatusDto } from '../dto/update-order-details.dto';
+import { Controller, Get, Param, ValidationPipe, UseGuards, 
+    UsePipes, Query, HttpException, HttpStatus, ParseIntPipe } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomerService } from '../customer.service';
-import { OrderStatusEnum, PaymentMode } from 'src/assets/constants';
-import { uuid } from 'uuidv4';
-import { NotificationGateway } from 'src/gateway/gateway.provider';
+import { OrderStatusEnum } from 'src/assets/constants';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import { CustomerOrderDTO, CustomerOrderListDto } from '../dto/customer-order.dto';
+import { GetCustomerOrdersQuery } from '../dto/customer-order.dto';
 import { PaginationDto } from 'src/assets/dtos/pagination.dto';
 import { ErrorMessages } from 'src/assets/errorMessages';
+import { OrderService } from 'src/routes/orders/orders.service';
+import { CustomerOrderResponseDTO } from '../dto/response.dto';
 
 
 @ApiTags('Orders - customer')
@@ -18,33 +16,8 @@ import { ErrorMessages } from 'src/assets/errorMessages';
 export class CustomerController {
     constructor(
         private readonly customerService: CustomerService,
-        private readonly notificationService: NotificationGateway,
+        private readonly orderService: OrderService
     ) { }
-
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
-    // @ApiOperation({
-    //     summary: 'Creates an order',
-    //     description: 'Creates an order associated with given userId, and productId'
-    // })
-    // @ApiResponse({ type: CreateOrderResposeDto, status: 201, description: 'Orders created successfully' })
-    // @Post('createOrder')
-    // async createOrder(@Body() OrderBodyDto: CreateOrderDto) {
-
-    //     //creating orders using instance Id
-    //     const instanceId = uuid();
-    //     const { currency } = OrderBodyDto
-
-    //     const totalAmount = calculateTotalPrice(OrderBodyDto)
-    //     const response = await this.customerService.createPaymentIntent(totalAmount, currency);
-    //     const { clientSecret, paymentId } = response.data;
-        
-    //     //creates an order
-    //     await this.customerService.createOrder(OrderBodyDto, paymentId , instanceId);
-    //     return { clientSecret }
-
-    //     // this.notificationService.io.to(key).emit(NEW_ORDER, orderData);
-    // }
 
 
     @ApiBearerAuth()
@@ -56,15 +29,17 @@ export class CustomerController {
     })
     @ApiResponse({
         status: 200, description: 'Returns the orders with the specified customer',
-        type: CustomerOrderListDto, isArray: true
+        type: CustomerOrderResponseDTO, isArray: true
     })
     @UsePipes(new ValidationPipe({ transform: true }))
     async getOrdersByStoreId(
-        @Param('customerId') customerId: number,
+        @Param('customerId', ParseIntPipe) customerId: number,
         @Query(ValidationPipe) query: PaginationDto) {
 
-        const { pageSize, page } = query;
-        if ((pageSize && !page) || (!pageSize && page)) {
+        const { page, pageSize } = query;
+
+        // Check if pageSize and page are provided
+        if (!pageSize || !page) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: ErrorMessages.INVALID_PAGINATION_INPUT.message,
@@ -72,82 +47,147 @@ export class CustomerController {
             }, HttpStatus.BAD_REQUEST);
         }
 
-        // Check if pagination details are provided
-        if (page && pageSize) {
-            return this.customerService.getAllOrdersByCustomerIdWithPagination(customerId,
-                page, pageSize);
-        } else {
-            // Retrieve all data
-            // No pagination details provided, return all results
-            return this.customerService.getAllOrdersByCustomerId(customerId);
+        // Initialize sets and arrays for data retrieval
+        const deliveryAgentIdSet: Set<number> = new Set();
+        const storeIdSet: Set<number> = new Set();
+        const shippingAddressIdSet: Set<number> = new Set();
+        const orderIdArray: number[] = [];
+
+        // Get orders with pagination details
+        const { totalOrders, orders } = await this.customerService.getOrdersByCustomerId(
+            customerId, page, pageSize,
+        );
+
+        // Extract relevant data from orders
+        for (const order of orders) {
+            if (order.deliveryAgentId) {
+                deliveryAgentIdSet.add(order.deliveryAgentId);
+            }
+            storeIdSet.add(order.vendorId);
+            shippingAddressIdSet.add(order.shippingAddressId);
+            orderIdArray.push(order.id);
         }
+
+        // Convert sets to arrays
+        const deliveryAgentIdArray = Array.from(deliveryAgentIdSet);
+        const storeIdArray = Array.from(storeIdSet);
+        const shippingAddressIdArray = Array.from(shippingAddressIdSet);
+
+        // Get mapping data from various services
+        const { orderData, deliveryAgents, vendors, addresses } =
+            await this.customerService.getMappingDatafromServices(
+                orderIdArray, deliveryAgentIdArray, storeIdArray,
+                shippingAddressIdArray
+            );
+            // console.log(orderData, deliveryAgents, vendors, addresses)
+        // Create a map of orders based on the id
+        const ordersMap = new Map(orders.map(order => [order.id, order]));
+
+        // console.log(ordersMap, orderData, 'mapped')
+
+        // Map orderData using orderId and merge with corresponding order
+        const mappedData = orderData.map(data => {
+            const order = ordersMap.get(data.orderId);
+            return { ...order, ...data };
+        });
+
+        // Get mapped data
+        // console.log(mappedData)
+        const data = await this.customerService.getMappedData(
+            deliveryAgents, vendors, addresses, mappedData
+        );
+
+        return { totalOrders, list: data };
     }
 
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    @Get('/getOrderDetailsByOrderId/:orderId')
-    @ApiOperation({
-        summary: 'Provides order details based on order id',
-        description: 'Provides order details associated with a customer by order id'
-    })
-    @ApiResponse({
-        status: 200, description: 'Returns order details by order id',
-        type: CustomerOrderDTO,
-    })
-    async getOrderDetailsByOrderId(@Param('orderId') orderId: number) {
-        return this.customerService.getOrderDetailsByOrderId(orderId);
-    }
-
-
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
-    @Get('getOrdersByCustomerIdAndStatus')
+    @Get('getOrdersByCustomerIdAndStatus/:customerId')
     @ApiOperation({
         summary: 'Provides orders based on customer Id and status',
         description: 'Provides a list of orders associated with a customer using customer id and status'
     })
     @ApiResponse({
         status: 200, description: 'Returns the orders with the specified customer and status',
-        type: CustomerOrderListDto,
+        type: CustomerOrderResponseDTO,
     })
     @UsePipes(new ValidationPipe({ transform: true }))
-    @ApiQuery({ name: 'orderStatus', description: 'Order status', 
-        enum: OrderStatusEnum, isArray: true})
-    async getOrdersByBusinessIds(
-        @Param('customerId') customerId: number,
-        @Query('orderStatus') orderStatus: number[],
-        @Query(ValidationPipe) query: PaginationDto) {
-        const { page, pageSize,} = query;
+    @ApiQuery({
+        name: 'orderStatus', description: 'Order status',
+        enum: OrderStatusEnum, isArray: true
+    })
+    async getOrdersByCustomerIdAndStatus(
+        @Param('customerId', ParseIntPipe) customerId: number,
+        @Query() query: GetCustomerOrdersQuery
+    ) {
+        const { page, pageSize, orderStatus } = query;
 
-        if ((pageSize && !page) || (!pageSize && page)) {
+        // Check if pageSize and page are provided
+        if (!pageSize || !page) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: ErrorMessages.INVALID_PAGINATION_INPUT.message,
                 success: false
             }, HttpStatus.BAD_REQUEST);
         }
-        // Check if pagination details are provided
-        if (page && pageSize) {
-            return this.customerService.getAllOrdersBasedOnStatusWithPagination(customerId,
-                page, pageSize, orderStatus);
-        } else {
-            // Retrieve all data
-            // No pagination details provided, return all results
-            return this.customerService.getAllOrdersBasedOnStatus(customerId, orderStatus);
 
+        // Validate order status
+        if (!this.orderService.validateOrderStatus(orderStatus)) {
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.INVALID_ORDER_STATUS.message,
+                success: false
+            }, HttpStatus.BAD_REQUEST);
         }
-    }
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
-    // @Put('updateOrderStatus/:orderId')
-    // @ApiOkResponse({ description: 'Order status updated successfully' })
-    // @ApiBadRequestResponse({ description: 'Invalid status or order cannot be updated in the current status' })
-    // @ApiNotFoundResponse({ description: 'Order not found' })
-    // @ApiOperation({ summary: 'Update the status of an order' })
-    // async updateOrderById(@Param('orderId') orderId: string, 
-    //     @Body(ValidationPipe) updateOrderStatusDto: UpdateOrderStatusDto) {
-    //     // return this.customerService.updateOrderStatus(orderId, updateOrderStatusDto.status);
-    // }
+        // Initialize sets and arrays for data retrieval
+        const deliveryAgentIdSet: Set<number> = new Set();
+        const storeIdSet: Set<number> = new Set();
+        const shippingAddressIdSet: Set<number> = new Set();
+        const orderIdArray: number[] = [];
+
+        // Get orders with pagination details
+        const { total, orders } = await this.customerService.getOrdersByCustomerIdAndStatus(
+            customerId, page, pageSize, orderStatus
+        );
+
+        // Extract relevant data from orders
+        for (const order of orders) {
+            if (order.deliveryAgentId) {
+                deliveryAgentIdSet.add(order.deliveryAgentId);
+            }
+            storeIdSet.add(order.vendorId);
+            shippingAddressIdSet.add(order.shippingAddressId);
+            orderIdArray.push(order.id);
+        }
+
+        // Convert sets to arrays
+        const deliveryAgentIdArray = Array.from(deliveryAgentIdSet);
+        const storeIdArray = Array.from(storeIdSet);
+        const shippingAddressIdArray = Array.from(shippingAddressIdSet);
+
+        // Get mapping data from various services
+        const { orderData, deliveryAgents, vendors, addresses } =
+            await this.customerService.getMappingDatafromServices(
+                orderIdArray, deliveryAgentIdArray, storeIdArray, 
+                shippingAddressIdArray
+            );
+
+        // Create a map of orders based on the id
+        const ordersMap = new Map(orders.map(order => [order.id, order]));
+
+        // Map orderData using orderId and merge with corresponding order
+        const mappedData = orderData.map(data => {
+            const order = ordersMap.get(data.orderId);
+            return { ...order, ...data };
+        });
+
+        // Get mapped data
+        const data = await this.customerService.getMappedData(
+            deliveryAgents, vendors, addresses, mappedData
+        );
+
+        return { totalOrders: total, list: data };
+    }
 }

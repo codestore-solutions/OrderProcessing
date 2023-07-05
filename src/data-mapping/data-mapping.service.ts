@@ -31,6 +31,7 @@ export class DataMappingService {
             }
             return [ ...transformedData, 
                 { 
+                    id: order.id,
                     paymentId: order.paymentId,
                     orderStatus: order.orderStatusId, 
                     paymentMode: order.paymentMode,

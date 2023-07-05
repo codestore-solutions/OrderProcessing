@@ -38,6 +38,36 @@ export class OrderService {
         }
     }
 
+    async getOrderStatusById(orderId: number) {
+
+        const order = await this.prisma.order.findUnique({
+            where: {
+                id: orderId
+            },
+            select: {
+                orderStatusId: true,
+                id: true
+            }
+        });
+        if (!order) {
+            throw new HttpException({
+                statusCode: HttpStatus.NOT_FOUND,
+                message: ErrorMessages.ORDER_NOT_FOUND.message,
+                success: false
+            }, HttpStatus.NOT_FOUND);
+        }
+        return order;
+    }
+
+
+    async getOrderStatus() {
+
+        const orderStatus = await this.prisma.orderStatus.findMany();
+        return orderStatus;
+    }
+    
+    
+
 
     async getOrderTimeline(orderId: number) {
         try {

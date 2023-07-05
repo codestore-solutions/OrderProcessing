@@ -14,8 +14,8 @@ export class DeliveryController {
     constructor(private readonly deliveryService: DeliveryService,
         private readonly orderService: OrderService) { }
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @ApiOperation({
         summary: 'Provides orders based on agent id',
         description: 'Provides a list of orders associated with a agent using agent id'
