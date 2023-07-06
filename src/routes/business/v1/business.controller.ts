@@ -117,7 +117,7 @@ export class BusinessController {
         const elapsedTime = endTime - startTime;
         this.logger.log(`API requests completed in ${elapsedTime} milliseconds.`);
 
-        return { total, list: data };
+        return { totalOrders: total, list: data };
     }
 
 

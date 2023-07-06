@@ -179,14 +179,14 @@ export class OrderService {
                 }, HttpStatus.NOT_FOUND);
             }
 
-            //must provide agent id in body dto
-            if (!('deliveryAgentId' in orderStatusDto.orders)) {
-                throw new HttpException({
-                    statusCode: HttpStatus.NOT_FOUND,
-                    message: ErrorMessages.AGENT_ID_REQUIRED.message,
-                    success: false
-                }, HttpStatus.NOT_FOUND);
-            }
+            // //must provide agent id in body dto
+            // if (!(orderStatusDto.orders && orderStatusDto.orders,length>0)) {
+            //     throw new HttpException({
+            //         statusCode: HttpStatus.NOT_FOUND,
+            //         message: ErrorMessages.AGENT_ID_REQUIRED.message,
+            //         success: false
+            //     }, HttpStatus.NOT_FOUND);
+            // }
 
             //validate orders previous status and 
             //for assigning agent it should be packing_completed

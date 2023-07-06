@@ -98,7 +98,7 @@ export class DeliveryController {
         const data = await this.deliveryService.getMappedData(
             customers, vendors, addresses, mappedData
         );
-        return { total: totalOrders, list: data };
+        return { totalOrders, list: data };
     }
 
 }

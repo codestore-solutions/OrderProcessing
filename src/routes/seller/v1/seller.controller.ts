@@ -108,7 +108,7 @@ export class SellerController {
             addresses, mappedData
         );
 
-        return { total: totalOrders, list: data };
+        return { totalOrders, list: data };
     }
 
 
