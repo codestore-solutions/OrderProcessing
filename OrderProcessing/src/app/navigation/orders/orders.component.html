@@ -1,10 +1,10 @@
 <div class="title-container">
   <div class="sort-filter-container">
     <h1 class="title-text">Order Management</h1>
-    <mat-select class="sortby" placeholder="Sort By">
-      <mat-option>Latest</mat-option>
-      <mat-option>Oldest</mat-option>
-      <mat-option>Available Stock</mat-option>
+    <mat-select class="sortby" placeholder="Sort By" (selectionChange)="statusChange()" [(ngModel)]="selectedStatus">
+      <ng-container *ngFor="let stat of statusList; let i=index">
+        <mat-option [value]="stat.id">{{status[i]}}</mat-option>
+      </ng-container>
     </mat-select>
   </div>
   <div class="filter-container">
@@ -21,14 +21,17 @@
         {{column.header}}
       </th>
       <td mat-cell *matCellDef="let row; let i=index" class="order-table-cell">
-        <div *ngIf="column.header != 'Sr.No.' && column.header != 'Action'">
+        <div *ngIf="column.header != 'Sr.No.' && column.header != 'Action' && column.header != 'Order Status'">
           {{row[column.field_name]}}
         </div>
         <div *ngIf="column.header == 'Sr.No.'">
           {{i + 1}}
         </div>
+        <div *ngIf="column.header == 'Order Status'">
+          {{status[row[column.field_name]-1]}}
+        </div>
         <div *ngIf="column.header == 'Action'">
-          <button mat-icon-button routerLink="order-detail">
+          <button mat-icon-button [routerLink]="['order-detail', 47]">
             <mat-icon>visibility</mat-icon>
           </button>
         </div>

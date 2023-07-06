@@ -14,7 +14,7 @@ const routes: Routes = [
         component: OrdersComponent
       },
       {
-        path: 'orders/order-detail',
+        path: 'orders/order-detail/:requester',
         component: OrderDetailComponent
       }
     ]

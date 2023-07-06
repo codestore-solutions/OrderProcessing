@@ -28,6 +28,8 @@ import { IconsProviderModule } from './icons-provider.module';
 import { NavComponent } from './component/nav/nav.component';
 import { TokenIntercepter } from './services/token.intercepter';
 registerLocaleData(en);
+import { DatePipe } from '@angular/common';
+
 
 
 @NgModule({
@@ -60,7 +62,8 @@ registerLocaleData(en);
       provide: HTTP_INTERCEPTORS,
       useClass: TokenIntercepter,
       multi: true
-    }
+    },
+    DatePipe
   ],
   bootstrap: [AppComponent]
 })

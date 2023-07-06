@@ -14,13 +14,13 @@ export class OrderEffects{
         
     }
 
-    loadOrder = createEffect(()=> this.action$.pipe(
-        ofType(loadOrder),
-        exhaustMap(()=>this.service.getOrders().pipe(
-            map((order:Order[])=>(loadOrderSuccess(order))),
-            catchError(()=>EMPTY)
-        ))
-    ))
+    // loadOrder = createEffect(()=> this.action$.pipe(
+    //     ofType(loadOrder),
+    //     exhaustMap(()=>this.service.getOrders().pipe(
+    //         map((order:Order[])=>(loadOrderSuccess(order))),
+    //         catchError(()=>EMPTY)
+    //     ))
+    // ))
 
     loadBooking = createEffect(()=> this.action$.pipe(
         ofType(loadBooking),
