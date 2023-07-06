@@ -43,8 +43,8 @@ export class OrderController {
     }
 
 
-    @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    // @ApiBearerAuth()
+    // @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Get order timeline with status' })
     @ApiResponse({
         status: 200, description: 'Returns the order timeline',
@@ -52,7 +52,7 @@ export class OrderController {
     })
     @ApiParam({ name: 'orderId', description: 'Order ID', example: 2 })
     @Get('/getOrderTimeline/:orderId')
-    async getOrderTimeline(@Param('orderId') orderId: number,) {
+    async getOrderTimeline(@Param('orderId', ParseIntPipe) orderId: number,) {
         return this.orderService.getOrderTimeline(orderId);
     }
 
