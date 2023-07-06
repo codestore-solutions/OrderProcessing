@@ -1,23 +1,28 @@
 import { Injectable } from "@angular/core";
 
-@Injectable()
-export class Order{
-    cartId: string;
-    count: number;
+interface OrderList {
+    createdAt: string,
     customer: {
-        username: string,
-        persona: string
-    };
-    payment: {
-        amountPaid: number,
-        discount: number,
-        createdAt: string
-    };
-    address: {
-        street: string,
-        city: string,
-        postalCode: string,
-        state: string,
-        country: string
-    };
+        id: number,
+        name: string,
+        email: string
+    },
+    deliveryCharges: number,
+    orderStatus: number,
+    paymentId: number,
+    paymentMode: number,
+    paymentStatus: number,
+    productCount: number,
+    shippingAddress: object
 }
+
+@Injectable()
+export class Order {
+    data: {
+        list: OrderList[],
+        total: number
+    };
+    message: string;
+    statusCode: number;
+    success: boolean;
+}  

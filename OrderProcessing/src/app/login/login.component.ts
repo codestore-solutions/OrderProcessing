@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit{
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
 
   constructor(private service: DataService, private router: Router) {
@@ -27,9 +27,12 @@ export class LoginComponent implements OnInit{
       username: this.loginForm.value.userName,
       password: this.loginForm.value.password
     }
-    this.service.loginService(userCred).subscribe(data=> {
-      localStorage.setItem('token', JSON.stringify(data));
-    });
-    this.router.navigate(['navigation'])
+    this.service.loginService(userCred).subscribe(data => {
+      console.log(data);
+      if (data) {
+        localStorage.setItem('token', JSON.stringify(data));
+      }
+    });;
+    this.router.navigate(['navigation']);
   }
 }

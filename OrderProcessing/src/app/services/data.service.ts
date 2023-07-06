@@ -10,16 +10,16 @@ interface category {
 }
 
 @Injectable()
-export class DataService{
+export class DataService {
     url2: string = 'http://localhost:3500/bookings'
-    url : string = 'http://localhost:3000/api'
-    constructor(private http:HttpClient){
+    url: string = 'http://localhost:3000/api'
+    constructor(private http: HttpClient) {
 
     }
-    sellerId: string="3";
+    sellerId: string = "3";
     // orders APIs
-    getOrders() {
-        return this.http.get( environment.orderURL + `getOrdersBySellerId/` + `${this.sellerId}?page=1&pageSize=10`);
+    getOrders(creds) {
+        return this.http.get(environment.orderURL + `getOrdersBySellerId/` + `${this.sellerId}?page=${creds.page}&pageSize=${creds.pageSize}&orderStatus=${creds.orderStatus}`);
     }
 
     getOrdersByStatus(status) {
@@ -27,7 +27,11 @@ export class DataService{
     }
 
     getOrderDetailByID(id) {
-        return this.http.get(environment.orderURL + 'getOrderDetailsByOrderId/' + `${id}`);
+        return this.http.get("https://app-orderbooking-dev.azurewebsites.net/api/v1/order/listOfOrders?orderIds=" + `${id}`);
+    }
+
+    getOrderStatus() {
+        return this.http.get(environment.order + 'getOrderStatus');
     }
 
     getBookingDetails(more: number) {
@@ -37,9 +41,9 @@ export class DataService{
     getNextBookingDetails(more: number) {
         return this.http.get(this.url2 + `?_page=${more}&_limit=20`);
     }
-    
+
     getCartDetail(cartID: string) {
-        return this.http.get('http://localhost:3000/api/seller/orders/'+`${this.sellerId}/` + `${cartID}`);
+        return this.http.get('http://localhost:3000/api/seller/orders/' + `${this.sellerId}/` + `${cartID}`);
     }
 
     getServiceCategoryList() {
@@ -54,7 +58,7 @@ export class DataService{
     postProductCategory(productCategory: category) {
         console.log("post method called");
         console.log(productCategory);
-        return this.http.post("http://localhost:3500/productCategory", productCategory).subscribe((result)=> {
+        return this.http.post("http://localhost:3500/productCategory", productCategory).subscribe((result) => {
             alert('Category Added')
         });;
     }
@@ -64,6 +68,8 @@ export class DataService{
     }
 
     loginService(userCred) {
-        return this.http.post(`https://app-deliveryagent-dev.azurewebsites.net/api/v1/testing/login`, userCred);
+        console.log(userCred);
+
+        return this.http.post(`https://app-deliveryagent-dev.azurewebsites.net/api/v1/testing/login`, userCred)
     }
 }
