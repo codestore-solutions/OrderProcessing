@@ -26,6 +26,9 @@ export class UserDto {
   businessAdminId?: number;
 
   @ApiProperty()
+  businessCategory?: number;
+
+  @ApiProperty()
   address?: string;
 
   @ApiProperty()
