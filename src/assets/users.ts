@@ -25,8 +25,54 @@ export const users: UserDto[] = [
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
     "role": 2,
+    "businessCategory": 1,
     "isActive": true
   },
+
+  {
+    "id": 10,
+    "name": "Amit Sharma",
+    "contacts": ["9871234567"],
+    "email": "amit.sharma@codestore.com",
+    "password": "password123",
+    "role": 2,
+    "businessCategory": 2,
+    "isActive": true
+  },
+
+  {
+    "id": 11,
+    "name": "Deepika Sharma",
+    "contacts": ["9871234567"],
+    "email": "deepika.sharma@codestore.com",
+    "password": "password123",
+    "role": 2,
+    "businessCategory": 3,
+    "isActive": true
+  },
+
+  {
+    "id": 12,
+    "name": "Ashish Verma",
+    "contacts": ["9871234567"],
+    "email": "ashish.verma@codestore.com",
+    "password": "password123",
+    "role": 2,
+    "businessCategory": 4,
+    "isActive": true
+  },
+
+  {
+    "id": 13,
+    "name": "Rahul Mehta",
+    "contacts": ["9871234567"],
+    "email": "rahul.mehta@codestore.com",
+    "password": "password123",
+    "role": 2,
+    "businessCategory": 5,
+    "isActive": true
+  },
+
   {
     "id": 3,
     "name": "Ratnesh Chaudhary",
