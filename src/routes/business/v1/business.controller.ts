@@ -137,14 +137,14 @@ export class BusinessController {
         const order = await this.businessService.getOrderById(orderId,);
         const customerId = order.customerId;
         const shippingAddressId = order.shippingAddressId;
-        const deliveryAgentId = order.deliveryAgentId;
+        const deliveryAgentId = order.deliveryAgentId? [ order.deliveryAgentId]: [];
         const vendorId = order.vendorId
 
 
         // Get mapping data from various services
         const { orderData, deliveryAgents, vendors, customers, addresses } =
             await this.businessService.getMappingDatafromServices(
-                [ order.id ], [ deliveryAgentId ], [ vendorId ], 
+                [ order.id ], [ ...deliveryAgentId ], [ vendorId ], 
                 [ customerId ], [ shippingAddressId ]
             );
 
