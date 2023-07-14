@@ -149,5 +149,115 @@ export const users: UserDto[] = [
     "isActive": true,
     "address": "Noida",
     "businessAdminId": 2
-  }
+  },
+  {
+    "id": 14,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent1@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 15,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent2@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 16,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent3@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 17,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent4@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 18,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent5@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 19,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent6@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 20,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent7@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 21,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent8@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 22,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent9@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 23,
+    "name": "Akhilesh Kumar",
+    "email": "deliveryagent10@codestore.com",
+    "password": "password123",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
 ]
