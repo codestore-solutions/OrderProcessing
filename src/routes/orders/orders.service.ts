@@ -65,8 +65,8 @@ export class OrderService {
         const orderStatus = await this.prisma.orderStatus.findMany();
         return orderStatus;
     }
-    
-    
+
+
 
 
     async getOrderTimeline(orderId: number) {
@@ -309,6 +309,79 @@ export class OrderService {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
                     message: ErrorMessages.INVALID_PICKUP.message,
+                    success: false
+                }, HttpStatus.NOT_FOUND);
+            }
+
+            //update order status after all validation and 
+            //sends a notification to customer when item is picked
+            //----------
+            await this.updateStatus(orders, status)
+            return updateStatusSuccessMessage
+        }
+
+        //update pick order status
+        if (orderStatusDto.status === OrderStatusEnum.ACCEPTED_BY_AGENT) {
+
+            //validate role - only business admin can assign order
+            if (!role || role !== rolesEnum.DeliveryAgent) {
+                throw new HttpException({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: ErrorMessages.NOT_AUTHORIZED.message,
+                    success: false
+                }, HttpStatus.NOT_FOUND);
+            }
+
+            //validate the orders comming from frontend with
+            //the one on backend with delivery agent Id
+            //---------
+
+            //validate orders previous status and 
+            //for picking up, it should be agent_assigned or agent_re_assigned
+            //only those orders with status agent_assigned or agent_re_assigned
+            //will get to be picked up
+            const previousStatus = [OrderStatusEnum.AGENT_ASSIGNED];
+            if (!validatePreviousStatus(orders, previousStatus)) {
+                throw new HttpException({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: ErrorMessages.ACCEPTED_BY_AGENT.message,
+                    success: false
+                }, HttpStatus.NOT_FOUND);
+            }
+
+            //update order status after all validation and 
+            //sends a notification to customer when item is picked
+            //----------
+            await this.updateStatus(orders, status)
+            return updateStatusSuccessMessage
+        }
+
+
+        //update pick order status
+        if (orderStatusDto.status === OrderStatusEnum.RE_ASSIGNING) {
+
+            //validate role - only business admin can assign order
+            if (!role || (role !== rolesEnum.DeliveryAgent && role !== rolesEnum.BusinessAdmin)) {
+                throw new HttpException({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: ErrorMessages.NOT_AUTHORIZED.message,
+                    success: false
+                }, HttpStatus.NOT_FOUND);
+            }
+
+            //validate the orders comming from frontend with
+            //the one on backend with delivery agent Id
+            //---------
+
+            //validate orders previous status and 
+            //for picking up, it should be agent_assigned or agent_re_assigned
+            //only those orders with status agent_assigned or agent_re_assigned
+            //will get to be picked up
+            const previousStatus = [OrderStatusEnum.AGENT_ASSIGNED];
+            if (!validatePreviousStatus(orders, previousStatus)) {
+                throw new HttpException({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: ErrorMessages.INVALID_RE_ASSIGNING.message,
                     success: false
                 }, HttpStatus.NOT_FOUND);
             }

@@ -43,8 +43,8 @@ export class OrderController {
     }
 
 
-    // @ApiBearerAuth()
-    // @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Get order timeline with status' })
     @ApiResponse({
         status: 200, description: 'Returns the order timeline',

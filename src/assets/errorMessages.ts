@@ -60,6 +60,11 @@ export const ErrorMessages = {
         message: 'Orders are not yet picked up'
     },
 
+    ACCEPTED_BY_AGENT: {
+        code: 'ACCEPTED_BY_AGENT',
+        message: 'Orders are not assigned to current delivery agent'
+    },
+
     INVALID_PICKUP: {
         code: 'INVALID_PICKUP',
         message: 'Orders are not assigned to current delivery agent'
@@ -72,7 +77,7 @@ export const ErrorMessages = {
 
     INVALID_RE_ASSIGNING: {
         code : 'INVALID_RE_ASSIGNING',
-        message: 'Only assigned orders can be re-assigned to delivery agent'
+        message: 'Only assigned orders can be re-assigned'
 
     },
 
