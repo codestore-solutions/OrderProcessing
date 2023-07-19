@@ -84,15 +84,23 @@ export class OrderService {
 
 
     async updateStatusWithAgent(orderArray: AssigningStatusDto[], orderStatus: number) {
+        console.log(111, orderArray)
         for (const order of orderArray) {
-            await this.prisma.order.update({
-                where: { id: order.orderId },
-                data: {
-                    orderStatusId: orderStatus,
-                    deliveryAgentId: order.deliveryAgentId
-                }
-            });
-            await this.addToOrderTimeline(order.orderId, orderStatus);
+            console.log(11111111111111)
+            try{
+                await this.prisma.order.update({
+                    where: { id: order.orderId },
+                    data: {
+                        orderStatusId: orderStatus,
+                        deliveryAgentId: order.deliveryAgentId
+                    }
+                });
+            } catch(error){
+                console.log(error)
+            }
+
+            console.log(order)
+            // await this.addToOrderTimeline(order.orderId, orderStatus);
         }
     }
 
@@ -143,7 +151,6 @@ export class OrderService {
 
     async updateAndAssignAgent(orderStatusDto: OrderAssigningStatusDto, user: any) {
         const role = user.role;
-        const orderIds = [...orderStatusDto.orders]
         const orders = orderStatusDto.orders
 
         const { orderStatus } = orderStatusDto;
@@ -203,48 +210,6 @@ export class OrderService {
             //Assign and update order status after all validation
             //sends a notification to delivery agent
             await this.updateStatusWithAgent(orders, orderStatus)
-            return updateStatusSuccessMessage;
-        }
-
-
-        //re-assigning the delivery agent to order/orders
-        if (orderStatusDto.orderStatus === OrderStatusEnum.RE_ASSIGNING) {
-
-            //validate role - only business admin can assign order
-            if (!role || role !== rolesEnum.BusinessAdmin) {
-                throw new HttpException({
-                    statusCode: HttpStatus.NOT_FOUND,
-                    message: ErrorMessages.NOT_AUTHORIZED.message,
-                    success: false,
-                }, HttpStatus.NOT_FOUND);
-            }
-
-            //must provide agent id in body dto
-            if (!('agentId' in orderStatusDto)) {
-                throw new HttpException({
-                    statusCode: HttpStatus.NOT_FOUND,
-                    message: ErrorMessages.AGENT_ID_REQUIRED.message,
-                    success: false
-                }, HttpStatus.NOT_FOUND);
-            }
-
-            //validate orders previous status and 
-            //for re-assigning agent it should be agent_assigned
-            //only those orders with status agent_assigned will get to re-assigned
-            const previousStatus = [OrderStatusEnum.AGENT_ASSIGNED];
-            if (!validatePreviousStatus(orders, previousStatus)) {
-                throw new HttpException({
-                    statusCode: HttpStatus.NOT_FOUND,
-                    message: ErrorMessages.INVALID_RE_ASSIGNING.message,
-                    success: false
-                }, HttpStatus.NOT_FOUND);
-            }
-
-            //Assign and update order status after all validation
-            //sends a notification to both previous and current delivery agent
-            //----------
-            await this.updateStatusWithAgent(orders, orderStatus)
-
             return updateStatusSuccessMessage;
         }
     }
