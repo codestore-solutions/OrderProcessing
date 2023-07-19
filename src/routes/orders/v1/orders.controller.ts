@@ -37,7 +37,7 @@ export class OrderController {
     async updateStatusWithAgentAssigning(
         @Req() request: any,
         @Body(ValidationPipe) orderStatusDto: OrderAssigningStatusDto) {
-
+            console.log(request.user)
         const user = request.user;
         return this.orderService.updateAndAssignAgent(orderStatusDto, user);
     }
