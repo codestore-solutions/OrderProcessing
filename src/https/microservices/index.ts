@@ -52,16 +52,15 @@ export class DataManagementService {
      * @returns Promise that resolves to the delivery agent data.
      */
     async getDeliveryAgents(deliveryAgentIds: number[]) {
-        // const baseUrl = this.configService.get("DELIVERY_MANAGEMENT_SERVICE");
-        // const trailingUrl = deliveryManagementEndpoint.getDeliveryAgents;
-        // const url = AxiosService.urlBuilder(baseUrl, trailingUrl);
+        const baseUrl = this.configService.get("DELIVERY_MANAGEMENT_SERVICE");
+        const trailingUrl = deliveryManagementEndpoint.getDeliveryAgents;
+        const url = AxiosService.urlBuilder(baseUrl, trailingUrl);
+        const params = { agentIds: deliveryAgentIds };
+        const encodedParams = stringify(params, { arrayFormat: 'repeat' });
+        const finalUrl = `${url}?${encodedParams}`;
+        console.log(params, finalUrl)
 
-        // const params = { deliveryAgentIds };
-        // const encodedParams = stringify(params, { arrayFormat: 'repeat' });
-        // const finalUrl = `${url}?${encodedParams}`;
-        // console.log(finalUrl)
-        // if (deliveryAgentIds.length > 0) return await HttpService.get(finalUrl);
-        return null;
+        if (deliveryAgentIds.length > 0) return await HttpService.get(finalUrl);
     }
 
     /**
