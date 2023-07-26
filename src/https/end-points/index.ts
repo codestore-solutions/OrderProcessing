@@ -2,7 +2,7 @@
  * Endpoint URLs for Delivery Management service
  */
 const deliveryManagementEndpoint = {
-    getDeliveryAgents: "v1/business-admin/getMultipleAgentList", // Endpoint for retrieving delivery agents
+    getDeliveryAgents: "v1/personal-details/getMultipleAgent", // Endpoint for retrieving delivery agents
 };
 
 /**
