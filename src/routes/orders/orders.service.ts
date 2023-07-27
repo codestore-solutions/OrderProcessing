@@ -251,15 +251,6 @@ export class OrderService {
                 }, HttpStatus.NOT_FOUND);
             }
 
-            //must provide agent id in body dto
-            if (!('agentId' in orderStatusDto)) {
-                throw new HttpException({
-                    statusCode: HttpStatus.NOT_FOUND,
-                    message: ErrorMessages.AGENT_ID_REQUIRED.message,
-                    success: false
-                }, HttpStatus.NOT_FOUND);
-            }
-
             //validate the orders comming from frontend with
             //the one on backend with delivery agent Id
             //---------
@@ -268,8 +259,7 @@ export class OrderService {
             //for picking up, it should be agent_assigned or agent_re_assigned
             //only those orders with status agent_assigned or agent_re_assigned
             //will get to be picked up
-            const previousStatus = [OrderStatusEnum.AGENT_ASSIGNED,
-            OrderStatusEnum.RE_ASSIGNING];
+            const previousStatus = [OrderStatusEnum.ACCEPTED_BY_AGENT];
             if (!validatePreviousStatus(orders, previousStatus)) {
                 throw new HttpException({
                     statusCode: HttpStatus.NOT_FOUND,
