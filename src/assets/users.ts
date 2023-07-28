@@ -260,4 +260,26 @@ export const users: UserDto[] = [
     "address": "Noida",
     "businessAdminId": 2
   },
+  {
+    "id": 24,
+    "name": "Garvit Sharma",
+    "email": "Garvit1999@mailinator.com",
+    "password": "Admin@1234",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
+  {
+    "id": 25,
+    "name": "Rohit Dass",
+    "email": "Rohit1999@mailinator.com",
+    "password": "Admin@1234",
+    "contacts": ["917860965109", "917355986157"],
+    "role": 5,
+    "isActive": true,
+    "address": "Noida",
+    "businessAdminId": 2
+  },
 ]
