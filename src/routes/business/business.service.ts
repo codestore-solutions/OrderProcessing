@@ -66,7 +66,6 @@ export class BusinessService {
                 ]);
 
 
-
             // console.log("ADDRESS:", addressData?.data.data, addressIdArray)
             // console.log("CUSTOMER:", customerData, customerIdArray)
             // console.log("DELIVERY:", deliveryAgentData?.data?.data, deliveryAgentIdArray)
@@ -118,7 +117,7 @@ export class BusinessService {
             },
             deliveryAgent: {
                 idField: 'deliveryAgentId',
-                map: new Map(deliveryAgentArray.map(delivery => [delivery.deliveryAgentId, delivery])),
+                map: new Map(deliveryAgentArray.map(delivery => [delivery.agentId, delivery])),
                 __all__: true,
                 selectedFields: [],
             },

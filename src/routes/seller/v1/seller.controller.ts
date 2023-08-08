@@ -113,6 +113,7 @@ export class SellerController {
 
 
     @ApiBearerAuth()
+    @ApiExcludeEndpoint()
     @UseGuards(JwtAuthGuard)
     @Get('/getOrderDetailsByOrderId/:orderId')
     @ApiOperation({
