@@ -167,7 +167,7 @@ export class CustomerService {
             },
             deliveryAgent: {
                 idField: 'deliveryAgentId',
-                map: new Map(deliveryAgentArray.map(delivery => [delivery.deliveryAgentId, delivery])),
+                map: new Map(deliveryAgentArray.map(delivery => [delivery.agentId, delivery])),
                 __all__: true,
                 selectedFields: [],
             },

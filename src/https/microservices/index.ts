@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { HttpService } from "../https.service";
 import {
     vendorManagementEndpoint, deliveryManagementEndpoint,
-    customerManagementEndpoint, addressManagementEndpoint, orderingEndpoint
+    addressManagementEndpoint, orderingEndpoint
 } from "../end-points";
 import AxiosService from "src/utils/axios/axiosService";
 import { UserRole, users } from "src/assets/users";
