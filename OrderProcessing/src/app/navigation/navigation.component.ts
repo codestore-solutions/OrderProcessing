@@ -18,11 +18,7 @@ export class NavigationComponent {
 
   menuItems = [
     { label: "Dashboard", icon: "", path: 'dashboard' },
-    {
-      label: "Orders", icon: "", children: [
-        { label: 'Orders List', icon: '', path: 'orders' }
-      ]
-    },
+    { label: "Orders", icon:'', path:"orders"},
     // { label: 'Bookings', icon: "", path: 'bookings' },
     // {
     //   label: 'Products', icon: 'inventory', children: [

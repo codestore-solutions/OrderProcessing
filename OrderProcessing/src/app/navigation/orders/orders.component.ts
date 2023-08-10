@@ -16,7 +16,6 @@ interface orderObject {
   orderStatus: number;
 }
 
-
 @Component({
   selector: 'app-orders',
   templateUrl: './orders.component.html',
