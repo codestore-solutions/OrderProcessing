@@ -47,6 +47,7 @@ export class OrdersComponent implements OnInit {
   viewDetails(element) {
     this.router.navigate(['order-detail']);
   }
+  
   ngOnInit(): void {
     const defaultCreds = {
       page: 1,
