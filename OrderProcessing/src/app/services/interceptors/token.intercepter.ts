@@ -1,7 +1,7 @@
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, catchError, throwError } from "rxjs";
-import { DataService } from "./data.service";
+import { DataService } from "../data.service";
 import { Router } from '@angular/router';
 
 

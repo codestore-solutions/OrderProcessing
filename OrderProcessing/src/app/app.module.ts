@@ -26,7 +26,7 @@ import en from '@angular/common/locales/en';
 import { SharedModuleModule } from './shared-module/shared-module.module';
 import { IconsProviderModule } from './icons-provider.module';
 import { NavComponent } from './component/nav/nav.component';
-import { TokenIntercepter } from './services/token.intercepter';
+import { TokenIntercepter } from './services/interceptors/token.intercepter';
 registerLocaleData(en);
 import { DatePipe } from '@angular/common';
 

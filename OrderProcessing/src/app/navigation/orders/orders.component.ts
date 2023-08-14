@@ -22,6 +22,7 @@ interface orderObject {
   styleUrls: ['./orders.component.scss']
 })
 export class OrdersComponent implements OnInit {
+
   dataSource: MatTableDataSource<any>;
   ordersList;
   selectedStatus;
@@ -36,10 +37,10 @@ export class OrdersComponent implements OnInit {
     { header: "Action", field_name: "action" }
   ]
   status: string[] = [
-    'New', 'Cancel', 'Packing', 'Packing Completed', 'Agent Assigned', 'Agent Re-assigned', 'Picked Up', 'Reached Destination', 'Not Accepted', 'Delivered', 'Return', 'Exchanged', 'Payment Failed', 'Cancelled by seller', 'Cancelled by seller'
+    'New', 'Cancel', 'Packing', 'Packing Completed', 'Agent Assigned', 'Agent Re-assigned', 'Picked Up', 'Reached Destination', 'Not Accepted', 'Delivered', 'Return', 'Exchanged', 'Payment Failed', 'Cancelled by seller', 'Cancelled by customer'
   ]
   displayedColumns: string[] = [];
-  constructor(private service: DataService, private router: Router, private datePipe: DatePipe, private change: ChangeDetectorRef) {
+  constructor(private _dataService: DataService, private router: Router, private datePipe: DatePipe, private change: ChangeDetectorRef) {
 
   }
 
@@ -48,20 +49,23 @@ export class OrdersComponent implements OnInit {
   }
   
   ngOnInit(): void {
+
+    this.getAllOrderStatuses();
+    this.getBusinessRelatedOrders();
+
+
     const defaultCreds = {
       page: 1,
       pageSize: 10,
       orderStatus: 1
     }
-    this.service.getOrders(defaultCreds).subscribe((data: Order) => {
-      console.log(data.data.list);
+    this._dataService.getOrders(defaultCreds).subscribe((data: Order) => {
       this.ordersList = this.dataParser(data);
       this.dataSource = new MatTableDataSource(this.ordersList);
     })
 
-    this.service.getOrderStatus().subscribe((data: ResponseModel) => {
+    this._dataService.getOrderStatus().subscribe((data: ResponseModel) => {
       this.statusList = data.data;
-      console.log(this.statusList);
     })
     this.displayedColumns = this.displayedColumns.concat(this.tableHeaders.map(c => c.field_name));
   }
@@ -85,19 +89,38 @@ export class OrdersComponent implements OnInit {
   }
 
   statusChange() {
+    console.log(this.selectedStatus);
     const creds = {
       page: 1,
       pageSize: 10,
       orderStatus: this.selectedStatus
     }
-    console.log(this.selectedStatus + " " + this.status[this.selectedStatus-1]);
-    this.service.getOrders(creds).subscribe((data: Order)=> {
+    this._dataService.getOrders(creds).subscribe((data: Order)=> {
       this.ordersList = this.dataParser(data);
       this.dataSource.data = this.ordersList;
+      console.log(this.ordersList);
     })
     this.change.detectChanges();
   }
+
+  // ---------------------------------- new code --------------------------------
+
+  pageConfig:{page:number; pageSize:number} = {
+    page:1,
+    pageSize:50
+  }
+
+  getAllOrderStatuses():void{
+    this._dataService.getOrderStatuses().subscribe((res)=>{
+      // do 
+      console.log(res);
+    })
+  }
+
+  getBusinessRelatedOrders():void{
+    this._dataService.getOrdersBySellerIdAndOrderStatus(3, this.pageConfig.page, this.pageConfig.pageSize, [1]).subscribe((res)=>{
+      // do something
+    })
+  }
+
 }
-
-
-
