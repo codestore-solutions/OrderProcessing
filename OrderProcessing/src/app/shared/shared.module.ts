@@ -35,6 +35,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips'
 import { FlexLayoutModule } from '@angular/flex-layout';
 
+
 const dependencies = [
   MatToolbarModule,
   MatButtonModule,
@@ -72,10 +73,11 @@ const dependencies = [
 @NgModule({
   declarations: [],
   imports: [
+    CommonModule,
     dependencies
   ],
   exports: [
     dependencies
   ]
 })
-export class SharedModuleModule { }
+export class SharedModule { }

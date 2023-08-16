@@ -9,18 +9,18 @@ import { DataService } from 'src/app/services/data.service';
   styleUrls: ['./order-detail.component.scss']
 })
 export class OrderDetailComponent implements OnInit{
-  requester;
+  orderId:any;
   
-  constructor(private service: DataService, private route: ActivatedRoute) {
-    this.requester = route.snapshot.params['requester'];
+  constructor(private _dataService: DataService, private _activatedRoute: ActivatedRoute) {
+    
   }
 
   ngOnInit(): void {
-    console.log(this.requester);
-    const orderIds : number[] = [];
-    orderIds.push(parseInt(this.requester));
-    this.service.getOrderDetailByID(orderIds).subscribe((data)=> {
-      console.log(data);
-    });
+    this.orderId = this._activatedRoute.snapshot.paramMap.get("orderId");
+    console.log(this.orderId);
+    this._dataService.getOrderDetails(this.orderId).subscribe((res)=>{
+      console.log(res);
+    })
+    
   }
 }

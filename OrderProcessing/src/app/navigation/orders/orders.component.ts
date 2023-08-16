@@ -6,7 +6,6 @@ import { Order } from 'src/app/model/order.model';
 import { ResponseModel } from 'src/app/model/response.model';
 import { DataService } from 'src/app/services/data.service';
 
-
 interface orderObject {
   user: string;
   date: string;
@@ -37,12 +36,31 @@ export class OrdersComponent implements OnInit {
     { header: "Action", field_name: "action" }
   ]
   status: string[] = [
-    'New', 'Cancel', 'Packing', 'Packing Completed', 'Agent Assigned', 'Agent Re-assigned', 'Picked Up', 'Reached Destination', 'Not Accepted', 'Delivered', 'Return', 'Exchanged', 'Payment Failed', 'Cancelled by seller', 'Cancelled by customer'
+    'New',
+    'Cancel',
+    'Packing',
+    'Packing Completed',
+    'Agent Assigned',
+    'Accepted by Agent',
+    'Agent Re-assigned',
+    'Picked Up',
+    'Reached Destination',
+    'Not Accepted by Customer',
+    'Delivered',
+    'Return',
+    'Exchanged',
+    'Payment Failed',
+    'Cancelled by Seller',
+    'Cancelled by Customer'
   ]
   displayedColumns: string[] = [];
-  constructor(private _dataService: DataService, private router: Router, private datePipe: DatePipe, private change: ChangeDetectorRef) {
+  constructor(
+    private _dataService: DataService,
+    private router: Router,
+    private datePipe: DatePipe,
+    private change: ChangeDetectorRef) {
 
-  }
+    }
 
   viewDetails(element) {
     this.router.navigate(['order-detail']);
@@ -68,6 +86,7 @@ export class OrdersComponent implements OnInit {
       this.statusList = data.data;
     })
     this.displayedColumns = this.displayedColumns.concat(this.tableHeaders.map(c => c.field_name));
+    
   }
 
   dataParser(orderList: Order) {

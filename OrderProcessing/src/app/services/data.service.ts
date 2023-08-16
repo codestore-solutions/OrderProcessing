@@ -86,4 +86,9 @@ export class DataService {
         return this._http.get<Orders>(`${environment.newUrl}vendor/getOrdersBySellerId/${sellerId}?page=${page}&pageSize=${pageSize}&orderStatus=${orderStatus}`)
     }
 
+    //get order details based on order id
+    getOrderDetails(orderId:number):any{
+        return this._http.get<any>(`${environment.newUrl}business/getOrderDetailsByOrderId/${orderId}`)
+    }
+
 }

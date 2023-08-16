@@ -23,7 +23,7 @@ import { NZ_I18N } from 'ng-zorro-antd/i18n';
 import { en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
-import { SharedModuleModule } from './shared-module/shared-module.module';
+import { SharedModule } from './shared/shared.module';
 import { IconsProviderModule } from './icons-provider.module';
 import { NavComponent } from './component/nav/nav.component';
 import { TokenIntercepter } from './services/interceptors/token.intercepter';
@@ -53,7 +53,7 @@ import { DatePipe } from '@angular/common';
     HttpClientModule,
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
     IconsProviderModule,
-    SharedModuleModule
+    SharedModule
   ],
   providers: [
     DataService, 

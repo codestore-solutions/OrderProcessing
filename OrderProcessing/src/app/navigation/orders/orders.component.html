@@ -3,7 +3,7 @@
     <h1 class="title-text">Order Management</h1>
     <mat-select class="sortby" placeholder="Sort By" (selectionChange)="statusChange()" [(ngModel)]="selectedStatus">
       <ng-container *ngFor="let stat of statusList; let i=index">
-        <mat-option [value]="stat.id">{{stat.name}}</mat-option>
+        <mat-option [value]="stat.id">{{status[i]}}</mat-option>
       </ng-container>
     </mat-select>
   </div>
@@ -30,7 +30,7 @@
           {{status[row[column.field_name]-1]}}
         </div>
         <div *ngIf="column.header == 'Action'">
-          <button mat-icon-button [routerLink]="['order-detail', 47]">
+          <button mat-icon-button [routerLink]="['order-detail', 103]">
             <img src="../../../assets/eye.svg" alt="details">
           </button>
         </div>
