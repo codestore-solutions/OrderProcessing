@@ -76,6 +76,10 @@ export class SellerController {
         const { totalOrders, orders } = await this.sellerService.getOrdersBySellerId(parsedSellerId,
             page, pageSize, orderStatus);
 
+        if(!totalOrders){
+            return { totalOrders, list: [] };
+        }
+        
         // Extract relevant data from orders
         for (const order of orders) {
             customerIdSet.add(order.customerId);
