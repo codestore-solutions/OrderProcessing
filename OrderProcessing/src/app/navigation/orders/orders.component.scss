@@ -1,6 +1,6 @@
 .title-container {
   margin-left: 5%;
-  margin-top: 5%;
+  margin-top: 1em;
   width: 100%;
   display: inline-flex;
   justify-content: space-between;
@@ -44,8 +44,8 @@
     }
 
     .filter {
-      width: 52px;
-      height: 50px;
+      width: 4em;
+      height: 3em;
       border-radius: 15px;
       border: 1px solid #EAEAEA;
       background-color: #FFFFFF;
@@ -68,24 +68,16 @@
   }
 }
 
-.table-container {
-  margin: 2% 5% 5% 5%;
-  border: 1px solid #EAEAEA;
-  border-radius: 20px;
-
-  .orders-table {
+.order-table{
+  width: 100%;
+    overflow: hidden;
     border-radius: 20px;
-    overflow: hidden !important;
-
-    .order-table-header {
-      background-color: #F1F3F6;
-      text-align: center;
-      border-color: white;
-    }
-
-    .order-table-cell {
-      border-color: white;
-      text-align: center;
-    }
-  }
+}
+th{
+  background-color: #F1F3F6 !important;
+}
+mat-paginator{
+  width: 100%;
+    margin-block: 5px;
+    background-color: transparent;
 }

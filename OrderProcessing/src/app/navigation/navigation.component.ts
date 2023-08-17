@@ -29,4 +29,8 @@ export class NavigationComponent {
     //   ]
     // }
   ]
+
+  logout():void{
+    localStorage.clear();
+  }
 }

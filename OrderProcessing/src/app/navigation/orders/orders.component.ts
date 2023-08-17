@@ -1,18 +1,21 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSelectChange } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { Order } from 'src/app/model/order.model';
+import { Orders } from 'src/app/model/orders';
 import { ResponseModel } from 'src/app/model/response.model';
 import { DataService } from 'src/app/services/data.service';
 
-interface orderObject {
-  user: string;
-  date: string;
-  amount: number;
-  paymentStatus: string;
-  paymentMode: string;
-  orderStatus: number;
+export interface UniqueOrderObject {
+  id: number;
+  customer: string;
+  createdAt: string;
+  amount: string;
+  paymentMode: number;
+  paymentStatus: number;
 }
 
 @Component({
@@ -22,19 +25,9 @@ interface orderObject {
 })
 export class OrdersComponent implements OnInit {
 
-  dataSource: MatTableDataSource<any>;
-  ordersList;
-  selectedStatus;
-  statusList;
-  tableHeaders = [
-    { header: "Sr.No.", field_name: "sn" },
-    { header: "User", field_name: "user" },
-    { header: "Date", field_name: "date" },
-    { header: "Amount", field_name: "amount" },
-    { header: "Payment Mode", field_name: "paymentMode" },
-    { header: 'Order Status', field_name: 'orderStatus'},
-    { header: "Action", field_name: "action" }
-  ]
+  selectedStatus!:number;
+  statusList!:{id:number; name:string;}[];
+  totalOrdersWithRespectiveStatus!:number;
   status: string[] = [
     'New',
     'Cancel',
@@ -53,93 +46,74 @@ export class OrdersComponent implements OnInit {
     'Cancelled by Seller',
     'Cancelled by Customer'
   ]
-  displayedColumns: string[] = [];
+
+  columnsToDisplay: string[] = ["serial", "id", "customer", "createdAt", "amount", "paymentMode", "paymentStatus", "action"];
+  mainDataSource!: MatTableDataSource<UniqueOrderObject>;
+  @ViewChild('paginator') paginator!: MatPaginator;
+
+  statusSpecificOrderList!: Orders;
+  remappedStatusSpecificOrderList: UniqueOrderObject[] = [];
+
+  pageConfig: { page: number; pageSize: number } = {
+    page: 0,
+    pageSize: 50
+  }
+
   constructor(
     private _dataService: DataService,
     private router: Router,
     private datePipe: DatePipe,
-    private change: ChangeDetectorRef) {
-
-    }
-
-  viewDetails(element) {
-    this.router.navigate(['order-detail']);
+    private _cd: ChangeDetectorRef) {
   }
-  
-  ngOnInit(): void {
 
+  ngOnInit(): void {
+    this.selectedStatus = 1;
     this.getAllOrderStatuses();
     this.getBusinessRelatedOrders();
-
-
-    const defaultCreds = {
-      page: 1,
-      pageSize: 10,
-      orderStatus: 1
-    }
-    this._dataService.getOrders(defaultCreds).subscribe((data: Order) => {
-      this.ordersList = this.dataParser(data);
-      this.dataSource = new MatTableDataSource(this.ordersList);
-    })
-
-    this._dataService.getOrderStatus().subscribe((data: ResponseModel) => {
-      this.statusList = data.data;
-    })
-    this.displayedColumns = this.displayedColumns.concat(this.tableHeaders.map(c => c.field_name));
-    
   }
 
-  dataParser(orderList: Order) {
-    let dataList: orderObject[] = [];
-    if (orderList) {
-      for (let order of orderList.data.list) {
-        const object: orderObject = {
-          date: this.datePipe.transform(order.createdAt, 'd-M-yyyy'),
-          user: order.customer.name,
-          amount: Math.floor(Math.random() * (12000 - 0 + 1)) + 0,
-          paymentStatus: order.paymentStatus == 1 ? 'Done' : 'Pending',
-          paymentMode: order.paymentMode == 1 ? 'COD' : 'Online',
-          orderStatus: order.orderStatus
+  getAllOrderStatuses(): void {
+    this._dataService.getOrderStatuses().subscribe((res) => {
+      this.statusList = res.data;
+    })
+  }
+
+  getBusinessRelatedOrders(): void {
+    this._dataService.getOrdersBySellerIdAndOrderStatus(3, this.pageConfig.page+1, this.pageConfig.pageSize, [this.selectedStatus])
+    .subscribe((res) => {
+      this.statusSpecificOrderList = res;
+      this.totalOrdersWithRespectiveStatus = res.data.totalOrders;
+      this.orderListDataHandler(this.statusSpecificOrderList);
+      this.mainDataSource = new MatTableDataSource(this.remappedStatusSpecificOrderList);
+      this._cd.detectChanges();
+    })
+  }
+
+  orderListDataHandler(orderListResponse: Orders): void {
+    this.remappedStatusSpecificOrderList = [];
+    if (orderListResponse.data.list.length) {
+      for (let order of orderListResponse.data.list) {
+        let tempOrderObject: UniqueOrderObject = {
+          id: order.id,
+          customer: order.customer.name,
+          createdAt: order.createdAt,
+          amount: "-",
+          paymentMode: order.paymentMode,
+          paymentStatus: order.paymentStatus
         }
-        dataList.push(object);
+        this.remappedStatusSpecificOrderList.push(tempOrderObject);
       }
     }
-    return dataList;
   }
 
-  statusChange() {
-    console.log(this.selectedStatus);
-    const creds = {
-      page: 1,
-      pageSize: 10,
-      orderStatus: this.selectedStatus
-    }
-    this._dataService.getOrders(creds).subscribe((data: Order)=> {
-      this.ordersList = this.dataParser(data);
-      this.dataSource.data = this.ordersList;
-      console.log(this.ordersList);
-    })
-    this.change.detectChanges();
+  orderStatusSelectionChange(e:MatSelectChange):void{
+    this.selectedStatus = e.value;
+    this.getBusinessRelatedOrders();
   }
 
-  // ---------------------------------- new code --------------------------------
-
-  pageConfig:{page:number; pageSize:number} = {
-    page:1,
-    pageSize:50
+  handlePageEvent(e:PageEvent){
+    this.pageConfig.pageSize = e.pageSize;
+    this.pageConfig.page = e.pageIndex;
+    this.getBusinessRelatedOrders();
   }
-
-  getAllOrderStatuses():void{
-    this._dataService.getOrderStatuses().subscribe((res)=>{
-      // do 
-      console.log(res);
-    })
-  }
-
-  getBusinessRelatedOrders():void{
-    this._dataService.getOrdersBySellerIdAndOrderStatus(3, this.pageConfig.page, this.pageConfig.pageSize, [1]).subscribe((res)=>{
-      // do something
-    })
-  }
-
 }

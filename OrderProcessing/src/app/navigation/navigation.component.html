@@ -19,8 +19,8 @@
       <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
         <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
       </button>
-      <button mat-icon-button>
-        <img src="../../../assets/bell-icon.png">
+      <button mat-icon-button (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
       </button>
     </mat-toolbar>
     <router-outlet ></router-outlet>

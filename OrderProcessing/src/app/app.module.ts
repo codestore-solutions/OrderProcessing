@@ -24,7 +24,6 @@ import { en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { SharedModule } from './shared/shared.module';
-import { IconsProviderModule } from './icons-provider.module';
 import { NavComponent } from './component/nav/nav.component';
 import { TokenIntercepter } from './services/interceptors/token.intercepter';
 registerLocaleData(en);
@@ -52,12 +51,10 @@ import { DatePipe } from '@angular/common';
     EffectsModule.forRoot([OrderEffects]),
     HttpClientModule,
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
-    IconsProviderModule,
     SharedModule
   ],
   providers: [
     DataService, 
-    { provide: NZ_I18N, useValue: en_US },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenIntercepter,
