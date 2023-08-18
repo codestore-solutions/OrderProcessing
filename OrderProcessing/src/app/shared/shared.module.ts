@@ -34,6 +34,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips'
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
 
 
 const dependencies = [
@@ -71,13 +73,18 @@ const dependencies = [
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    PageNotFoundComponent,
+    NoDataFoundComponent
+  ],
   imports: [
     CommonModule,
     dependencies
   ],
   exports: [
-    dependencies
+    dependencies,
+    PageNotFoundComponent,
+    NoDataFoundComponent
   ]
 })
 export class SharedModule { }
