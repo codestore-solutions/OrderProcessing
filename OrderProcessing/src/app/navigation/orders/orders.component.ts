@@ -24,10 +24,6 @@ export interface UniqueOrderObject {
   styleUrls: ['./orders.component.scss']
 })
 export class OrdersComponent implements OnInit {
-
-  selectedStatus!:number;
-  statusList!:{id:number; name:string;}[];
-  totalOrdersWithRespectiveStatus!:number;
   status: string[] = [
     'New',
     'Cancel',
@@ -45,7 +41,20 @@ export class OrdersComponent implements OnInit {
     'Payment Failed',
     'Cancelled by Seller',
     'Cancelled by Customer'
-  ]
+  ];
+  PaymentStatus = {
+    0 : "Failed",
+    1 : "Successful",
+    2 : "Pending"
+  };
+  PaymentMode = {
+    1 : "Online",
+    2 : "COD"
+  }
+
+  selectedStatus!:number;
+  statusList!:{id:number; name:string;}[];
+  totalOrdersWithRespectiveStatus!:number;
 
   columnsToDisplay: string[] = ["serial", "id", "customer", "createdAt", "amount", "paymentMode", "paymentStatus", "action"];
   mainDataSource!: MatTableDataSource<UniqueOrderObject>;
@@ -98,8 +107,8 @@ export class OrdersComponent implements OnInit {
           customer: order.customer.name,
           createdAt: order.createdAt,
           amount: "N/A",
-          paymentMode: order.paymentMode,
-          paymentStatus: order.paymentStatus
+          paymentMode: this.PaymentMode[order.paymentMode],
+          paymentStatus: this.PaymentStatus[order.paymentStatus]
         }
         this.remappedStatusSpecificOrderList.push(tempOrderObject);
       }

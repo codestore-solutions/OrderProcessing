@@ -22,13 +22,12 @@ export class OrderDetailComponent implements OnInit{
 
   ngOnInit(): void {
     this.orderId = parseInt(this._activatedRoute.snapshot.paramMap.get("orderId")!);
-    console.log(this.orderId, typeof this.orderId);
     this.getOrderDetails();
   }
 
   getOrderDetails():void{
     this._dataService.getOrderDetails(this.orderId).subscribe((res)=>{
-      console.log(res);
+      this.orderDetails = res;
     })
   }
 }

@@ -1,6 +1,6 @@
 <div class="title-container">
   <div class="sort-filter-container">
-    <h1 class="title-text">Order Management</h1>
+    <span class="bold">Order Management</span>
     <mat-select class="sortby" placeholder="Sort By" (selectionChange)="orderStatusSelectionChange($event);"
       [(ngModel)]="selectedStatus">
       <ng-container *ngFor="let stat of statusList; let i=index">
@@ -15,7 +15,9 @@
 </div>
 
 <div>
-  <div>
+  <mat-progress-bar mode="indeterminate" *ngIf="!statusSpecificOrderList"></mat-progress-bar>
+  <app-no-data-found *ngIf="!remappedStatusSpecificOrderList.length"></app-no-data-found>
+  <div *ngIf="remappedStatusSpecificOrderList.length">
     <table mat-table [dataSource]="mainDataSource" class="mat-elevation-z2 order-table">
       <ng-container matColumnDef="serial">
         <th mat-header-cell *matHeaderCellDef>
@@ -62,7 +64,10 @@
           <b>Payment Mode</b>
         </th>
         <td mat-cell *matCellDef="let element;">
+          <span
+          [ngClass]="{'blue-badge':element.paymentMode==='Online', 'green-badge':element.paymentMode === 'COD'}">
           {{element.paymentMode}}
+        </span>
         </td>
       </ng-container>
       <ng-container matColumnDef="paymentStatus">

@@ -1,5 +1,6 @@
 <span class="bold">Order Details</span>
 <!-- For Completed Orders -->
+{{orderDetails | json}}
 <div class="complete-order-detail-container">
   <mat-card class="order-detail-card">
     <mat-card-content>
@@ -99,7 +100,9 @@
           <p class="field-name">User Address</p>
           <p class="field-value">Unit 1/23 Hastings Road,
             Melbourne 3000,Victoria,
-            Australia.</p>
+            Australia.
+            {{orderDetails.data.vendor.business.address | json}}
+          </p>
         </div>
         <div class="order-field-container">
           <p class="field-name">Vendor Address</p>

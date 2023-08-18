@@ -36,6 +36,7 @@ import { MatChipsModule } from '@angular/material/chips'
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 
 const dependencies = [
@@ -68,7 +69,8 @@ const dependencies = [
   MatExpansionModule,
   MatChipsModule,
   CommonModule,
-  FlexLayoutModule
+  FlexLayoutModule,
+  MatProgressBarModule
 ]
 
 
