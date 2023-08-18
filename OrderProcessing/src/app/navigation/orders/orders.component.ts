@@ -97,7 +97,7 @@ export class OrdersComponent implements OnInit {
           id: order.id,
           customer: order.customer.name,
           createdAt: order.createdAt,
-          amount: "-",
+          amount: "N/A",
           paymentMode: order.paymentMode,
           paymentStatus: order.paymentStatus
         }

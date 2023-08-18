@@ -1,5 +1,6 @@
 .complete-order-detail-container {
-  margin: 5%;
+  margin-block: 1em;
+
   display: flex;
   gap: 3%;
 
@@ -105,7 +106,7 @@
 
 
 .ongoing-order-container {
-  margin: 5%;
+  margin-block: 1em;
 
   .card-container {
     width: 100%;
@@ -228,7 +229,7 @@
 }
 
 .feedback-container {
-  margin: 5%;
+  margin-block: 1em;
 
   .feedback-heading {
     font-size: 22px;
@@ -281,7 +282,7 @@
 }
 
 .cancellation-container {
-  margin: 5%;
+  margin-block: 1em;
 
   .cancel-heading {
     font-size: 22px;

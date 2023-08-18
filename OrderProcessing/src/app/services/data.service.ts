@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http"
 import { environment } from "../../environments/environment";
 import { Observable } from "rxjs";
-import { OrderStatuses, Orders } from "../model/orders";
+import { OrderDetails, OrderStatuses, Orders } from "../model/orders";
 
 interface category {
     id: string;
@@ -87,8 +87,8 @@ export class DataService {
     }
 
     //get order details based on order id
-    getOrderDetails(orderId:number):any{
-        return this._http.get<any>(`${environment.newUrl}business/getOrderDetailsByOrderId/${orderId}`)
+    getOrderDetails(orderId:number):Observable<OrderDetails>{
+        return this._http.get<OrderDetails>(`${environment.newUrl}business/getOrderDetailsByOrderId/${orderId}`)
     }
 
 }

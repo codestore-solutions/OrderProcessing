@@ -19,8 +19,6 @@ import { BookingsComponent } from './component/bookings/bookings.component';
 import { ReusableTableComponent } from './util-components/reusable-table/reusable-table.component';
 import { ProductDetailsComponent } from './util-components/product-details/product-details.component';
 import { OrderDetailComponent } from './component/order-detail/order-detail.component';
-import { NZ_I18N } from 'ng-zorro-antd/i18n';
-import { en_US } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
 import { SharedModule } from './shared/shared.module';

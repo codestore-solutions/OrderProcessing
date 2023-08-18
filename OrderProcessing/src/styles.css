@@ -9,3 +9,8 @@ body {
   margin: 0;
   font-family: "Poppins", sans-serif !important;
 }
+.bold{
+  font-weight: bold;
+  font-size: 1.5em;
+
+}
