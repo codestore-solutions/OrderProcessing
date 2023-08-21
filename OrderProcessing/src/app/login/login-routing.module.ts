@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent } from './login.component';
 import { DashboardGuardService } from '../services/guards/dashboard-guard.service';
+import { AdminLoginComponent } from './admin-login/admin-login.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: LoginComponent
+    component: AdminLoginComponent
   },
   {
     path: 'navigation',

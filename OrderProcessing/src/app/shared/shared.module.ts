@@ -38,7 +38,6 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { NoDataFoundComponent } from './no-data-found/no-data-found.component';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 
-
 const dependencies = [
   MatToolbarModule,
   MatButtonModule,
