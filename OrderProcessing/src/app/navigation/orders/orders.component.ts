@@ -1,3 +1,4 @@
+import { SelectionChange } from '@angular/cdk/collections';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -63,7 +64,7 @@ export class OrdersComponent implements OnInit {
 
   pageConfig: { page: number; pageSize: number } = {
     page: 0,
-    pageSize: 50
+    pageSize: 5
   }
 
   constructor(
@@ -105,8 +106,8 @@ export class OrdersComponent implements OnInit {
           customer: order.customer.name,
           createdAt: order.createdAt,
           amount: "N/A",
-          paymentMode: this.PaymentModes[order.paymentMode],
-          paymentStatus: this.PaymentStatuses[order.paymentStatus]
+          paymentMode: this.PaymentModes[(order.paymentMode.toString())],
+          paymentStatus: this.PaymentStatuses[order.paymentStatus.toString()]
         }
         this.remappedStatusSpecificOrderList.push(tempOrderObject);
       }

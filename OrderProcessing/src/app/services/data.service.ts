@@ -47,7 +47,6 @@ export class DataService {
         return this._http.get<OrderStatuses>(`${environment.orderProcessingUrl}order/getOrderStatus`);
     }
 
-
     //gets order list associated with a particular business and order status type
     getOrdersBySellerIdAndOrderStatus(sellerId:number, page:number, pageSize:number, orderStatus:number[]):Observable<Orders>{
         return this._http.get<Orders>(`${environment.orderProcessingUrl}vendor/getOrdersBySellerId/${sellerId}?page=${page}&pageSize=${pageSize}&orderStatus=${orderStatus}`)
