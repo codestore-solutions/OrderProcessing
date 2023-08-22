@@ -15,28 +15,6 @@ interface category {
 export class DataService {
     constructor(private _http: HttpClient) {}
 
-    // getOrders(creds) {
-    //     return this._http.get(environment.orderURL + `getOrdersBySellerId/` + `${this.sellerId}?page=${creds.page}&pageSize=${creds.pageSize}&orderStatus=${creds.orderStatus}`);
-    // }
-
-    // getOrdersByStatus(status) {
-    //     return this._http.get(environment.orderURL + 'getSellerOrderBystatus/' + `${this.sellerId}?status=${status}`);
-    // }
-
-    // getOrderDetailByID(id) {
-    //     return this._http.get("https://app-orderbooking-dev.azurewebsites.net/api/v1/order/listOfOrders?orderIds=" + `${id}`);
-    // }
-
-    // getOrderStatus() {
-    //     return this._http.get(environment.order + 'getOrderStatus');
-    // }
-
-    // generateUUID() {
-    //     return this._http.get("https://www.uuidtools.com/api/generate/timestamp-first")
-    // }
-
-    // -------------------------------- new services ---------------------------------------------
-
     //logs user in to the dashboard
     userLogin(userCredentials:{username:string; password:string;}):Observable<any>{
         return this._http.post<any>("https://app-deliveryagent-dev.azurewebsites.net/api/v1/testing/login", userCredentials)
