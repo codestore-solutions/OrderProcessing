@@ -4,9 +4,7 @@ import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSelectChange } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { Order } from 'src/app/model/order.model';
-import { Orders } from 'src/app/model/orders';
-import { ResponseModel } from 'src/app/model/response.model';
+import { Orders } from 'src/app/interfaces/orders';
 import { DataService } from 'src/app/services/data.service';
 
 export interface UniqueOrderObject {
@@ -14,8 +12,8 @@ export interface UniqueOrderObject {
   customer: string;
   createdAt: string;
   amount: string;
-  paymentMode: number;
-  paymentStatus: number;
+  paymentMode: string;
+  paymentStatus: string;
 }
 
 @Component({
@@ -42,14 +40,14 @@ export class OrdersComponent implements OnInit {
     'Cancelled by Seller',
     'Cancelled by Customer'
   ];
-  PaymentStatus = {
-    0 : "Failed",
-    1 : "Successful",
-    2 : "Pending"
+  PaymentStatuses = {
+    '0' : "Failed",
+    '1' : "Successful",
+    '2' : "Pending"
   };
-  PaymentMode = {
-    1 : "Online",
-    2 : "COD"
+  PaymentModes = {
+    '1' : "Online",
+    '2' : "COD"
   }
 
   selectedStatus!:number;
@@ -107,8 +105,8 @@ export class OrdersComponent implements OnInit {
           customer: order.customer.name,
           createdAt: order.createdAt,
           amount: "N/A",
-          paymentMode: this.PaymentMode[order.paymentMode],
-          paymentStatus: this.PaymentStatus[order.paymentStatus]
+          paymentMode: this.PaymentModes[order.paymentMode],
+          paymentStatus: this.PaymentStatuses[order.paymentStatus]
         }
         this.remappedStatusSpecificOrderList.push(tempOrderObject);
       }

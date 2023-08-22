@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Order } from 'src/app/model/order.model';
-import { OrderDetails } from 'src/app/model/orders';
+import { OrderDetails } from 'src/app/interfaces/orders';
 import { DataService } from 'src/app/services/data.service';
 
 @Component({
@@ -10,8 +9,8 @@ import { DataService } from 'src/app/services/data.service';
   styleUrls: ['./order-detail.component.scss']
 })
 export class OrderDetailComponent implements OnInit{
-  orderId:number;
-  orderDetails: OrderDetails;
+  orderId!:number;
+  orderDetails!: OrderDetails;
   vendorDetails:any;
   customerDetails:any;
   
