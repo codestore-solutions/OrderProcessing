@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from './services/data.service';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
@@ -25,7 +24,6 @@ import { DatePipe } from '@angular/common';
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: !isDevMode() }),
     SharedModule
   ],
   providers: [

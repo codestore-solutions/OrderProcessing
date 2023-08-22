@@ -97,17 +97,15 @@
       <mat-card-content>
         <div class="order-field-container">
           <p class="field-name">User Address</p>
-          <p class="field-value">Unit 1/23 Hastings Road,
-            Melbourne 3000,Victoria,
-            Australia.
-            {{orderDetails.data.vendor.business.address | json}}
+          <p class="field-value">
+            {{orderDetails.data.shippingAddress | json}}
           </p>
         </div>
         <div class="order-field-container">
           <p class="field-name">Vendor Address</p>
-          <p class="field-value">Unit 1/23 Hastings Road,
-            Melbourne 3000,Victoria,
-            Australia.</p>
+          <p class="field-value">
+            {{orderDetails.data.vendor.business.address | json}}
+          </p>
         </div>
       </mat-card-content>
     </mat-card>
