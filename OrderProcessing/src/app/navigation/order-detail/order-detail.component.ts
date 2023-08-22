@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Order } from 'src/app/model/order.model';
+import { OrderDetails } from 'src/app/interfaces/orders';
 import { DataService } from 'src/app/services/data.service';
 
 @Component({
@@ -9,18 +9,24 @@ import { DataService } from 'src/app/services/data.service';
   styleUrls: ['./order-detail.component.scss']
 })
 export class OrderDetailComponent implements OnInit{
-  requester;
+  orderId!:number;
+  orderDetails!: OrderDetails;
+  vendorDetails:any;
+  customerDetails:any;
   
-  constructor(private service: DataService, private route: ActivatedRoute) {
-    this.requester = route.snapshot.params['requester'];
-  }
+  constructor(
+    private _dataService: DataService,
+    private _activatedRoute: ActivatedRoute
+    ) {}
 
   ngOnInit(): void {
-    console.log(this.requester);
-    const orderIds : number[] = [];
-    orderIds.push(parseInt(this.requester));
-    this.service.getOrderDetailByID(orderIds).subscribe((data)=> {
-      console.log(data);
-    });
+    this.orderId = parseInt(this._activatedRoute.snapshot.paramMap.get("orderId")!);
+    this.getOrderDetails();
+  }
+
+  getOrderDetails():void{
+    this._dataService.getOrderDetails(this.orderId).subscribe((res)=>{
+      this.orderDetails = res;
+    })
   }
 }

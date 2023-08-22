@@ -1,43 +1,93 @@
 <div class="title-container">
   <div class="sort-filter-container">
-    <h1 class="title-text">Order Management</h1>
-    <mat-select class="sortby" placeholder="Sort By" (selectionChange)="statusChange()" [(ngModel)]="selectedStatus">
+    <span class="bold">Order Management</span>
+    <mat-select class="sortby" placeholder="Sort By" (selectionChange)="orderStatusSelectionChange($event);"
+      [(ngModel)]="selectedStatus">
       <ng-container *ngFor="let stat of statusList; let i=index">
         <mat-option [value]="stat.id">{{status[i]}}</mat-option>
       </ng-container>
     </mat-select>
   </div>
-  <div class="filter-container">
-    <input class="search-filter" type="text" placeholder="Search" #input>
-    <button class="filter"><img src="../../../assets/filter.png"></button>
-  </div>
 </div>
 
-
-<div class="table-container">
-  <table mat-table class="orders-table" [dataSource]="dataSource">
-    <ng-container *ngFor="let column of tableHeaders; let i=index" [matColumnDef]="column.field_name">
-      <th mat-header-cell *matHeaderCellDef class="order-table-header">
-        {{column.header}}
-      </th>
-      <td mat-cell *matCellDef="let row; let i=index" class="order-table-cell">
-        <div *ngIf="column.header != 'Sr.No.' && column.header != 'Action' && column.header != 'Order Status'">
-          {{row[column.field_name]}}
-        </div>
-        <div *ngIf="column.header == 'Sr.No.'">
-          {{i + 1}}
-        </div>
-        <div *ngIf="column.header == 'Order Status'">
-          {{status[row[column.field_name]-1]}}
-        </div>
-        <div *ngIf="column.header == 'Action'">
-          <button mat-icon-button [routerLink]="['order-detail', 47]">
-            <mat-icon>visibility</mat-icon>
+<div>
+  <mat-progress-bar mode="indeterminate" *ngIf="!statusSpecificOrderList"></mat-progress-bar>
+  <app-no-data-found *ngIf="!remappedStatusSpecificOrderList.length"></app-no-data-found>
+  <div *ngIf="remappedStatusSpecificOrderList.length">
+    <table mat-table [dataSource]="mainDataSource" class="mat-elevation-z2 order-table">
+      <ng-container matColumnDef="serial">
+        <th mat-header-cell *matHeaderCellDef>
+          <b>S.No.</b>
+        </th>
+        <td mat-cell *matCellDef="let element; let i = index">
+          {{i+1+pageConfig.page*pageConfig.pageSize}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>
+          <b>Order ID</b>
+        </th>
+        <td mat-cell *matCellDef="let element;">
+          {{element.id}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="customer">
+        <th mat-header-cell *matHeaderCellDef>
+          <b>Customer</b>
+        </th>
+        <td mat-cell *matCellDef="let element;">
+          {{element.customer}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef>
+          <b>Date</b>
+        </th>
+        <td mat-cell *matCellDef="let element;">
+          {{element.createdAt | date}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef>
+          <b>Amount</b>
+        </th>
+        <td mat-cell *matCellDef="let element;">
+          {{element.amount}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="paymentMode">
+        <th mat-header-cell *matHeaderCellDef>
+          <b>Payment Mode</b>
+        </th>
+        <td mat-cell *matCellDef="let element;">
+          <span
+          [ngClass]="{'blue-badge':element.paymentMode==='Online', 'green-badge':element.paymentMode === 'COD'}">
+          {{element.paymentMode}}
+        </span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="paymentStatus">
+        <th mat-header-cell *matHeaderCellDef>
+          <b>Payment Status</b>
+        </th>
+        <td mat-cell *matCellDef="let element;">
+          {{element.paymentStatus}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>
+          <b>Action</b>
+        </th>
+        <td mat-cell *matCellDef="let element;">
+          <button mat-icon-button routerLink="order-detail/{{element.id}}">
+            <img src="../../../assets/eye.svg" alt="View">
           </button>
-        </div>
-      </td>
-    </ng-container>
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-  </table>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
+    </table>
+    <mat-paginator [length]="totalOrdersWithRespectiveStatus" [pageSize]="pageConfig.pageSize" (page)="handlePageEvent($event)" #paginator></mat-paginator>
+  </div>
 </div>

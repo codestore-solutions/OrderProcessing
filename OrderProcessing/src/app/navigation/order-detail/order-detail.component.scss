@@ -1,5 +1,21 @@
+.title-container{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .sortby {
+    width: 200px;
+    height: 1.5em;
+    padding: 1%;
+    background: #FFFFFF;
+    border: 1px solid #EAEAEA;
+    box-shadow: 0px 2px 1px rgba(84, 91, 252, 0.2);
+    border-radius: 15px;
+  }
+}
+
 .complete-order-detail-container {
-  margin: 5%;
+  margin-block: 1em;
+
   display: flex;
   gap: 3%;
 
@@ -105,7 +121,7 @@
 
 
 .ongoing-order-container {
-  margin: 5%;
+  margin-block: 1em;
 
   .card-container {
     width: 100%;
@@ -228,7 +244,7 @@
 }
 
 .feedback-container {
-  margin: 5%;
+  margin-block: 1em;
 
   .feedback-heading {
     font-size: 22px;
@@ -281,13 +297,12 @@
 }
 
 .cancellation-container {
-  margin: 5%;
+  margin-block: 1em;
 
   .cancel-heading {
     font-size: 22px;
     font-weight: 500;
     line-height: 33px;
-    letter-spacing: 0em;
     color: #000000;
   }
 

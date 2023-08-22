@@ -1,91 +1,45 @@
 .title-container {
-  margin-left: 5%;
-  margin-top: 5%;
-  width: 100%;
-  display: inline-flex;
-  justify-content: space-between;
-  align-items: baseline;
-
+  margin-bottom: 1em;
   .sort-filter-container {
     display: flex;
-    gap: 3%;
-    width: 50%;
-    align-items: baseline;
-
-    .title-text {
-      font-size: 25px;
-      font-weight: 600;
-      line-height: 38px;
-      letter-spacing: 0em;
-      text-align: left;
-    }
-
+    align-items: center;
+    justify-content: space-between;
     .sortby {
       width: 200px;
-      height: 45px;
-      padding: 2%;
+      height: 1.5em;
+      padding: 1%;
       background: #FFFFFF;
       border: 1px solid #EAEAEA;
       box-shadow: 0px 2px 1px rgba(84, 91, 252, 0.2);
       border-radius: 15px;
     }
   }
-
-
-  .filter-container {
-    margin-right: 15%;
-    display: inline-flex;
-    gap: 5%;
-    align-items: baseline;
-
-    .add-brand {
-      background-color: #F1F3F6;
-      box-shadow: 0px 2px 1px rgba(84, 91, 252, 0.2);
-    }
-
-    .filter {
-      width: 52px;
-      height: 50px;
-      border-radius: 15px;
-      border: 1px solid #EAEAEA;
-      background-color: #FFFFFF;
-      box-shadow: 0px 2px 1px rgba(84, 91, 252, 0.2);
-
-      img {
-        height: 24px;
-        width: 24px;
-      }
-    }
-
-    .search-filter {
-      height: 45px;
-      outline: none;
-      border: 1px solid #EAEAEA;
-      border-radius: 15px;
-      padding-left: 5%;
-      box-shadow: 0px 2px 1px rgba(84, 91, 252, 0.2);
-    }
-  }
 }
 
-.table-container {
-  margin: 2% 5% 5% 5%;
-  border: 1px solid #EAEAEA;
+.order-table {
+  width: 100%;
+  overflow: hidden;
   border-radius: 20px;
-
-  .orders-table {
-    border-radius: 20px;
-    overflow: hidden !important;
-
-    .order-table-header {
-      background-color: #F1F3F6;
-      text-align: center;
-      border-color: white;
-    }
-
-    .order-table-cell {
-      border-color: white;
-      text-align: center;
-    }
-  }
+}
+th {
+  background-color: #F1F3F6 !important;
+}
+mat-paginator {
+  width: 100%;
+  margin-block: 5px;
+  background-color: transparent;
+}
+.blue-badge{
+  background-color: #D4D4F3;
+  color: #545BFC;
+  padding: 0.25em;
+  border-radius: 0.25em;
+  font-weight: 500;
+}
+.green-badge{
+  background-color: #E8FFF3;
+  color: #50CD89;
+  padding: 0.25em;
+  border-radius: 0.25em;
+  font-weight: 500;
 }

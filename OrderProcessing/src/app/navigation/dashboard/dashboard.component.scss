@@ -1,0 +1,39 @@
+.sidenav {
+    background-color: #304FFE !important;
+    border-top-right-radius: 35px !important;
+    border-bottom-right-radius: 35px !important;
+  }
+  
+  
+  .expansion-panel:hover {
+    background-color: #545BFC;
+  }
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .example-spacer {
+    flex: 1 1 auto;
+  }
+  
+  .panel-content-wrapper {
+    height: 90vh;
+    padding: 20px;
+    overflow-y: scroll;
+  }
+  
+  .nav-btn {
+    background-color: transparent !important;
+  }
+  
+  .white {
+    color: white !important;
+  }
+  
+  .logo {
+    margin: 1em 0.5em;
+  }
+  
+  .active {
+    background-color: #1a21dd;
+  }

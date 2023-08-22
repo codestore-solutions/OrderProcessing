@@ -1,3 +1,11 @@
+<div class="title-container">
+  <span class="bold">Order Details</span>
+  <mat-select class="sortby">
+      <mat-option [value]="1">1</mat-option>
+      <mat-option [value]="2">2</mat-option>
+      <mat-option [value]="3">3</mat-option>
+    </mat-select>
+</div>
 <!-- For Completed Orders -->
 <div class="complete-order-detail-container">
   <mat-card class="order-detail-card">
@@ -96,15 +104,15 @@
       <mat-card-content>
         <div class="order-field-container">
           <p class="field-name">User Address</p>
-          <p class="field-value">Unit 1/23 Hastings Road,
-            Melbourne 3000,Victoria,
-            Australia.</p>
+          <p class="field-value">
+            {{orderDetails.data.shippingAddress | json}}
+          </p>
         </div>
         <div class="order-field-container">
           <p class="field-name">Vendor Address</p>
-          <p class="field-value">Unit 1/23 Hastings Road,
-            Melbourne 3000,Victoria,
-            Australia.</p>
+          <p class="field-value">
+            {{orderDetails.data.vendor.business.address | json}}
+          </p>
         </div>
       </mat-card-content>
     </mat-card>
@@ -143,7 +151,7 @@
   </div> -->
 </div>
 
-<div class="feedback-container">
+<!-- <div class="feedback-container">
   <p class="feedback-heading">Feedback for Delivery Agent</p>
   <mat-card class="feedback-card">
     <mat-card-content>
@@ -165,7 +173,7 @@
       </div>
     </mat-card-content>
   </mat-card>
-</div>
+</div> -->
 
 <div class="cancellation-container">
   <p class="cancel-heading">Reason for cancellation</p>

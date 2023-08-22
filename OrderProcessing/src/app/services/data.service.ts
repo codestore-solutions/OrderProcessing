@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http"
-import { environment } from "../environments/environment";
+import { environment } from "../../environments/environment";
+import { Observable } from "rxjs";
+import { OrderDetails, OrderStatuses, Orders } from "../interfaces/orders";
 
 interface category {
     id: string;
@@ -11,65 +13,31 @@ interface category {
 
 @Injectable()
 export class DataService {
-    url2: string = 'http://localhost:3500/bookings'
-    url: string = 'http://localhost:3000/api'
-    constructor(private http: HttpClient) {
+    constructor(private _http: HttpClient) {}
 
-    }
-    sellerId: string = "3";
-    // orders APIs
-    getOrders(creds) {
-        return this.http.get(environment.orderURL + `getOrdersBySellerId/` + `${this.sellerId}?page=${creds.page}&pageSize=${creds.pageSize}&orderStatus=${creds.orderStatus}`);
+    //logs user in to the dashboard
+    userLogin(userCredentials:{username:string; password:string;}):Observable<any>{
+        return this._http.post<any>("https://app-deliveryagent-dev.azurewebsites.net/api/v1/testing/login", userCredentials)
     }
 
-    getOrdersByStatus(status) {
-        return this.http.get(environment.orderURL + 'getSellerOrderBystatus/' + `${this.sellerId}?status=${status}`);
+    //gets list of possible statuses of an order
+    getOrderStatuses():Observable<OrderStatuses>{
+        return this._http.get<OrderStatuses>(`${environment.orderProcessingUrl}order/getOrderStatus`);
     }
 
-    getOrderDetailByID(id) {
-        return this.http.get("https://app-orderbooking-dev.azurewebsites.net/api/v1/order/listOfOrders?orderIds=" + `${id}`);
+    //gets order list associated with a particular business and order status type
+    getOrdersBySellerIdAndOrderStatus(sellerId:number, page:number, pageSize:number, orderStatus:number[]):Observable<Orders>{
+        return this._http.get<Orders>(`${environment.orderProcessingUrl}vendor/getOrdersBySellerId/${sellerId}?page=${page}&pageSize=${pageSize}&orderStatus=${orderStatus}`)
     }
 
-    getOrderStatus() {
-        return this.http.get(environment.order + 'getOrderStatus');
+    //get order details based on order id
+    getOrderDetails(orderId:number):Observable<OrderDetails>{
+        return this._http.get<OrderDetails>(`${environment.orderProcessingUrl}business/getOrderDetailsByOrderId/${orderId}`)
     }
 
-    getBookingDetails(more: number) {
-        return this.http.get(this.url2 + `?_limit=${more}`);
+    //update statuses of the orders
+    updateOrderStatuses(payload:{status:number; orders:number[]}):Observable<any>{
+        return this._http.put<any>(`${environment.orderProcessingUrl}order/updateOrder`, payload)
     }
-
-    getNextBookingDetails(more: number) {
-        return this.http.get(this.url2 + `?_page=${more}&_limit=20`);
-    }
-
-    getCartDetail(cartID: string) {
-        return this.http.get('http://localhost:3000/api/seller/orders/' + `${this.sellerId}/` + `${cartID}`);
-    }
-
-    getServiceCategoryList() {
-        const url = 'http://localhost:3500/category'
-        return this.http.get(url);
-    }
-
-    getProductList() {
-        return this.http.get("http://localhost:3500/products");
-    }
-
-    postProductCategory(productCategory: category) {
-        console.log("post method called");
-        console.log(productCategory);
-        return this.http.post("http://localhost:3500/productCategory", productCategory).subscribe((result) => {
-            alert('Category Added')
-        });;
-    }
-
-    generateUUID() {
-        return this.http.get("https://www.uuidtools.com/api/generate/timestamp-first")
-    }
-
-    loginService(userCred) {
-        console.log(userCred);
-
-        return this.http.post(`https://app-deliveryagent-dev.azurewebsites.net/api/v1/testing/login`, userCred)
-    }
+    
 }
