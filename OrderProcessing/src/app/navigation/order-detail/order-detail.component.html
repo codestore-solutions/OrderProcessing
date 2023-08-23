@@ -111,13 +111,13 @@
         <div class="order-field-container">
           <p class="field-name">User Address</p>
           <p class="field-value">
-            {{orderDetails?.data?.shippingAddress | json}}
+            {{orderDetails?.data?.shippingAddress?.street | json}}
           </p>
         </div>
         <div class="order-field-container">
           <p class="field-name">Vendor Address</p>
           <p class="field-value">
-            {{orderDetails?.data?.vendor?.business?.address | json}}
+            {{orderDetails?.data?.vendor?.business?.address?.street | json}}
           </p>
         </div>
       </mat-card-content>
