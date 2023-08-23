@@ -1,10 +1,16 @@
 <div class="title-container">
   <span class="bold">Order Details</span>
-  <mat-select class="sortby">
-      <mat-option [value]="1">1</mat-option>
-      <mat-option [value]="2">2</mat-option>
-      <mat-option [value]="3">3</mat-option>
+  <div class="action-wrapper">
+    <mat-select class="sortby" placeholder="Change Order Status"
+    (selectionChange)="orderStatusSelectionChange($event);" [(ngModel)]="newStatusToBeUpdated">
+      <ng-container *ngFor="let stat of statusList; let i=index">
+        <mat-option [value]="stat.id">{{status[i]}}</mat-option>
+      </ng-container>
     </mat-select>
+    <button mat-icon-button (click)="updateStatus()" *ngIf="newStatusToBeUpdated" color="primary">
+      <mat-icon>check</mat-icon>
+    </button>
+  </div>
 </div>
 <!-- For Completed Orders -->
 <div class="complete-order-detail-container">
@@ -105,38 +111,14 @@
         <div class="order-field-container">
           <p class="field-name">User Address</p>
           <p class="field-value">
-            {{orderDetails.data.shippingAddress | json}}
+            {{orderDetails?.data?.shippingAddress | json}}
           </p>
         </div>
         <div class="order-field-container">
           <p class="field-name">Vendor Address</p>
           <p class="field-value">
-            {{orderDetails.data.vendor.business.address | json}}
+            {{orderDetails?.data?.vendor?.business?.address | json}}
           </p>
-        </div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <div class="product-detail-container">
-    <mat-card class="product-card">
-      <mat-card-content class="product-details">
-        <div class="image-title-container">
-          <img src="../../../assets/smart-watch.png">
-          <div class="title-container">
-            <div class="title-date">
-              <p class="title">Smart Watch</p>
-              <p class="date">Delivery Date: 19/05/2023</p>
-            </div>
-            <div class="price">
-              <p>INR 12330/-</p>
-            </div>
-          </div>
-        </div>
-        <div class="description">
-          <p class="header">Description :</p>
-          <p class="description-content">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Esse saepe eos, ipsum
-            fuga iure dicta, quis ea molestiae iusto, ex animi neque hic nostrum! Architecto ipsa quae blanditiis magnam
-            enim.</p>
         </div>
       </mat-card-content>
     </mat-card>

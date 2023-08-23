@@ -36,7 +36,7 @@ export class DataService {
     }
 
     //update statuses of the orders
-    updateOrderStatuses(payload:{status:number; orders:number[]}):Observable<any>{
+    updateOrderStatus(payload:{status:number; orders:number[]}):Observable<any>{
         return this._http.put<any>(`${environment.orderProcessingUrl}order/updateOrder`, payload)
     }
     
