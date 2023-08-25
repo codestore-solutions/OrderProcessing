@@ -11,7 +11,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./order-detail.component.scss']
 })
 export class OrderDetailComponent implements OnInit{
-  status: string[] = [
+  statuses: string[] = [
     'New',
     'Cancel',
     'Packing',
@@ -29,12 +29,86 @@ export class OrderDetailComponent implements OnInit{
     'Cancelled by Seller',
     'Cancelled by Customer'
   ];
-
+  updatableOrderStatuses:{statusCode:number; statusName:string;}[] = [
+    {
+      statusCode: 1,
+      statusName:"New"
+    },
+    {
+      statusCode: 2,
+      statusName:"Cancel"
+    },
+    {
+      statusCode: 3,
+      statusName:"Packing"
+    },
+    {
+      statusCode: 4,
+      statusName:"Packing Completed"
+    },
+    // {
+    //   statusCode: 5,
+    //   statusName:"Agent Assigned"
+    // },
+    // {
+    //   statusCode: 6,
+    //   statusName:"Accepted by Agent"
+    // },
+    // {
+    //   statusCode: 7,
+    //   statusName:"Agent Re-assigned"
+    // },
+    // {
+    //   statusCode: 8,
+    //   statusName:"Picked Up"
+    // },
+    // {
+    //   statusCode: 9,
+    //   statusName:"Reached Destination"
+    // },
+    // {
+    //   statusCode: 10,
+    //   statusName:"Not Accepted by Customer"
+    // },
+    // {
+    //   statusCode: 11,
+    //   statusName:"Delivered"
+    // },
+    // {
+    //   statusCode: 12,
+    //   statusName:"Return"
+    // },
+    // {
+    //   statusCode: 13,
+    //   statusName:"Exchanged"
+    // },
+    // {
+    //   statusCode: 14,
+    //   statusName:"Payment Failed"
+    // },
+    // {
+    //   statusCode: 15,
+    //   statusName:"Cancelled by Seller"
+    // },
+    // {
+    //   statusCode: 16,
+    //   statusName:"Cancelled by Customer"
+    // }
+  ]
+  PaymentStatuses = [
+    "Failed",
+    "Successful",
+    "Pending"
+  ];
+  PaymentModes = [
+    "Online",
+    "COD"
+  ]
+  
   orderId!:number;
   orderDetails!: OrderDetails;
-  vendorDetails:any;
-  customerDetails:any;
-  statusList!:{id:number; name:string;}[];
+  orderInformation!:any;
+  // statusList!:{id:number; name:string;}[];
   updateStatusPayload!:{status:number; orders:number[]};
   newStatusToBeUpdated!:number;
   
@@ -47,14 +121,14 @@ export class OrderDetailComponent implements OnInit{
   ngOnInit(): void {
     this.orderId = parseInt(this._activatedRoute.snapshot.paramMap.get("orderId")!);
     this.getOrderDetails();
-    this.getAllOrderStatuses();
+    // this.getAllOrderStatuses();
   }
 
-  getAllOrderStatuses(): void {
-    this._dataService.getOrderStatuses().subscribe((res) => {
-      this.statusList = res.data;
-    })
-  }
+  // getAllOrderStatuses(): void {
+  //   this._dataService.getOrderStatuses().subscribe((res) => {
+  //     this.statusList = res.data;
+  //   })
+  // }
 
   getOrderDetails():void{
     this._dataService.getOrderDetails(this.orderId).subscribe((res)=>{

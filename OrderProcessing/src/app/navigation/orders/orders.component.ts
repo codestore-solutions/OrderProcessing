@@ -1,10 +1,8 @@
 import { SelectionChange } from '@angular/cdk/collections';
-import { DatePipe } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSelectChange } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
-import { Router } from '@angular/router';
 import { Orders } from 'src/app/interfaces/orders';
 import { DataService } from 'src/app/services/data.service';
 
@@ -15,6 +13,7 @@ export interface UniqueOrderObject {
   amount: string;
   paymentMode: string;
   paymentStatus: string;
+  orderStatus:string;
 }
 
 @Component({
@@ -23,7 +22,7 @@ export interface UniqueOrderObject {
   styleUrls: ['./orders.component.scss']
 })
 export class OrdersComponent implements OnInit {
-  status: string[] = [
+  statuses: string[] = [
     'New',
     'Cancel',
     'Packing',
@@ -41,21 +40,90 @@ export class OrdersComponent implements OnInit {
     'Cancelled by Seller',
     'Cancelled by Customer'
   ];
-  PaymentStatuses = {
-    '0' : "Failed",
-    '1' : "Successful",
-    '2' : "Pending"
-  };
-  PaymentModes = {
-    '1' : "Online",
-    '2' : "COD"
-  }
+
+  orderStatuses: {statusCode:number; statusName:string;}[] = [
+    {
+      statusCode: 1,
+      statusName:"New"
+    },
+    {
+      statusCode: 2,
+      statusName:"Cancel"
+    },
+    {
+      statusCode: 3,
+      statusName:"Packing"
+    },
+    {
+      statusCode: 4,
+      statusName:"Packing Completed"
+    },
+    {
+      statusCode: 5,
+      statusName:"Agent Assigned"
+    },
+    {
+      statusCode: 6,
+      statusName:"Accepted by Agent"
+    },
+    {
+      statusCode: 7,
+      statusName:"Agent Re-assigned"
+    },
+    {
+      statusCode: 8,
+      statusName:"Picked Up"
+    },
+    {
+      statusCode: 9,
+      statusName:"Reached Destination"
+    },
+    {
+      statusCode: 10,
+      statusName:"Not Accepted by Customer"
+    },
+    {
+      statusCode: 11,
+      statusName:"Delivered"
+    },
+    {
+      statusCode: 12,
+      statusName:"Return"
+    },
+    {
+      statusCode: 13,
+      statusName:"Exchanged"
+    },
+    {
+      statusCode: 14,
+      statusName:"Payment Failed"
+    },
+    {
+      statusCode: 15,
+      statusName:"Cancelled by Seller"
+    },
+    {
+      statusCode: 16,
+      statusName:"Cancelled by Customer"
+    }
+  ];
+
+  PaymentStatuses = [
+    "Failed",
+    "Successful",
+    "Pending"
+  ];
+
+  PaymentModes = [
+    "Online",
+    "COD"
+  ]
 
   selectedStatus!:number;
-  statusList!:{id:number; name:string;}[];
+  // statusList!:{id:number; name:string; displayName?:string}[];
   totalOrdersWithRespectiveStatus!:number;
 
-  columnsToDisplay: string[] = ["serial", "id", "customer", "createdAt", "amount", "paymentMode", "paymentStatus", "action"];
+  columnsToDisplay: string[] = ["serial", "id", "customer", "createdAt", "amount", "paymentMode", "paymentStatus", "orderStatus", "action"];
   mainDataSource!: MatTableDataSource<UniqueOrderObject>;
   @ViewChild('paginator') paginator!: MatPaginator;
 
@@ -69,22 +137,21 @@ export class OrdersComponent implements OnInit {
 
   constructor(
     private _dataService: DataService,
-    private router: Router,
-    private datePipe: DatePipe,
     private _cd: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this.selectedStatus = 1;
-    this.getAllOrderStatuses();
+    // this.getAllOrderStatuses();
     this.getBusinessRelatedOrders();
   }
 
-  getAllOrderStatuses(): void {
-    this._dataService.getOrderStatuses().subscribe((res) => {
-      this.statusList = res.data;
-    })
-  }
+  // getAllOrderStatuses(): void {
+  //   this._dataService.getOrderStatuses().subscribe((res) => {
+  //     this.statusList = res.data;
+  //     this.statusList = this.statusList.map((x, index)=>({...x, displayName:this.statuses[index]}));
+  //   })
+  // }
 
   getBusinessRelatedOrders(): void {
     this._dataService.getOrdersBySellerIdAndOrderStatus(3, this.pageConfig.page+1, this.pageConfig.pageSize, [this.selectedStatus])
@@ -106,8 +173,9 @@ export class OrdersComponent implements OnInit {
           customer: order.customer.name,
           createdAt: order.createdAt,
           amount: "N/A",
-          paymentMode: this.PaymentModes[(order.paymentMode.toString())],
-          paymentStatus: this.PaymentStatuses[order.paymentStatus.toString()]
+          paymentMode: this.PaymentModes[order.paymentMode-1],
+          paymentStatus: this.PaymentStatuses[order.paymentStatus],
+          orderStatus: this.statuses[order.orderStatus-1]
         }
         this.remappedStatusSpecificOrderList.push(tempOrderObject);
       }
