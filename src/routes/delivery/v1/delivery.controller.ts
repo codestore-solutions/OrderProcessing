@@ -65,6 +65,10 @@ export class DeliveryController {
             agentId, page, pageSize, orderStatus
         );
 
+        if(totalOrders === 0){
+            return { totalOrders, list: [] };
+        }
+
         // Extract relevant data from orders
         for (const order of orders) {
             customerIdSet.add(order.customerId);
@@ -77,7 +81,6 @@ export class DeliveryController {
         const customerIdArray = Array.from(customerIdSet);
         const vendorIdArray = Array.from(vendorIdSet);
         const shippingAddressIdArray = Array.from(shippingAddressIdSet);
-
         // Get mapping data from various services
         const { orderData, customers, vendors, addresses } =
             await this.deliveryService.getMappingDatafromServices(
