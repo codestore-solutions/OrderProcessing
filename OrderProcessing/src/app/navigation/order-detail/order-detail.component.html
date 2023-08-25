@@ -14,7 +14,13 @@
         </mat-option>
       </ng-container>
     </mat-select>
-    <button mat-icon-button (click)="updateStatus()" *ngIf="newStatusToBeUpdated" color="primary">
+    <button
+      mat-icon-button
+      (click)="updateStatus()"
+      *ngIf="newStatusToBeUpdated"
+      color="primary"
+      matTooltip="Update Status to {{statuses[newStatusToBeUpdated-1]}}"
+      >
       <mat-icon>check</mat-icon>
     </button>
   </div>
@@ -75,6 +81,11 @@
     </mat-card-content> -->
     <app-no-data-found></app-no-data-found>
   </mat-card>
+</div>
+
+<div class="timeline-wrapper">
+  <span class="bold">Order Timeline</span>
+  <app-order-timeline-bar></app-order-timeline-bar>
 </div>
 
 <!-- For Ongoing Orders -->

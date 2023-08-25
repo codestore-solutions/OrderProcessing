@@ -8,7 +8,7 @@
   }
   .sortby {
     width: 200px;
-    padding: 3%;
+    padding: 4%;
     background: white;
     border: 1px solid #EAEAEA;
     box-shadow: 0px 2px 1px rgba(84, 91, 252, 0.2);
@@ -26,14 +26,11 @@
     background-color: #FFFFFF;
     border-radius: 10px;
     .detail-field {
+      color: #7E8299;
       display: flex;
       justify-content: space-between;
-      .field-name {
-        color: #7E8299;
-      }
       .field-value {
         font-weight: 600;
-        color: #7E8299;
       }
     }
   }
@@ -72,6 +69,10 @@
       }
     }
   }
+}
+
+.timeline-wrapper{
+  margin-block: 2em;
 }
 
 .ongoing-order-container {
