@@ -79,7 +79,7 @@
         <p>INR 12330/-</p>
       </div>
     </mat-card-content> -->
-    <app-no-data-found></app-no-data-found>
+    <app-no-data-found [dataMissingMessage]="'Products data not available'"></app-no-data-found>
   </mat-card>
 </div>
 
@@ -177,7 +177,7 @@
           </p>
         </div>
       </mat-card-content>
-      <app-no-data-found *ngIf="!orderDetails.data.deliveryAgentId"></app-no-data-found>
+      <app-no-data-found [dataMissingMessage]="'Delivery agent not assigned'" *ngIf="!orderDetails.data.deliveryAgentId"></app-no-data-found>
     </mat-card>
   </div>
 </div>

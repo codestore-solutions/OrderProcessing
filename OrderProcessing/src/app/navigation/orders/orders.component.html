@@ -12,7 +12,7 @@
 
 <div>
   <mat-progress-bar mode="indeterminate" *ngIf="!statusSpecificOrderList"></mat-progress-bar>
-  <app-no-data-found *ngIf="!remappedStatusSpecificOrderList.length"></app-no-data-found>
+  <app-no-data-found [dataMissingMessage]="'No orders found'" *ngIf="!remappedStatusSpecificOrderList.length"></app-no-data-found>
   <div *ngIf="remappedStatusSpecificOrderList.length">
     <table mat-table [dataSource]="mainDataSource" class="mat-elevation-z2 order-table">
       <ng-container matColumnDef="serial">
