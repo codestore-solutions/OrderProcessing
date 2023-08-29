@@ -12,8 +12,7 @@
 
 <div>
   <mat-progress-bar mode="indeterminate" *ngIf="!statusSpecificOrderList"></mat-progress-bar>
-  <app-no-data-found [dataMissingMessage]="'No orders found'" *ngIf="!remappedStatusSpecificOrderList.length"></app-no-data-found>
-  <div *ngIf="remappedStatusSpecificOrderList.length">
+  <div>
     <table mat-table [dataSource]="mainDataSource" class="mat-elevation-z2 order-table">
       <ng-container matColumnDef="serial">
         <th mat-header-cell *matHeaderCellDef>
@@ -98,4 +97,5 @@
     </table>
     <mat-paginator [length]="totalOrdersWithRespectiveStatus" [pageSize]="pageConfig.pageSize" (page)="handlePageEvent($event)" #paginator></mat-paginator>
   </div>
+  <app-no-data-found [dataMissingMessage]="'No orders found'" *ngIf="!remappedStatusSpecificOrderList.length"></app-no-data-found>
 </div>
