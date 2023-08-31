@@ -1,4 +1,17 @@
 export const ErrorMessages = {
+    VENDOR_NOT_FOUND: {
+        message: "Vendors not found",
+        code: "VENDOR_NOT_FOUND"
+    },
+
+    AGENT_NOT_FOUND: {
+        message: "Agent not found",
+        code: "AGENT_NOT_FOUND"
+    },
+    CUSTOMER_NOT_FOUND: {
+        message: "Customer not found",
+        code: "CUSTOMER_NOT_FOUND"
+    },
 
     SERVICE_UNAVAILABLE: {
         message: "Service unavailable",

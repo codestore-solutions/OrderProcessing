@@ -31,8 +31,20 @@ export function transformPaginationValueToInt(value: any, key: string): number {
 
 export function transformArrayToIntArray(value: any, key: string): number[] {
     const parsedValues = [];
-    for (const ele of value) {
-        const parsedValue = parseInt(ele, 10);
+    if(Array.isArray(value)){
+        for (const ele of value) {
+            const parsedValue = parseInt(ele, 10);
+            if (isNaN(parsedValue)) {
+                throw new HttpException({
+                    statusCode: HttpStatus.BAD_REQUEST,
+                    message: key + " " + ErrorMessages.INVALID_VALUE.message,
+                    success: false
+                }, HttpStatus.BAD_REQUEST);
+            }
+            parsedValues.push(parsedValue)
+        }
+    } else {
+        const parsedValue = parseInt(value, 10);
         if (isNaN(parsedValue)) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
@@ -40,7 +52,8 @@ export function transformArrayToIntArray(value: any, key: string): number[] {
                 success: false
             }, HttpStatus.BAD_REQUEST);
         }
-        parsedValues.push(parsedValue)
+        return [ parsedValue ];
     }
+
     return parsedValues;
 }

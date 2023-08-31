@@ -1,5 +1,5 @@
 import {
-    Controller, Get, HttpException, HttpStatus, Logger, Param,
+    Controller, Get, HttpException, HttpStatus, Inject, Logger, Param,
     ParseIntPipe,
     Query, UseGuards, UsePipes, ValidationPipe
 } from '@nestjs/common';
@@ -10,15 +10,18 @@ import {
 import { BusinessOrderDetailsDTO, GetOrdersQuery, OrderListDto, } from '../dto/business-order-dto';
 import { BusinessService } from '../business.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import { OrderStatusEnum } from 'src/assets/constants';
+import { OrderStatusEnum, constants } from 'src/assets/constants';
 import { ErrorMessages } from 'src/assets/errorMessages';
 import { BusinessOrderResponseDTO } from '../dto/response.dto';
+import { PrismaClient } from '@prisma/client';
 
 
 @ApiTags('Orders - business')
 @Controller('v1/business')
 export class BusinessController {
-    constructor(private readonly businessService: BusinessService) { }
+    constructor(private readonly businessService: BusinessService,
+        @Inject(constants.PRISMA_CLIENT) private readonly prisma: PrismaClient,
+        ) { }
     private logger = new Logger(BusinessController.name)
 
     @ApiBearerAuth()
@@ -63,6 +66,22 @@ export class BusinessController {
             }, HttpStatus.BAD_REQUEST);
         }
 
+        const vendor = await this.prisma.order.findFirst({
+            where: {
+                vendorId: {
+                    in: vendorIds
+                },
+            },
+        })
+
+        if(!vendor){
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.VENDOR_NOT_FOUND.message,
+                success: false
+            }, HttpStatus.BAD_REQUEST);
+        }
+
         // Initialize sets and arrays for data retrieval
         const deliveryAgentIdSet: Set<number> = new Set();
         const customerIdSet: Set<number> = new Set();
@@ -74,6 +93,10 @@ export class BusinessController {
         const { total, orders } = await this.businessService.getAllOrdersByStoreIdsWithPagination(
             vendorIdArray, page, pageSize, orderStatus
         );
+
+        if(total === 0){
+            return { totalOrders: total, list: [] };
+        }
 
         // Extract relevant data from orders
         for (const order of orders) {

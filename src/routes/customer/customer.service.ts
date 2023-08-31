@@ -140,10 +140,10 @@ export class CustomerService {
         } catch (error) {
             this.logger.error('An error occurred:', error);
             throw new HttpException({
-                statusCode: HttpStatus.SERVICE_UNAVAILABLE,
-                message: ErrorMessages.SERVICE_UNAVAILABLE.message,
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: error.message ?? "Something went wrong",
                 success: false
-            }, HttpStatus.SERVICE_UNAVAILABLE);
+            }, HttpStatus.BAD_REQUEST);
         }
     }
 

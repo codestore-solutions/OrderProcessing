@@ -49,6 +49,7 @@ export class SellerController {
 
         const { page, pageSize, orderStatus } = query;
 
+        console.log(orderStatus)
         if (!pageSize || !page) {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,

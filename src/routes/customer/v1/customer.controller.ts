@@ -1,14 +1,15 @@
 import { Controller, Get, Param, ValidationPipe, UseGuards, 
-    UsePipes, Query, HttpException, HttpStatus, ParseIntPipe } from '@nestjs/common';
+    UsePipes, Query, HttpException, HttpStatus, ParseIntPipe, Inject } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CustomerService } from '../customer.service';
-import { OrderStatusEnum } from 'src/assets/constants';
+import { OrderStatusEnum, constants } from 'src/assets/constants';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { GetCustomerOrdersQuery } from '../dto/customer-order.dto';
 import { PaginationDto } from 'src/assets/dtos/pagination.dto';
 import { ErrorMessages } from 'src/assets/errorMessages';
 import { OrderService } from 'src/routes/orders/orders.service';
 import { CustomerOrderResponseDTO } from '../dto/response.dto';
+import { PrismaClient } from '@prisma/client';
 
 
 @ApiTags('Orders - customer')
@@ -16,7 +17,8 @@ import { CustomerOrderResponseDTO } from '../dto/response.dto';
 export class CustomerController {
     constructor(
         private readonly customerService: CustomerService,
-        private readonly orderService: OrderService
+        private readonly orderService: OrderService,
+        @Inject(constants.PRISMA_CLIENT) private readonly prisma: PrismaClient,
     ) { }
 
 
@@ -47,6 +49,20 @@ export class CustomerController {
             }, HttpStatus.BAD_REQUEST);
         }
 
+        const customer = await this.prisma.order.findFirst({
+            where: {
+                customerId: customerId,
+            },
+        })
+
+        if(!customer){
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.CUSTOMER_NOT_FOUND.message,
+                success: false
+            }, HttpStatus.BAD_REQUEST);
+        }
+
         // Initialize sets and arrays for data retrieval
         const deliveryAgentIdSet: Set<number> = new Set();
         const storeIdSet: Set<number> = new Set();
@@ -58,6 +74,10 @@ export class CustomerController {
             customerId, page, pageSize,
         );
 
+        if(!totalOrders){
+            return { totalOrders, list: [] };
+        }
+        
         // Extract relevant data from orders
         for (const order of orders) {
             if (order.deliveryAgentId) {
@@ -122,7 +142,8 @@ export class CustomerController {
         @Query() query: GetCustomerOrdersQuery
     ) {
         const { page, pageSize, orderStatus } = query;
-
+        console.log(customerId, 'cutsomer')
+        
         // Check if pageSize and page are provided
         if (!pageSize || !page) {
             throw new HttpException({
@@ -141,6 +162,20 @@ export class CustomerController {
             }, HttpStatus.BAD_REQUEST);
         }
 
+        const customer = await this.prisma.order.findFirst({
+            where: {
+                customerId: customerId,
+            },
+        })
+
+        if(!customer){
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.CUSTOMER_NOT_FOUND.message,
+                success: false
+            }, HttpStatus.BAD_REQUEST);
+        }
+
         // Initialize sets and arrays for data retrieval
         const deliveryAgentIdSet: Set<number> = new Set();
         const storeIdSet: Set<number> = new Set();
@@ -152,6 +187,10 @@ export class CustomerController {
             customerId, page, pageSize, orderStatus
         );
 
+        if(!total){
+            return { totalOrders: total, list: [] };
+        }
+        
         // Extract relevant data from orders
         for (const order of orders) {
             if (order.deliveryAgentId) {

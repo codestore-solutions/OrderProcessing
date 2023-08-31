@@ -71,6 +71,20 @@ export class OrderService {
 
     async getOrderTimeline(orderId: number) {
         try {
+
+            const order = await this.prisma.order.findUnique({
+                where: {
+                    id: orderId
+                }
+            });
+            if (!order) {
+                throw new HttpException({
+                    statusCode: HttpStatus.NOT_FOUND,
+                    message: ErrorMessages.ORDER_NOT_FOUND.message,
+                    success: false
+                }, HttpStatus.NOT_FOUND);
+            }
+
             const orderTimeline = await this.prisma.orderStatusTimeline.findMany({
                 where: { orderId },
                 select: { timestamp: true, orderStatusId: true }
@@ -86,7 +100,6 @@ export class OrderService {
     async updateStatusWithAgent(orderArray: AssigningStatusDto[], orderStatus: number) {
         console.log(111, orderArray)
         for (const order of orderArray) {
-            console.log(11111111111111)
             try{
                 await this.prisma.order.update({
                     where: { id: order.orderId },

@@ -1,18 +1,20 @@
-import { Controller, Get, HttpException, HttpStatus, Param, ParseIntPipe, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Inject, Param, ParseIntPipe, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth,  ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeliveryService } from '../delivery.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import { OrderStatusEnum } from 'src/assets/constants';
+import { OrderStatusEnum, constants } from 'src/assets/constants';
 import { GetDeliveryAgentOrdersQuery } from '../dto/create-order-details.dto';
 import { ErrorMessages } from 'src/assets/errorMessages';
 import { OrderService } from 'src/routes/orders/orders.service';
+import { PrismaClient } from '@prisma/client';
 
 
 @ApiTags('Orders - delivery')
 @Controller('delivery')
 export class DeliveryController {
     constructor(private readonly deliveryService: DeliveryService,
-        private readonly orderService: OrderService) { }
+        private readonly orderService: OrderService,
+        @Inject(constants.PRISMA_CLIENT) private readonly prisma: PrismaClient,) { }
 
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
@@ -50,6 +52,20 @@ export class DeliveryController {
             throw new HttpException({
                 statusCode: HttpStatus.BAD_REQUEST,
                 message: ErrorMessages.INVALID_ORDER_STATUS.message,
+                success: false
+            }, HttpStatus.BAD_REQUEST);
+        }
+
+        const deliveryAgent = await this.prisma.order.findFirst({
+            where: {
+                deliveryAgentId: agentId,
+            },
+        })
+
+        if(!deliveryAgent){
+            throw new HttpException({
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: ErrorMessages.AGENT_NOT_FOUND.message,
                 success: false
             }, HttpStatus.BAD_REQUEST);
         }
