@@ -1,13 +1,13 @@
 <div class="container">
     <ul class="timeline">
       <li [ngClass]="{'active-tl': currentOrderStatus>=1}">
-        Booked
+        Order Booked
       </li>
       <li [ngClass]="{'active-tl': currentOrderStatus>=4}">
-        Packed
+        Order Packed
       </li>
       <li [ngClass]="{'active-tl': currentOrderStatus>=8}">
-        Picked
+        Picked by delivery agent
       </li>
       <li *ngIf="currentOrderStatus==11" [ngClass]="{'active-tl': currentOrderStatus==11}">
         Delivered
