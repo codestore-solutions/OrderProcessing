@@ -34,10 +34,10 @@ export class OrderDetailComponent implements OnInit{
       statusCode: 1,
       statusName:"New"
     },
-    {
-      statusCode: 2,
-      statusName:"Cancel"
-    },
+    // {
+    //   statusCode: 2,
+    //   statusName:"Cancel"
+    // },
     {
       statusCode: 3,
       statusName:"Packing"
