@@ -5,6 +5,7 @@ import { MatSelectChange } from '@angular/material/select';
 import { MatTableDataSource } from '@angular/material/table';
 import { Orders } from 'src/app/interfaces/orders';
 import { DataService } from 'src/app/services/data.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface UniqueOrderObject {
   id: number;
@@ -46,10 +47,10 @@ export class OrdersComponent implements OnInit {
       statusCode: 1,
       statusName:"New"
     },
-    {
-      statusCode: 2,
-      statusName:"Cancel"
-    },
+    // {
+    //   statusCode: 2,
+    //   statusName:"Cancel"
+    // },
     {
       statusCode: 3,
       statusName:"Packing"
@@ -130,6 +131,8 @@ export class OrdersComponent implements OnInit {
   statusSpecificOrderList!: Orders;
   remappedStatusSpecificOrderList: UniqueOrderObject[] = [];
 
+  serverSideError!:boolean;
+
   pageConfig: { page: number; pageSize: number } = {
     page: 0,
     pageSize: 50
@@ -137,7 +140,9 @@ export class OrdersComponent implements OnInit {
 
   constructor(
     private _dataService: DataService,
-    private _cd: ChangeDetectorRef) {
+    private _cd: ChangeDetectorRef,
+    private _snackbar: MatSnackBar
+    ) {
   }
 
   ngOnInit(): void {
@@ -160,7 +165,11 @@ export class OrdersComponent implements OnInit {
       this.totalOrdersWithRespectiveStatus = res.data.totalOrders;
       this.orderListDataHandler(this.statusSpecificOrderList);
       this.mainDataSource = new MatTableDataSource(this.remappedStatusSpecificOrderList);
+      this.serverSideError = false;
       this._cd.detectChanges();
+    }, (err)=>{
+      this._snackbar.open("Failed to load resources.", "Dismiss", {duration: 2500});
+      this.serverSideError = true;
     })
   }
 
