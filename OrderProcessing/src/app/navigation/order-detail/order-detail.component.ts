@@ -141,6 +141,10 @@ export class OrderDetailComponent implements OnInit{
   }
 
   updateStatus():void{
+    if(this.orderDetails.data.orderStatus===1 && this.newStatusToBeUpdated===4){
+      this._snackbar.open("Order must under packing to be considered packed.", "OK", {duration:2500});
+      return
+    }
     this.updateStatusPayload = {
       status: this.newStatusToBeUpdated,
       orders:[
