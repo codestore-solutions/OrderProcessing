@@ -57,10 +57,10 @@ export class DeliveryService {
         } catch (error) {
             this.logger.error('An error occurred:', error);
             throw new HttpException({
-                statusCode: HttpStatus.BAD_REQUEST,
-                message: ErrorMessages.INVALID_ORDER_STATUS.message,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: ErrorMessages.INTERNAL_SERVER_ERROR.message,
                 success: false
-            }, HttpStatus.BAD_REQUEST);
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -97,10 +97,10 @@ export class DeliveryService {
         } catch (error) {
             this.logger.error('An error occurred:', error);
             throw new HttpException({
-                statusCode: HttpStatus.BAD_REQUEST,
-                message: ErrorMessages.INVALID_ORDER_STATUS.message,
+                statusCode: HttpStatus.SERVICE_UNAVAILABLE,
+                message: ErrorMessages.SERVICE_UNAVAILABLE.message,
                 success: false
-            }, HttpStatus.BAD_REQUEST);
+            }, HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 

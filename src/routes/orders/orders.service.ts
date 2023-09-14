@@ -31,10 +31,10 @@ export class OrderService {
             return count === status.length;
         } catch (error) {
             throw new HttpException({
-                statusCode: HttpStatus.BAD_REQUEST,
-                message: ErrorMessages.INVALID_ORDER_STATUS.message,
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: ErrorMessages.INTERNAL_SERVER_ERROR.message,
                 success: false
-            }, HttpStatus.BAD_REQUEST);
+            }, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
