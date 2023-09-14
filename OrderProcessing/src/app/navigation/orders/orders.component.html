@@ -11,7 +11,7 @@
 </div>
 
 <div>
-  <!-- <mat-progress-bar mode="indeterminate" *ngIf="!statusSpecificOrderList"></mat-progress-bar> -->
+  <mat-progress-bar mode="indeterminate" *ngIf="isFetched===undefined"></mat-progress-bar>
   <div>
     <table mat-table [dataSource]="mainDataSource" class="mat-elevation-z2 order-table">
       <ng-container matColumnDef="serial">
@@ -95,8 +95,8 @@
       <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
       <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"></tr>
     </table>
-    <app-no-data-found [dataMissingMessage]="'No orders found'" *ngIf="remappedStatusSpecificOrderList.length===0 && !serverSideError"></app-no-data-found>
-    <app-no-data-found [dataMissingMessage]="'Failed to load resources'" *ngIf="serverSideError"></app-no-data-found>
+    <app-no-data-found [dataMissingMessage]="'No orders found'" *ngIf="remappedStatusSpecificOrderList.length===0 && isFetched"></app-no-data-found>
+    <app-no-data-found [dataMissingMessage]="'Failed to load resources'" *ngIf="isFetched===false"></app-no-data-found>
     <mat-paginator [length]="totalOrdersWithRespectiveStatus" [pageSize]="pageConfig.pageSize" (page)="handlePageEvent($event)" #paginator></mat-paginator>
   </div>
 </div>

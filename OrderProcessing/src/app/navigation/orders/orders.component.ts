@@ -131,7 +131,7 @@ export class OrdersComponent implements OnInit {
   statusSpecificOrderList!: Orders;
   remappedStatusSpecificOrderList: UniqueOrderObject[] = [];
 
-  serverSideError!:boolean;
+  isFetched!:boolean;
 
   pageConfig: { page: number; pageSize: number } = {
     page: 0,
@@ -165,11 +165,11 @@ export class OrdersComponent implements OnInit {
       this.totalOrdersWithRespectiveStatus = res.data.totalOrders;
       this.orderListDataHandler(this.statusSpecificOrderList);
       this.mainDataSource = new MatTableDataSource(this.remappedStatusSpecificOrderList);
-      this.serverSideError = false;
+      this.isFetched = true;
       this._cd.detectChanges();
     }, (err)=>{
       this._snackbar.open("Failed to load resources.", "Dismiss", {duration: 2500});
-      this.serverSideError = true;
+      this.isFetched = false;
     })
   }
 
