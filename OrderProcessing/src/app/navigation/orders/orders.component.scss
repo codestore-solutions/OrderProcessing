@@ -15,7 +15,8 @@
   }
 }
 .table-wrapper{
-  overflow: scroll;
+  overflow: auto;
+  padding: 5px;
 }
 .order-table {
   width: 100%;
@@ -43,4 +44,7 @@ mat-paginator {
   padding: 0.25em;
   border-radius: 0.25em;
   font-weight: 500;
+}
+::-webkit-scrollbar{
+  display: none;
 }
