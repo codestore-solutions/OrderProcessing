@@ -168,8 +168,12 @@ export class OrdersComponent implements OnInit {
       this.isFetched = true;
       this._cd.detectChanges();
     }, (err)=>{
+      this.remappedStatusSpecificOrderList = [];
+      this.totalOrdersWithRespectiveStatus = 0;
+      this.mainDataSource = new MatTableDataSource(this.remappedStatusSpecificOrderList);
       this._snackbar.open("Failed to load resources.", "Dismiss", {duration: 2500});
       this.isFetched = false;
+      this._cd.detectChanges();
     })
   }
 
