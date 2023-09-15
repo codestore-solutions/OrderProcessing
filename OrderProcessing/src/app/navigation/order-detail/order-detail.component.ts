@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { OrderDetails } from 'src/app/interfaces/orders';
 import { DataService } from 'src/app/services/data.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DeliveryAgentDetails } from 'src/app/interfaces/deliveryAgent';
 
 @Component({
   selector: 'app-order-detail',
@@ -107,7 +108,10 @@ export class OrderDetailComponent implements OnInit{
   
   orderId!:number;
   orderDetails!: OrderDetails;
-  orderInformation!:any;
+  deliveryAgentDetails!:DeliveryAgentDetails;
+  errorInOrderFetching!:boolean;
+  errorInDeliveryFetching!:boolean;
+  // orderInformation!:any;
   // statusList!:{id:number; name:string;}[];
   updateStatusPayload!:{status:number; orders:number[]};
   newStatusToBeUpdated!:number;
@@ -133,6 +137,21 @@ export class OrderDetailComponent implements OnInit{
   getOrderDetails():void{
     this._dataService.getOrderDetails(this.orderId).subscribe((res)=>{
       this.orderDetails = res;
+      this.errorInOrderFetching = false;
+      if(this.orderDetails?.data?.deliveryAgentId){
+        this.getDeliveryAgentDetails(this.orderDetails.data.deliveryAgentId);
+      }
+    }, (err)=>{
+      this.errorInOrderFetching = true;
+    })
+  }
+
+  getDeliveryAgentDetails(deliveryAgentId:number):void{
+    this._dataService.getDeliveryAgentDetails(deliveryAgentId).subscribe((res)=>{
+      this.deliveryAgentDetails = res;
+      this.errorInDeliveryFetching = false;
+    }, (err)=>{
+      this.errorInDeliveryFetching = true;
     })
   }
 
@@ -141,7 +160,7 @@ export class OrderDetailComponent implements OnInit{
   }
 
   updateStatus():void{
-    if(this.orderDetails.data.orderStatus===1 && this.newStatusToBeUpdated===4){
+    if(this.orderDetails?.data?.orderStatus===1 && this.newStatusToBeUpdated===4){
       this._snackbar.open("Order must under packing to be considered packed.", "OK", {duration:2500});
       return
     }

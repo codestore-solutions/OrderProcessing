@@ -1,8 +1,9 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http"
+import { HttpClient, HttpParams } from "@angular/common/http"
 import { environment } from "../../environments/environment";
 import { Observable } from "rxjs";
 import { OrderDetails, OrderStatuses, Orders } from "../interfaces/orders";
+import { DeliveryAgentDetails } from "../interfaces/deliveryAgent";
 
 interface category {
     id: string;
@@ -38,6 +39,13 @@ export class DataService {
     //update statuses of the orders
     updateOrderStatus(payload:{status:number; orders:number[]}):Observable<any>{
         return this._http.put<any>(`${environment.orderProcessingUrl}order/updateOrder`, payload)
+    }
+
+    //get delivery agent details
+    getDeliveryAgentDetails(deliveryAgentId: number):Observable<DeliveryAgentDetails>{
+        let agentConfig = new HttpParams()
+        .set('agentId', deliveryAgentId);
+        return this._http.get<DeliveryAgentDetails>(`${environment.deliveryManagementUrl}personal-details/get`, {params: agentConfig})
     }
     
 }

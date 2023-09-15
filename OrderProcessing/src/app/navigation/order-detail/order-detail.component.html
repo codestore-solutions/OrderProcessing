@@ -1,188 +1,197 @@
-<div class="title-container">
-  <span class="bold">Order Details</span>
-  <div class="action-wrapper">
-    <mat-select class="sortby" placeholder="Change Status"
-    *ngIf="orderDetails.data.orderStatus<4"
-    (selectionChange)="orderStatusSelectionChange($event);" [(ngModel)]="newStatusToBeUpdated"
-    >
-      <ng-container *ngFor="let status of updatableOrderStatuses">
-        <mat-option
-          [value]="status.statusCode"
-          *ngIf="status.statusCode>orderDetails.data.orderStatus"
-        >
-          {{status.statusName}}
-        </mat-option>
-      </ng-container>
-    </mat-select>
-    <button
-      mat-icon-button
-      (click)="updateStatus()"
-      *ngIf="newStatusToBeUpdated"
-      color="primary"
-      matTooltip="Update Status to {{statuses[newStatusToBeUpdated-1]}}"
+<div *ngIf="errorInOrderFetching===false">
+  <div class="title-container">
+    <span class="bold">Order Details</span>
+    <div class="action-wrapper">
+      <mat-select class="sortby" placeholder="Change Status"
+      *ngIf="orderDetails.data?.orderStatus!<4"
+      (selectionChange)="orderStatusSelectionChange($event);" [(ngModel)]="newStatusToBeUpdated"
       >
-      <mat-icon>check</mat-icon>
-    </button>
+        <ng-container *ngFor="let status of updatableOrderStatuses">
+          <mat-option
+            [value]="status.statusCode"
+            *ngIf="status.statusCode>orderDetails.data?.orderStatus!"
+          >
+            {{status.statusName}}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+      <button
+        mat-icon-button
+        (click)="updateStatus()"
+        *ngIf="newStatusToBeUpdated"
+        color="primary"
+        matTooltip="Update Status to {{statuses[newStatusToBeUpdated-1]}}"
+        >
+        <mat-icon>check</mat-icon>
+      </button>
+    </div>
   </div>
-</div>
-
-<div *ngIf="!orderDetails">
-  <br>
-  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-</div>
-
-<div class="complete-order-detail-container">
-  <mat-card class="order-detail-card">
-    <mat-card-content>
-      <div class="detail-field">
-        <p class="field-name">Order ID</p>
-        <p class="field-value">{{orderDetails.data.id}}</p>
-      </div>
-      <div class="detail-field">
-        <p class="field-name">Order Status</p>
-        <p class="field-value">{{statuses[orderDetails.data.orderStatus-1]}}</p>
-      </div>
-      <div class="detail-field">
-        <p class="field-name">Total Amount</p>
-        <p class="field-value">N/A</p>
-      </div>
-      <div class="detail-field">
-        <p class="field-name">Payment Status</p>
-        <p class="field-value">{{PaymentStatuses[orderDetails.data.paymentStatus]}}</p>
-      </div>
-      <div class="detail-field">
-        <p class="field-name">Payment Mode</p>
-        <p class="field-value">{{PaymentModes[orderDetails.data.paymentMode-1]}}</p>
-      </div>
-      <div class="detail-field">
-        <p class="field-name">Date</p>
-        <p class="field-value">{{orderDetails.data.createdAt | date}}</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
-  <mat-card class="order-product-list">
-    <mat-card-header class="header">
-      <mat-card-title class="title">Products Details</mat-card-title>
-    </mat-card-header>
-    <!-- <mat-card-content class="product-list-container">
-      <div class="product-detail-container">
-        <div class="image-title-container">
-          <img src="../../../assets/smart-watch.png">
-          <div class="product-title">
-            <p class="title">Smart Watch</p>
-          </div>
-        </div>
-        <p>INR 12330/-</p>
-      </div>
-      <div class="product-detail-container">
-        <div class="image-title-container">
-          <img src="../../../assets/smart-watch.png">
-          <div class="product-title">
-            <p class="title">Smart Watch</p>
-          </div>
-        </div>
-        <p>INR 12330/-</p>
-      </div>
-    </mat-card-content> -->
-    <app-no-data-found [dataMissingMessage]="'Products data not available'"></app-no-data-found>
-  </mat-card>
-</div>
-
-<div class="timeline-wrapper">
-  <span class="bold">Order Timeline</span>
-  <app-order-timeline-bar [currentOrderStatus]="orderDetails.data.orderStatus"></app-order-timeline-bar>
-</div>
-
-<!-- For Ongoing Orders -->
-<div class="ongoing-order-container">
-  <div class="card-container">
-
+  
+  <div *ngIf="!orderDetails">
+    <br>
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+  
+  <div class="complete-order-detail-container">
     <mat-card class="order-detail-card">
-      <mat-card-header>
-        <mat-card-title>
-          Customer
-        </mat-card-title>
-      </mat-card-header>
       <mat-card-content>
-        <div class="order-field-container">
-          <p class="field-name">Name</p>
-          <p class="field-value">{{orderDetails.data.customer.name}}</p>
+        <div class="detail-field">
+          <p class="field-name">Order ID</p>
+          <p class="field-value">{{orderDetails.data?.id}}</p>
         </div>
-        <div class="order-field-container">
-          <p class="field-name">Email</p>
-          <p class="field-value">{{orderDetails.data.customer.email}}</p>
+        <div class="detail-field">
+          <p class="field-name">Order Status</p>
+          <p class="field-value">{{statuses[orderDetails.data?.orderStatus!-1]}}</p>
         </div>
-        <div class="order-field-container">
-          <p class="field-name">Phone</p>
-          <p class="field-value">
-            {{orderDetails.data.shippingAddress.countryCode}}-{{orderDetails.data.shippingAddress.phoneNumber}}
-          </p>
+        <div class="detail-field">
+          <p class="field-name">Total Amount</p>
+          <p class="field-value">N/A</p>
         </div>
-        <div class="order-field-container">
-          <p class="field-name">Address</p>
-          <p class="field-value">
-            {{orderDetails.data.shippingAddress.street}}, 
-            {{orderDetails.data.shippingAddress.city}}, 
-            {{orderDetails.data.shippingAddress.state}}, 
-            {{orderDetails.data.shippingAddress.postalCode}}
-          </p>
+        <div class="detail-field">
+          <p class="field-name">Payment Status</p>
+          <p class="field-value">{{PaymentStatuses[orderDetails.data?.paymentStatus!]}}</p>
+        </div>
+        <div class="detail-field">
+          <p class="field-name">Payment Mode</p>
+          <p class="field-value">{{PaymentModes[orderDetails.data?.paymentMode!-1]}}</p>
+        </div>
+        <div class="detail-field">
+          <p class="field-name">Date</p>
+          <p class="field-value">{{orderDetails.data?.createdAt | date}}</p>
         </div>
       </mat-card-content>
     </mat-card>
-
-    <mat-card class="order-detail-card">
-      <mat-card-header>
-        <mat-card-title>
-          Vendor
-        </mat-card-title>
+    <mat-card class="order-product-list">
+      <mat-card-header class="header">
+        <mat-card-title class="title">Products Details</mat-card-title>
       </mat-card-header>
-      <mat-card-content>
-        <div class="order-field-container">
-          <p class="field-name">Vendor Name</p>
-          <p class="field-value">
-            {{orderDetails.data.vendor.first_name}} 
-            {{orderDetails.data.vendor.last_name}}
-          </p>
+      <!-- <mat-card-content class="product-list-container">
+        <div class="product-detail-container">
+          <div class="image-title-container">
+            <img src="../../../assets/smart-watch.png">
+            <div class="product-title">
+              <p class="title">Smart Watch</p>
+            </div>
+          </div>
+          <p>INR 12330/-</p>
         </div>
-        <div class="order-field-container">
-          <p class="field-name">Email</p>
-          <p class="field-value">{{orderDetails.data.vendor.email}}</p>
+        <div class="product-detail-container">
+          <div class="image-title-container">
+            <img src="../../../assets/smart-watch.png">
+            <div class="product-title">
+              <p class="title">Smart Watch</p>
+            </div>
+          </div>
+          <p>INR 12330/-</p>
         </div>
-        <div class="order-field-container">
-          <p class="field-name">Phone</p>
-          <p class="field-value">{{orderDetails.data.vendor.phone_number}}</p>
-        </div>
-        <div class="order-field-container">
-          <p class="field-name">Address</p>
-          <p class="field-value">
-            {{orderDetails.data.vendor.business.address.street}}, 
-            {{orderDetails.data.vendor.business.address.city}}, 
-            {{orderDetails.data.vendor.business.address.state}}, 
-            {{orderDetails.data.vendor.business.address.postalCode}}
-          </p>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="order-detail-card">
-      <mat-card-header>
-        <mat-card-title>
-          Delivery
-        </mat-card-title>
-      </mat-card-header>
-      <mat-card-content *ngIf="orderDetails.data.deliveryAgentId">
-        <div class="order-field-container">
-          <p class="field-name">Agent Name</p>
-          <p class="field-value">{{orderDetails.data.deliveryAgent?.fullName}}</p>
-        </div>
-        <div class="order-field-container">
-          <p class="field-name">Phone</p>
-          <p class="field-value">
-            {{orderDetails.data.deliveryAgent?.countryCode}}-{{orderDetails.data.deliveryAgent?.phoneNumber}}
-          </p>
-        </div>
-      </mat-card-content>
-      <app-no-data-found [dataMissingMessage]="'Delivery agent not assigned'" *ngIf="!orderDetails.data.deliveryAgentId"></app-no-data-found>
+      </mat-card-content> -->
+      <app-no-data-found [dataMissingMessage]="'Products data not available'"></app-no-data-found>
     </mat-card>
   </div>
+  
+  <div class="timeline-wrapper">
+    <span class="bold">Order Timeline</span>
+    <app-order-timeline-bar [currentOrderStatus]="orderDetails.data?.orderStatus!"></app-order-timeline-bar>
+  </div>
+  
+  <!-- For Ongoing Orders -->
+  <div class="ongoing-order-container">
+    <div class="card-container">
+  
+      <mat-card class="order-detail-card">
+        <mat-card-header>
+          <mat-card-title>
+            Customer
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="order-field-container">
+            <p class="field-name">Name</p>
+            <p class="field-value">{{orderDetails.data?.customer?.name}}</p>
+          </div>
+          <div class="order-field-container">
+            <p class="field-name">Email</p>
+            <p class="field-value">{{orderDetails.data?.customer?.email}}</p>
+          </div>
+          <div class="order-field-container">
+            <p class="field-name">Phone</p>
+            <p class="field-value">
+              {{orderDetails.data?.shippingAddress?.countryCode}}-{{orderDetails.data?.shippingAddress?.phoneNumber}}
+            </p>
+          </div>
+          <div class="order-field-container">
+            <p class="field-name">Address</p>
+            <p class="field-value">
+              {{orderDetails.data?.shippingAddress?.street}}, 
+              {{orderDetails.data?.shippingAddress?.city}}, 
+              {{orderDetails.data?.shippingAddress?.state}}, 
+              {{orderDetails.data?.shippingAddress?.postalCode}}
+            </p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="order-detail-card">
+        <mat-card-header>
+          <mat-card-title>
+            Vendor
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="order-field-container">
+            <p class="field-name">Vendor Name</p>
+            <p class="field-value">
+              {{orderDetails.data?.vendor?.first_name}} 
+              {{orderDetails.data?.vendor?.last_name}}
+            </p>
+          </div>
+          <div class="order-field-container">
+            <p class="field-name">Email</p>
+            <p class="field-value">{{orderDetails.data?.vendor?.email}}</p>
+          </div>
+          <div class="order-field-container">
+            <p class="field-name">Phone</p>
+            <p class="field-value">{{orderDetails.data?.vendor?.phone_number}}</p>
+          </div>
+          <div class="order-field-container">
+            <p class="field-name">Address</p>
+            <p class="field-value">
+              {{orderDetails.data?.vendor?.business?.address?.street}}, 
+              {{orderDetails.data?.vendor?.business?.address?.city}}, 
+              {{orderDetails.data?.vendor?.business?.address?.state}}, 
+              {{orderDetails.data?.vendor?.business?.address?.postalCode}}
+            </p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+  
+      <mat-card class="order-detail-card">
+        <mat-card-header>
+          <mat-card-title>
+            Delivery
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content *ngIf="errorInDeliveryFetching===false">
+          <div class="order-field-container">
+            <p class="field-name">Agent Name</p>
+            <p class="field-value">{{deliveryAgentDetails.data?.fullName}}</p>
+          </div>
+          <div class="order-field-container">
+            <p class="field-name">Phone</p>
+            <p class="field-value">
+              {{deliveryAgentDetails.data?.phoneNumber}}
+            </p>
+          </div>
+          <div class="order-field-container">
+            <p class="field-name">Email</p>
+            <p class="field-value">
+              {{deliveryAgentDetails.data?.email}}
+            </p>
+          </div>
+        </mat-card-content>
+        <app-no-data-found [dataMissingMessage]="'Delivery agent not assigned'" *ngIf="!orderDetails.data?.deliveryAgentId"></app-no-data-found>
+        <app-no-data-found [dataMissingMessage]="'Failed to load delivery agent details'" *ngIf="errorInDeliveryFetching"></app-no-data-found>
+      </mat-card>
+    </div>
+  </div>  
 </div>
