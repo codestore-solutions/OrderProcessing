@@ -121,11 +121,11 @@
           </div>
           <div class="order-field-container">
             <p class="field-name">Address</p>
-            <p class="field-value">
-              {{orderDetails.data?.shippingAddress?.street}}, 
-              {{orderDetails.data?.shippingAddress?.city}}, 
-              {{orderDetails.data?.shippingAddress?.state}}, 
-              {{orderDetails.data?.shippingAddress?.postalCode}}
+            <p class="field-value" style="word-break: break-all;">
+              <span>{{orderDetails.data?.shippingAddress?.street}}, </span>
+              <span>{{orderDetails.data?.shippingAddress?.city}}, </span>
+              <span>{{orderDetails.data?.shippingAddress?.state}}, </span>
+              <span>{{orderDetails.data?.shippingAddress?.postalCode}}</span>
             </p>
           </div>
         </mat-card-content>
@@ -155,11 +155,11 @@
           </div>
           <div class="order-field-container">
             <p class="field-name">Address</p>
-            <p class="field-value">
-              {{orderDetails.data?.vendor?.business?.address?.street}}, 
-              {{orderDetails.data?.vendor?.business?.address?.city}}, 
-              {{orderDetails.data?.vendor?.business?.address?.state}}, 
-              {{orderDetails.data?.vendor?.business?.address?.postalCode}}
+            <p class="field-value" style="word-break: break-all;">
+              <span>{{orderDetails.data?.vendor?.business?.address?.street}}, </span>
+              <span>{{orderDetails.data?.vendor?.business?.address?.city}}, </span>
+              <span>{{orderDetails.data?.vendor?.business?.address?.state}}, </span>
+              <span>{{orderDetails.data?.vendor?.business?.address?.postalCode}}</span>
             </p>
           </div>
         </mat-card-content>
@@ -189,7 +189,7 @@
             </p>
           </div>
         </mat-card-content>
-        <app-no-data-found [dataMissingMessage]="'Delivery agent not assigned'" *ngIf="!orderDetails.data?.deliveryAgentId"></app-no-data-found>
+        <app-no-data-found [dataMissingMessage]="'Delivery agent not assigned yet'" *ngIf="!orderDetails.data?.deliveryAgentId"></app-no-data-found>
         <app-no-data-found [dataMissingMessage]="'Failed to load delivery agent details'" *ngIf="errorInDeliveryFetching"></app-no-data-found>
       </mat-card>
     </div>

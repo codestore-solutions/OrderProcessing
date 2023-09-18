@@ -135,7 +135,7 @@ export class OrdersComponent implements OnInit {
 
   pageConfig: { page: number; pageSize: number } = {
     page: 0,
-    pageSize: 50
+    pageSize: 20
   }
 
   constructor(
