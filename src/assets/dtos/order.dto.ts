@@ -46,6 +46,9 @@ export class OrderDTO {
 
     @ApiProperty()
     deliveryCharge: number;
+
+    // @ApiProperty()
+    // orderItems:any;
 }
 
 
@@ -80,4 +83,6 @@ export class OrderDBDto {
   deliveryMode?: string;
 
   deliveryCharge?: number;
+
+  // orderItems: any;
 }

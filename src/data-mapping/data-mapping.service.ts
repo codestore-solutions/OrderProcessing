@@ -40,6 +40,7 @@ export class DataMappingService {
                     deliveryCharges: order.deliveryCharges,
                     createdAt: order.createdDate,
                     paymentStatus: order.paymentStatus,
+                    orderItems: order.orderItems,
                      ...transformedOrder 
                 }];
         }, []);

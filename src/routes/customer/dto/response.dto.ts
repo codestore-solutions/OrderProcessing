@@ -48,6 +48,10 @@ const responseExampleData = {
         "id": 5,
         "name": "Ramesh Kapoor",
         "email": "ramesh.kapoor@example.com",
+        "contacts": [
+            "917860965109",
+            "917355986157"
+        ]
     },
     "shippingAddress": {
         "id": 1,
@@ -153,6 +157,9 @@ class CustomerDTO {
 
     @ApiProperty()
     email: string;
+
+    @ApiProperty()
+    contacts: string[];
 }
 
 class ShippingAddressDTO {
