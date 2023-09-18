@@ -70,7 +70,7 @@ export class BusinessService {
             // console.log("CUSTOMER:", customerData, customerIdArray)
             // console.log("DELIVERY:", deliveryAgentData?.data?.data, deliveryAgentIdArray)
             // console.log("VENDORS:", vendorData?.data?.data, vendorIdArray)
-
+            // console.log(orderData.data.data.orderItems)
             // Return the fetched data
             return {
                 orderData: orderData && orderData.data ? orderData.data.data : [],
@@ -113,7 +113,7 @@ export class BusinessService {
                 idField: 'customerId',
                 map: new Map(customerArray.map(customer => [customer.id, customer])),
                 __all__: false,
-                selectedFields: ['id', 'name', 'email'],
+                selectedFields: ['id', 'name', 'email', 'contacts'],
             },
             deliveryAgent: {
                 idField: 'deliveryAgentId',

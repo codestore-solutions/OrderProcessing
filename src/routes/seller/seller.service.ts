@@ -116,7 +116,7 @@ export class SellerService {
                 idField: 'customerId',
                 map: new Map(customerArray.map(customer => [customer.id, customer])),
                 __all__: false,
-                selectedFields: ['id', 'name', 'email'],
+                selectedFields: ['id', 'name', 'email', 'contacts'],
             },
             shippingAddress: {
                 idField: 'shippingAddressId',

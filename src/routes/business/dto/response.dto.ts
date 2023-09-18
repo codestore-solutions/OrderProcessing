@@ -140,6 +140,9 @@ class CustomerDTO {
 
     @ApiProperty()
     email: string;
+
+    @ApiProperty()
+    contacts: string[];
 }
 
 class ShippingAddressDTO {
