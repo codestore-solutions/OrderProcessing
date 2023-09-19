@@ -9,14 +9,14 @@
       <li [ngClass]="{'active-tl': currentOrderStatus>=8}">
         Picked by delivery agent
       </li>
-      <li *ngIf="currentOrderStatus==11" [ngClass]="{'active-tl': currentOrderStatus==11}">
+      <li [ngClass]="{'active-tl': currentOrderStatus==11}">
         Delivered
       </li>
-      <li *ngIf="currentOrderStatus==12" [ngClass]="{'active-tl': currentOrderStatus==12}">
+      <!-- <li *ngIf="currentOrderStatus==12" [ngClass]="{'active-tl': currentOrderStatus==12}">
         Return
       </li>
       <li *ngIf="currentOrderStatus==16" [ngClass]="{'active-tl': currentOrderStatus==16}">
         Cancelled
-      </li>
+      </li> -->
     </ul>
 </div>

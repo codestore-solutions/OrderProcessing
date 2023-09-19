@@ -48,4 +48,8 @@ export class DataService {
         return this._http.get<DeliveryAgentDetails>(`${environment.deliveryManagementUrl}personal-details/get`, {params: agentConfig})
     }
     
+    //get product details for the product id
+    getProductDetails(productId:number):Observable<any>{
+        return this._http.get<any>(`${environment.productCatalogueUrl}Products/productDetail/${productId}`)
+    }
 }

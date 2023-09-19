@@ -35,10 +35,6 @@ export class OrderDetailComponent implements OnInit{
       statusCode: 1,
       statusName:"New"
     },
-    // {
-    //   statusCode: 2,
-    //   statusName:"Cancel"
-    // },
     {
       statusCode: 3,
       statusName:"Packing"
@@ -46,55 +42,7 @@ export class OrderDetailComponent implements OnInit{
     {
       statusCode: 4,
       statusName:"Packing Completed"
-    },
-    // {
-    //   statusCode: 5,
-    //   statusName:"Agent Assigned"
-    // },
-    // {
-    //   statusCode: 6,
-    //   statusName:"Accepted by Agent"
-    // },
-    // {
-    //   statusCode: 7,
-    //   statusName:"Agent Re-assigned"
-    // },
-    // {
-    //   statusCode: 8,
-    //   statusName:"Picked Up"
-    // },
-    // {
-    //   statusCode: 9,
-    //   statusName:"Reached Destination"
-    // },
-    // {
-    //   statusCode: 10,
-    //   statusName:"Not Accepted by Customer"
-    // },
-    // {
-    //   statusCode: 11,
-    //   statusName:"Delivered"
-    // },
-    // {
-    //   statusCode: 12,
-    //   statusName:"Return"
-    // },
-    // {
-    //   statusCode: 13,
-    //   statusName:"Exchanged"
-    // },
-    // {
-    //   statusCode: 14,
-    //   statusName:"Payment Failed"
-    // },
-    // {
-    //   statusCode: 15,
-    //   statusName:"Cancelled by Seller"
-    // },
-    // {
-    //   statusCode: 16,
-    //   statusName:"Cancelled by Customer"
-    // }
+    }
   ]
   PaymentStatuses = [
     "Failed",
@@ -109,10 +57,10 @@ export class OrderDetailComponent implements OnInit{
   orderId!:number;
   orderDetails!: OrderDetails;
   deliveryAgentDetails!:DeliveryAgentDetails;
+  productsInOrderDetails!:any;
   errorInOrderFetching!:boolean;
   errorInDeliveryFetching!:boolean;
-  // orderInformation!:any;
-  // statusList!:{id:number; name:string;}[];
+  errorInProductFetching!:boolean;
   updateStatusPayload!:{status:number; orders:number[]};
   newStatusToBeUpdated!:number;
   
@@ -125,18 +73,12 @@ export class OrderDetailComponent implements OnInit{
   ngOnInit(): void {
     this.orderId = parseInt(this._activatedRoute.snapshot.paramMap.get("orderId")!);
     this.getOrderDetails();
-    // this.getAllOrderStatuses();
   }
-
-  // getAllOrderStatuses(): void {
-  //   this._dataService.getOrderStatuses().subscribe((res) => {
-  //     this.statusList = res.data;
-  //   })
-  // }
 
   getOrderDetails():void{
     this._dataService.getOrderDetails(this.orderId).subscribe((res)=>{
       this.orderDetails = res;
+      console.log(res);
       this.errorInOrderFetching = false;
       if(this.orderDetails?.data?.deliveryAgentId){
         this.getDeliveryAgentDetails(this.orderDetails.data.deliveryAgentId);
@@ -153,6 +95,10 @@ export class OrderDetailComponent implements OnInit{
     }, (err)=>{
       this.errorInDeliveryFetching = true;
     })
+  }
+
+  getProductDetails():void{
+
   }
 
   orderStatusSelectionChange(e:MatSelectChange):void{
