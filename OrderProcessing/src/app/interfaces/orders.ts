@@ -1,34 +1,46 @@
 export interface Orders {
     data: {
         list: {
-            id: number;
-            deliveryAgentId: null | number;
-            paymentId: number | null;
-            orderStatus: number;
-            paymentMode: number;
-            productCount: number;
-            deliveryCharges: number;
-            createdAt: string;
-            paymentStatus: number;
-            customer:{
-                id:number;
-                name:string;
-                email:string;
+            id?: number;
+            deliveryAgentId?: null | number;
+            paymentId?: number | null;
+            orderStatus?: number;
+            paymentMode?: number;
+            productCount?: number;
+            deliveryCharges?: number;
+            createdAt?: string;
+            paymentStatus?: number;
+            customer?: {
+                id?: number;
+                name?: string;
+                email?: string;
+                contacts?: string[];
             };
-            shippingAddress:{
-                id:number;
-                userId:number;
-                street:string;
-                city:string;
-                state:string;
-                country:string;
-                countryCode:string;
-                postalCode:string;
-                phoneNumber:string;
-                alternateNumber:string | null;
-                addressType:number;
-                longitude:number;
-                latitude:number;
+            orderItems?: {
+                orderItemsId?: number;
+                productId?: number;
+                variantId?: number;
+                price?: number;
+                discount?: number;
+                quantity?: number;
+                orderStatus?: number;
+                orderId?: number;
+                order?: null | number;
+            }[];
+            shippingAddress?: {
+                id?: number;
+                userId?: number;
+                street?: string;
+                city?: string;
+                state?: string;
+                country?: string;
+                countryCode?: string;
+                postalCode?: string;
+                phoneNumber?: string;
+                alternateNumber?: string | null;
+                addressType?: number;
+                longitude?: number;
+                latitude?: number;
             };
         }[];
         totalOrders: number;

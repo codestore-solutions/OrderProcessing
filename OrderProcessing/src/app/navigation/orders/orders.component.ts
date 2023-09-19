@@ -42,6 +42,8 @@ export class OrdersComponent implements OnInit {
     'Cancelled by Customer'
   ];
 
+  businessAdminId:number = JSON.parse(localStorage.getItem("token")!).id;
+
   orderStatuses: {statusCode:number; statusName:string;}[] = [
     {
       statusCode: 1,
@@ -135,7 +137,7 @@ export class OrdersComponent implements OnInit {
 
   pageConfig: { page: number; pageSize: number } = {
     page: 0,
-    pageSize: 20
+    pageSize: 10
   }
 
   constructor(
@@ -159,7 +161,7 @@ export class OrdersComponent implements OnInit {
   // }
 
   getBusinessRelatedOrders(): void {
-    this._dataService.getOrdersBySellerIdAndOrderStatus(3, this.pageConfig.page+1, this.pageConfig.pageSize, [this.selectedStatus])
+    this._dataService.getOrdersBySellerIdAndOrderStatus(this.businessAdminId, this.pageConfig.page+1, this.pageConfig.pageSize, [this.selectedStatus])
     .subscribe((res) => {
       this.statusSpecificOrderList = res;
       this.totalOrdersWithRespectiveStatus = res.data.totalOrders;
@@ -182,13 +184,13 @@ export class OrdersComponent implements OnInit {
     if (orderListResponse.data.list.length) {
       for (let order of orderListResponse.data.list) {
         let tempOrderObject: UniqueOrderObject = {
-          id: order.id,
-          customer: order.customer.name,
-          createdAt: order.createdAt,
+          id: order.id!,
+          customer: order.customer?.name!,
+          createdAt: order.createdAt!,
           amount: "N/A",
-          paymentMode: this.PaymentModes[order.paymentMode-1],
-          paymentStatus: this.PaymentStatuses[order.paymentStatus],
-          orderStatus: this.statuses[order.orderStatus-1]
+          paymentMode: this.PaymentModes[order.paymentMode!-1],
+          paymentStatus: this.PaymentStatuses[order.paymentStatus!],
+          orderStatus: this.statuses[order.orderStatus!-1]
         }
         this.remappedStatusSpecificOrderList.push(tempOrderObject);
       }
