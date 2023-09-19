@@ -282,4 +282,76 @@ export const users: UserDto[] = [
     "address": "Noida",
     "businessAdminId": 2
   },
+  {
+    "id": 27,
+    "name": "Business Admin TestUser",
+    "contacts": [
+      "9871234567"
+    ],
+    "email": "businessAdmin.testuser@codestore.com",
+    "password": "password123",
+    "role": 2,
+    "businessCategory": 3,
+    "isActive": true
+  },
+  {
+    "id": 28,
+    "name": "Agent TestUser",
+    "contacts": [
+      "9871234567"
+    ],
+    "email": "agent.testuser@codestore.com",
+    "password": "password123",
+    "role": 5,
+    "businessCategory": 3,
+    "isActive": true
+  },
+{
+    "id": 29,
+    "name": "Customer TestUser",
+    "contacts": [
+      "9871234567"
+    ],
+    "email": "customer.testuser@codestore.com",
+    "password": "password123",
+    "role": 4,
+    "businessCategory": 3,
+    "isActive": true
+  },
+ {
+    "id": 30,
+    "name": "Vendor TestUser",
+    "contacts": [
+      "9871234567"
+    ],
+    "email": "vendor.testuser@codestore.com",
+    "password": "password123",
+    "role": 3,
+    "businessCategory": 3,
+    "isActive": true
+  },
+  {
+    "id": 31,
+    "name": "Garvit Sharma",
+    "contacts": [
+      "7355986158"
+    ],
+    "email": "Garvit1999@mailinator.com",
+    "password": "Admin@1234",
+    "role": 5,
+    "businessCategory": 3,
+    "isActive": true
+  },
+ {
+    "id": 32,
+    "name": "Rohit Dass",
+    "contacts": [
+      "7355986158"
+    ],
+    "email": "Rohit1999@mailinator.com",
+    "password": "Admin@1234",
+    "role": 5,
+    "businessCategory": 3,
+    "isActive": true
+  }
 ]
