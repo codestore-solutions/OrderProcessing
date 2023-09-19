@@ -173,7 +173,11 @@ export class OrderDetailComponent implements OnInit{
     this._dataService.updateOrderStatus(this.updateStatusPayload)
     .subscribe((res)=>{
       this._snackbar.open("Order status updated successfully", "OK")
-      window.location.reload();
+      setTimeout(()=>{
+        window.location.reload();
+      }, 3000)
+    }, (err)=>{
+      this._snackbar.open("Failed to change order status", "OK", {duration:2500})
     })
   }
 }
