@@ -1,46 +1,34 @@
 export interface Orders {
     data: {
         list: {
-            id?: number;
-            deliveryAgentId?: null | number;
-            paymentId?: number | null;
-            orderStatus?: number;
-            paymentMode?: number;
-            productCount?: number;
-            deliveryCharges?: number;
-            createdAt?: string;
-            paymentStatus?: number;
-            customer?: {
-                id?: number;
-                name?: string;
-                email?: string;
-                contacts?: string[];
+            id: number;
+            deliveryAgentId: null | number;
+            paymentId: number | null;
+            orderStatus: number;
+            paymentMode: number;
+            productCount: number;
+            deliveryCharges: number;
+            createdAt: string;
+            paymentStatus: number;
+            customer:{
+                id:number;
+                name:string;
+                email:string;
             };
-            orderItems?: {
-                orderItemsId?: number;
-                productId?: number;
-                variantId?: number;
-                price?: number;
-                discount?: number;
-                quantity?: number;
-                orderStatus?: number;
-                orderId?: number;
-                order?: null | number;
-            }[];
-            shippingAddress?: {
-                id?: number;
-                userId?: number;
-                street?: string;
-                city?: string;
-                state?: string;
-                country?: string;
-                countryCode?: string;
-                postalCode?: string;
-                phoneNumber?: string;
-                alternateNumber?: string | null;
-                addressType?: number;
-                longitude?: number;
-                latitude?: number;
+            shippingAddress:{
+                id:number;
+                userId:number;
+                street:string;
+                city:string;
+                state:string;
+                country:string;
+                countryCode:string;
+                postalCode:string;
+                phoneNumber:string;
+                alternateNumber:string | null;
+                addressType:number;
+                longitude:number;
+                latitude:number;
             };
         }[];
         totalOrders: number;
@@ -50,35 +38,23 @@ export interface Orders {
     message: string;
 }
 
-export interface OrderDetails {
-    data?: {
-        id?: number;
+export interface OrderDetails{
+    data?:{
+        id?:number;
         deliveryAgentId?: number | null;
         orderStatus?: number;
         paymentId?: number | string | null;
         paymentMode?: number;
-        paymentStatus?: number;
+        paymentStatus?:number;
         productCount?: number;
         deliveryCharges?: number;
-        createdAt?: string;
-        orderItems?: {
-            orderItemsId?: number;
-            productId?: number;
-            variantId?: number;
-            price?: number;
-            discount?: number;
-            quantity?: number;
-            orderStatus?: number;
-            orderId?: number;
-            order?: null | number;
-        }[];
-        customer?: {
-            id?: number;
-            name?: string;
-            email?: string;
-            contacts?: string[];
+        createdAt?:string;
+        customer?:{
+            id?:number;
+            name?:string;
+            email?:string;
         };
-        vendor?: {
+        vendor?:{
             id?: number;
             profile_picture?: string | null;
             first_name?: string;
@@ -122,7 +98,7 @@ export interface OrderDetails {
                 }
             }
         };
-        shippingAddress?: {
+        shippingAddress?:{
             id?: number;
             userId?: number;
             street?: string;
@@ -137,7 +113,7 @@ export interface OrderDetails {
             latitude?: number;
             longitude?: number;
         };
-        deliveryAgent?: {
+        deliveryAgent?:{
             id?: number;
             agentId?: number;
             fullName?: string;
@@ -153,7 +129,7 @@ export interface OrderDetails {
             updatedOn?: string;
             agentStatus?: number;
             verificationStatus?: number;
-            bankDetails?: {
+            bankDetails?:{
                 id?: number;
                 agentDetailId?: number;
                 accountHolderName?: string;
@@ -164,7 +140,7 @@ export interface OrderDetails {
                 updatedOn?: string;
                 agentDetail?: null | string;
             };
-            vehicleDetails?: {
+            vehicleDetails?:{
                 id?: number;
                 agentDetailId?: number;
                 vehicleType?: number;
@@ -177,9 +153,9 @@ export interface OrderDetails {
                 updatedOn?: string;
                 agentDetails?: null | string;
             };
-            kyCs?: [];
-            serviceLocations?: [];
-            lazyLoader?: {};
+            kyCs?:[];
+            serviceLocations?:[];
+            lazyLoader?:{};
         };
     }
     statusCode: number;
@@ -187,8 +163,8 @@ export interface OrderDetails {
     message: string;
 }
 
-export interface OrderStatuses {
-    data: {
+export interface OrderStatuses{
+    data:{
         id: number;
         name: string;
     }[];
