@@ -98,7 +98,7 @@
   <div class="ongoing-order-container">
     <div class="card-container">
   
-      <mat-card class="order-detail-card">
+      <mat-card class="order-detail-card" *ngIf="orderDetails.data?.customer">
         <mat-card-header>
           <mat-card-title>
             Customer
@@ -131,7 +131,7 @@
         </mat-card-content>
       </mat-card>
   
-      <mat-card class="order-detail-card">
+      <mat-card class="order-detail-card" *ngIf="orderDetails.data?.vendor">
         <mat-card-header>
           <mat-card-title>
             Vendor
