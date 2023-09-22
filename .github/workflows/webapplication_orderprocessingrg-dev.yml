@@ -31,3 +31,20 @@ jobs:
         run: |
             ls -R  # List files recursively in the working directory
         working-directory: ./OrderProcessing/dist
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v2
+        id: deploy-to-webapp  
+        with:
+          app-name: 'OrderProcessingRG-dev'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CB2F4EB75FF149969DF283077FDC0277 }}
+          package: ./OrderProcessing/dist/order-processing
