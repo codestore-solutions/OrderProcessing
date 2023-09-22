@@ -25,6 +25,11 @@ jobs:
         run: |
           npm install
           npm run build --if-present
+      
+      - name: List Files in Working Directory
+        run: |
+            ls -R  # List files recursively in the working directory
+        working-directory: .  # Set the working directory for this step
   
   deploy:
     runs-on: ubuntu-latest
@@ -41,4 +46,4 @@ jobs:
           app-name: 'order-processing-dev'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_70679AD1D2A14110BF511A9F877AC35A }}
-          package: dist
+          package: ./dist
