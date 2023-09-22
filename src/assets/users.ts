@@ -15,7 +15,7 @@ export const users: UserDto[] = [
     "email": "rajiv.kumar@example.com",
     "password": "password123",
     "contacts": ["917860965109", "917355986157"],
-    "role": 2,
+    "role": 1,
     "isActive": true
   },
   {
