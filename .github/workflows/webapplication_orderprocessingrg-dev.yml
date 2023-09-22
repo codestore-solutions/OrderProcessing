@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - OrderProcessingRG-dev
+name: CI_CD dev-webapp-cs
 
 on:
   push:
     branches:
-      - WebApplication
+      - dev-webapp-cs
   workflow_dispatch:
 
 jobs:
@@ -26,12 +26,6 @@ jobs:
         run: |
           npm install
           npm run build --if-present
-              
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v2
-        with:
-          name: node-app
-          path: .
 
   deploy:
     runs-on: windows-latest
@@ -41,11 +35,6 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v2
-        with:
-          name: node-app
-               
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp  
@@ -53,4 +42,4 @@ jobs:
           app-name: 'OrderProcessingRG-dev'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CB2F4EB75FF149969DF283077FDC0277 }}
-          package: .
+          package: ./OrderProcessing/dist/order-processing
