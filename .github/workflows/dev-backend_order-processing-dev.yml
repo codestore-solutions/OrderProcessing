@@ -29,7 +29,7 @@ jobs:
       - name: List Files in Working Directory
         run: |
             ls -R  # List files recursively in the working directory
-        working-directory: .  # Set the working directory for this step
+        working-directory: ./dist  # Set the working directory for this step
   
   deploy:
     runs-on: ubuntu-latest
