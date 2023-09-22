@@ -41,4 +41,4 @@ jobs:
           app-name: 'order-processing-dev'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_70679AD1D2A14110BF511A9F877AC35A }}
-          package: ./dist
+          package: /dist
